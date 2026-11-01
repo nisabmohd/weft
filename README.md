@@ -1,11 +1,11 @@
-# Sprout
+# Weft
 
-Sprout is a small, open-source habit tracker for Android. It keeps your habits and notes on your phone, works without an account, and the APK is about 3 MB.
+Weft (formerly Sprout) is a small, open-source habit tracker for Android. It keeps your habits and notes on your phone, works without an account, and the APK is about 3 MB.
 
-**No ads · No tracking · No account · Free and open source (GPL v3)**
+**No ads · No tracking · No account · Free and open source (GPL v3)** · [Website](https://nisabmohd.github.io/weft/)
 
-[<img src="docs/badges/github.png" alt="Get it on GitHub" height="80">](https://github.com/nisabmohd/sprout-habit-tracker/releases/latest)
-[<img src="docs/badges/obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/nisabmohd/sprout-habit-tracker)
+[<img src="docs/badges/github.png" alt="Get it on GitHub" height="80">](https://github.com/nisabmohd/weft/releases/latest)
+[<img src="docs/badges/obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/nisabmohd/weft)
 
 | Today | Log an amount | Week | Overall |
 | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ Sprout is a small, open-source habit tracker for Android. It keeps your habits a
 | **Habit detail** | **Journal** | **Insights** | **Dark mode** |
 | ![Habit detail](docs/screenshots/06-habit-detail.png) | ![Journal](docs/screenshots/07-journal.png) | ![Insights](docs/screenshots/09-insights.png) | ![Dark mode](docs/screenshots/13-today-dark.png) |
 
-More: [welcome](docs/screenshots/01-welcome.png), [filter by habit](docs/screenshots/08-filter-by-habit.png), [date range](docs/screenshots/10-date-range.png), [new habit](docs/screenshots/12-new-habit.png), [settings](docs/screenshots/11-more.png), [font](docs/screenshots/18-font-sheet.png).
+More: [welcome](docs/screenshots/01-welcome.png), [filter by habit](docs/screenshots/08-filter-by-habit.png), [date range](docs/screenshots/10-date-range.png), [new habit](docs/screenshots/12-new-habit.png), [settings](docs/screenshots/11-more.png), [Google Drive backup](docs/screenshots/19-drive-backup.png), [font](docs/screenshots/18-font-sheet.png).
 
 ### Widgets
 
@@ -33,6 +33,8 @@ You can also:
 - get a reminder at the time you pick, and a nudge in the evening to add a note when you skip a habit that asks for one
 - add four home-screen widgets that stay in sync with the app; the Today widget marks habits done from the home screen
 - export everything, including your settings, to a JSON file and import it again, or export a CSV for spreadsheets
+- back up to your own Google Drive, by hand or every night while charging, and restore any of the last 10 backups (Google Play and GitHub builds)
+- long-press the app icon for Add note and New habit
 - choose light or dark, dynamic color from your wallpaper or an accent color, one of five fonts and a text size
 - use it in English, Hindi, Spanish, German, French, Portuguese (Brazil) or Japanese, separately from the phone's language
 
@@ -40,19 +42,19 @@ You can also:
 
 ## Download
 
-Download `sprout-vX.Y.Z-github.apk` from the latest [GitHub release](https://github.com/nisabmohd/sprout-habit-tracker/releases). There are three builds:
+Download `weft-vX.Y.Z-github.apk` from the latest [GitHub release](https://github.com/nisabmohd/weft/releases). There are three builds:
 
-- `github` is the one on GitHub Releases. It has no Google code and checks GitHub for new versions: About → Check for updates, or once a day on its own, then downloads and installs the update for you.
-- `foss` is the same app without the update check and without any network access. This is the one for F-Droid, which updates it.
-- `play` is for Google Play and will add Google Drive backup (see [`TODO.md`](TODO.md)).
+- `github` is the one on GitHub Releases. It checks GitHub for new versions (About → Check for updates, or once a day on its own), then downloads and installs the update for you. It has Google Drive backup, which uses Google's sign-in library and needs Google Play services on the phone.
+- `foss` has no Google code, no update check and no network access at all. This is the one for F-Droid, which updates it. Backup is to a file only.
+- `play` is the Google Play build: updates and ratings through Google Play, and Google Drive backup.
 
-**Obtainium:** tap the Obtainium badge above on your phone, or add `https://github.com/nisabmohd/sprout-habit-tracker` in [Obtainium](https://github.com/ImranR98/Obtainium). When it asks which APK to install, pick the `foss` one; Obtainium keeps it up to date. All GitHub builds are signed with the same key, so you can switch between them without losing your data.
+**Obtainium:** tap the Obtainium badge above on your phone, or add `https://github.com/nisabmohd/weft` in [Obtainium](https://github.com/ImranR98/Obtainium). When it asks which APK to install, pick the `foss` one; Obtainium keeps it up to date. All GitHub builds are signed with the same key, so you can switch between them without losing your data.
 
-Sprout runs on Android 8.0 and later.
+Weft runs on Android 8.0 and later.
 
 ## Privacy
 
-Sprout has no ads, no analytics and no trackers. It asks for two permissions: notifications, for reminders, and "Alarms & reminders" if you want them to arrive on the minute. Your data only leaves the phone when you export it.
+Weft has no ads, no analytics and no trackers. It asks for two permissions: notifications, for reminders, and "Alarms & reminders" if you want them to arrive on the minute. Your data only leaves the phone when you export it or turn on Google Drive backup, which writes to a hidden folder in your own Drive that only Weft can see. See the [privacy policy](https://nisabmohd.github.io/weft/privacy/) ([`PRIVACY.md`](PRIVACY.md)).
 
 ## Build
 
@@ -71,12 +73,12 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup and testing, and [`AGENTS.md`
 
 ## Support
 
-Sprout is free and has no ads. I build it because I enjoy it. If it helps you, you can [sponsor me on GitHub](https://github.com/sponsors/nisabmohd) or star the repo.
+Weft is free and has no ads. I build it because I enjoy it. If it helps you, you can [sponsor me on GitHub](https://github.com/sponsors/nisabmohd) or star the repo.
 
 ## Contact
 
-Sprout is made by **mid apps** (Nisab Mohd & contributors). Questions, ideas or press: [hello.midapps@gmail.com](mailto:hello.midapps@gmail.com). Bugs and feature requests: [GitHub Issues](https://github.com/nisabmohd/sprout-habit-tracker/issues).
+Weft is made by **mid apps** (Nisab Mohd & contributors). Questions, ideas or press: [hello.midapps@gmail.com](mailto:hello.midapps@gmail.com). Bugs and feature requests: [GitHub Issues](https://github.com/nisabmohd/weft/issues).
 
 ## License
 
-Sprout is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts).
+Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the sock in the app icon) is from [Tabler Icons](https://tabler.io/icons), MIT License; see [`licenses/icons`](licenses/icons).

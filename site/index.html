@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weft: Habit Tracker</title>
+  <meta name="description" content="Weft is a small, open-source habit tracker for Android. Your habits and notes stay on your phone. No account, no ads, no tracking.">
+  <link rel="icon" href="weft.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="weft.svg" alt="">Weft</a>
+      <nav>
+        <a href="privacy/">Privacy policy</a>
+        <a href="https://github.com/nisabmohd/weft">Source code</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <img class="logo" src="weft.svg" alt="Weft logo">
+      <h1>Weft: Habit Tracker</h1>
+      <p>A small, open-source habit tracker for Android. Check off your habits, log part of a day, and keep a short note. Your data stays on your phone.</p>
+      <div class="buttons">
+        <a class="button primary" href="https://play.google.com/store/apps/details?id=app.sprout.habits">Get it on Google Play</a>
+        <a class="button secondary" href="https://github.com/nisabmohd/weft/releases/latest">Download the APK</a>
+      </div>
+    </div>
+
+    <div class="shots">
+      <img src="screens/today.png" alt="Today: each habit as a card, with a score for the day">
+      <img src="screens/journal.png" alt="Journal: notes grouped by day">
+      <img src="screens/insights.png" alt="Insights: scores by day and by habit">
+    </div>
+
+    <section>
+      <h2>What Weft does</h2>
+      <ul>
+        <li>Each day, every habit is Done, Partial or Skipped. Swipe right for Done, left for Skip, or press and hold to log an amount, like 15 of 20 pages.</li>
+        <li>See your week at a glance, or the last 26 weeks as a heatmap, with streaks.</li>
+        <li>Keep a Journal: a short note for any habit and day.</li>
+        <li>Insights for any dates: scores by weekday and by habit.</li>
+        <li>Reminders, four home-screen widgets, light and dark themes, five fonts, seven languages.</li>
+        <li>Export to a JSON or CSV file, and optional backup to your own Google Drive.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Your data</h2>
+      <p>Weft has no account, no ads, no analytics and no server. Your habits, check-ins and notes are stored only on your phone.</p>
+      <div class="note">
+        <p style="margin-top:0"><strong>Google Drive backup</strong> is optional and off until you tap Connect Google Drive (Google Play and GitHub versions). Weft then asks Google for two things:</p>
+        <ul>
+          <li><strong>Its own hidden folder in your Google Drive</strong> (<code>drive.appdata</code>), to keep your last 10 backups there. Weft can't see any other file in your Drive.</li>
+          <li><strong>Your email address</strong>, to show which account the backups go to.</li>
+        </ul>
+        <p style="margin-bottom:0">Backups go straight from your phone to your own Drive. We never receive them. Disconnect or delete the backups at any time in Weft's Backup &amp; restore screen. Details are in the <a href="privacy/">privacy policy</a>.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Free and open source</h2>
+      <p>Weft is free, under the GNU GPL v3. The code, issues and releases are on <a href="https://github.com/nisabmohd/weft">GitHub</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Weft is made by mid apps (Nisab Mohd &amp; contributors) ·
+      <a href="privacy/">Privacy policy</a> ·
+      <a href="mailto:hello.midapps@gmail.com">hello.midapps@gmail.com</a> ·
+      <a href="https://github.com/nisabmohd/weft/issues">Report a bug</a>
+    </div>
+  </footer>
+</body>
+</html>

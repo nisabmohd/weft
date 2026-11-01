@@ -1,5 +1,5 @@
 name: Feature request
-description: An idea to make Sprout better
+description: An idea to make Weft better
 labels: [enhancement]
 body:
   - type: textarea

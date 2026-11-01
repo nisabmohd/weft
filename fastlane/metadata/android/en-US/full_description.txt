@@ -1,4 +1,4 @@
-Sprout is a small habit tracker that keeps your habits and notes on your phone.
+Weft is a small habit tracker that keeps your habits and notes on your phone.
 
 Each day, every habit is Done, Partial or Skipped. Swipe right to mark it done, swipe left to skip it, or press and hold to log an amount, like 15 of 20 pages or 30 of 45 minutes. Every change can be undone.
 

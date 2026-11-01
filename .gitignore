@@ -24,3 +24,6 @@ build/
 
 # Release signing key and its passwords. Never commit; back them up elsewhere.
 /keystore/
+
+# The website, built by tools/build_site.py (published by the Pages workflow).
+/_site/
