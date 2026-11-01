@@ -247,6 +247,8 @@
     <string name="github_issues">GitHub Issues</string>
     <string name="contribute">貢献する</string>
     <string name="contribute_desc">コード、デザイン、翻訳を歓迎します</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="privacy_policy_desc">Weft が保存するもの、決して集めないもの</string>
     <string name="licences">オープンソースライセンス</string>
     <string name="licences_desc">このアプリが使うライブラリとフォント</string>
     <string name="made_by">Nisab Mohd とコントリビューターが作りました</string>

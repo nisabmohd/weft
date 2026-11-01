@@ -14,6 +14,8 @@ cd weft
 ./gradlew :app:assemblePlayDebug
 ```
 
+In Android Studio the active build variant is **playDebug** (Build → Select Build Variant). Each flavor adds its own folders: `src/drive` (Google Drive backup, play and github), `src/play` (Play updates and review), and the stand-ins `src/noDrive` / `src/noPlay` for builds without them. Files in a folder the active variant doesn't use show "Unresolved reference" in the editor; that's expected, and switching the variant (e.g. to fossDebug) makes those files the active ones.
+
 Debug builds fill an empty database with sample habits and two weeks of history, so every screen has something to show. Release builds never do this.
 
 ## Test

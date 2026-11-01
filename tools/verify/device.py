@@ -160,13 +160,22 @@ def density():
 
 
 def nav(tab):
-    """Taps a bottom-bar tab by its label (the bar's labels are always the last matches)."""
-    end = time.time() + 3
-    while True:  # retry briefly: the bar may still be sliding in after a page transition
-        nodes = [n for n in dump() if n.label == tab and n.package == PACKAGE]
-        if nodes or time.time() > end:
+    """
+    Taps a bottom-bar tab by its label (the bar's labels are always the last matches). If Weft is
+    on a screen without the bar (a habit, Manage habits, Backup & restore, left there by an earlier
+    check), goes back to it first.
+    """
+    nodes = []
+    for attempt in range(4):
+        end = time.time() + (3 if attempt == 0 else 1.5)
+        while True:  # retry briefly: the bar may still be sliding in after a page transition
+            nodes = [n for n in dump() if n.label == tab and n.package == PACKAGE]
+            if nodes or time.time() > end:
+                break
+            time.sleep(0.4)
+        if nodes or attempt == 3:
             break
-        time.sleep(0.4)
+        back()
     if not nodes:
         raise AssertionError(f"tab not found: {tab}")
     n = max(nodes, key=lambda n: n.bounds[1])
@@ -226,22 +235,46 @@ def pin_widget(kind):
     Empties the home screen and pins one Weft widget there ([kind]: week, today, strip, streak),
     through the debug build's PinWidgetActivity. Clearing the launcher resets its layout, so only
     run this on a test emulator.
+
+    After `pm clear` the launcher rebuilds its default home screen for a few seconds; a pin request
+    accepted during that time is dropped on a slow emulator. So it waits for the home screen to
+    settle, checks that the widget really arrived, and tries once more if it didn't.
     """
-    shell(f"pm clear {launcher()}")
-    home()
-    time.sleep(2)
-    shell(f"am start -n {PACKAGE}/.PinWidgetActivity --es widget {kind}")
-    end = time.time() + 8
+    home_app = launcher()
+    for attempt in range(3):
+        shell(f"pm clear {home_app}")
+        home()
+        _wait_for_home(home_app)
+        shell(f"am start -n {PACKAGE}/.PinWidgetActivity --es widget {kind}")
+        end = time.time() + 15
+        while time.time() < end:
+            add = next((n for n in dump() if n.label.lower() in ("add to home screen", "add automatically")), None)
+            if add:
+                shell(f"input tap {add.center[0]} {add.center[1]}")
+                break
+            time.sleep(0.5)
+        else:
+            raise AssertionError(f"launcher didn't offer to add the {kind} widget")
+        time.sleep(1.5)
+        home()
+        # Kept only if it's still there once the launcher has finished loading its layout.
+        time.sleep(8)
+        if widget_nodes():
+            return
+    raise AssertionError(f"the {kind} widget didn't stay on the home screen")
+
+
+def _wait_for_home(home_app, timeout=40.0, still=5.0):
+    """Waits until the launcher's home screen has stayed the same for [still] seconds."""
+    end = time.time() + timeout
+    last, since = None, time.time()
     while time.time() < end:
-        add = next((n for n in dump() if n.label.lower() in ("add to home screen", "add automatically")), None)
-        if add:
-            shell(f"input tap {add.center[0]} {add.center[1]}")
-            break
-        time.sleep(0.5)
-    else:
-        raise AssertionError(f"launcher didn't offer to add the {kind} widget")
-    time.sleep(1.5)
-    home()
+        now = sorted(n.label for n in dump() if n.package == home_app and n.label)
+        if now != last:
+            last, since = now, time.time()
+        elif now and time.time() - since >= still:
+            return
+        time.sleep(1.0)
 
 
 def widget_nodes():
@@ -249,8 +282,34 @@ def widget_nodes():
     return [n for n in dump() if n.package == PACKAGE]
 
 
+def show_widget_page():
+    """
+    The launcher may add a widget to another home screen page (when the first is full), and Home
+    always goes back to the first page. If no Weft widget is on screen, swipes across the pages to
+    it, and back to the first page if none has one.
+    """
+    if widget_nodes():
+        return True
+    w, h = screen_size()
+    for _ in range(3):
+        shell(f"input swipe {int(w * 0.85)} {h // 2} {int(w * 0.15)} {h // 2} 250")
+        time.sleep(0.8)
+        if widget_nodes():
+            return True
+    for _ in range(3):
+        shell(f"input swipe {int(w * 0.15)} {h // 2} {int(w * 0.85)} {h // 2} 250")
+        time.sleep(0.4)
+    return False
+
+
+def screen_size():
+    m = re.search(r"(\d+)x(\d+)", shell("wm size"))
+    return (int(m.group(1)), int(m.group(2))) if m else (1080, 2400)
+
+
 def widget_wait(predicate, timeout=4.0):
     """Waits until [predicate] holds for the widget labels; returns them, or None on timeout."""
+    show_widget_page()
     end = time.time() + timeout
     while True:
         labels = [n.label for n in widget_nodes() if n.label]
@@ -262,6 +321,7 @@ def widget_wait(predicate, timeout=4.0):
 
 
 def widget_tap(label, contains=False):
+    show_widget_page()
     n = next((n for n in widget_nodes() if n.label == label or (contains and label in n.label)), None)
     if n is None:
         raise AssertionError(f"not on the widget: {label!r}")

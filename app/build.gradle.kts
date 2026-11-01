@@ -26,6 +26,8 @@ android {
         buildConfigField("String", "SPONSOR_URL", "\"https://github.com/sponsors/nisabmohd\"")
         // The developer, mid apps: About's contact row and the store listings use this address.
         buildConfigField("String", "CONTACT_EMAIL", "\"hello.midapps@gmail.com\"")
+        // Weft's privacy policy on the developer's site (also the OAuth consent screen's and Play's link).
+        buildConfigField("String", "PRIVACY_URL", "\"https://nisabmohd.vercel.app/weft/privacy\"")
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=app.sprout.habits\"")
     }
 
@@ -34,6 +36,9 @@ android {
         // Google Play's In-App Updates and In-App Review (src/play), and Google Drive backup (src/drive).
         create("play") {
             dimension = "distribution"
+            // Android Studio opens this flavor (playDebug) by default. Without it, it picks fossDebug,
+            // where src/drive and src/play aren't part of the project and show as unresolved.
+            isDefault = true
             buildConfigField("boolean", "PLAY_STORE", "true")
             // True since 1.4.0: the app is live on Google Play (as Sprout, renamed Weft 2026-11-01). It turns on "Rate on Play Store"
             // (About and the support prompt) and About's "Check for updates", which both open

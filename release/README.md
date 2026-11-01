@@ -32,6 +32,20 @@ The feature graphic is made by `python3 tools/feature_graphic.py <folder of raw 
 | 7 | Home screen widgets | Widgets for your / home screen |
 | 8 | Today, dark | Light and dark themes, / your font and colors |
 
+## What's new (Play Console, 500 characters max)
+
+1.5.0 (versionCode 22), 457 characters:
+
+```
+Sprout is now Weft, with a new icon. Same app: your habits, notes and settings stay.
+• Back up to your own Google Drive, every night or when you tap Back up now, and restore any of your last 10 backups.
+• Backup & restore has its own screen in More.
+• Long-press the icon for Add note and New habit.
+• Updates and ratings go through Google Play.
+• Widgets move to the new day at midnight and follow light and dark mode.
+• Fixes for the time picker and more.
+```
+
 ## Listing text (draft)
 
 **App name** (30 chars max): `Weft: Habit Tracker`

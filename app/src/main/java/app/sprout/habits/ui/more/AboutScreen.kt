@@ -82,6 +82,7 @@ fun AboutScreen(updates: UpdateManager, playUpdates: PlayUpdates, onBack: () -> 
                 if (BuildConfig.PLAY_LISTED) {
                     { LinkRow(stringResource(R.string.rate_on_play), stringResource(R.string.rate_desc)) { openUrl(context, BuildConfig.PLAY_STORE_URL) } }
                 } else null,
+                { LinkRow(stringResource(R.string.privacy_policy), stringResource(R.string.privacy_policy_desc)) { openUrl(context, BuildConfig.PRIVACY_URL) } },
                 { LinkRow(stringResource(R.string.source_code), repo.removePrefix("https://")) { openUrl(context, repo) } },
                 { LinkRow(stringResource(R.string.report_bug), stringResource(R.string.github_issues)) { openUrl(context, "$repo/issues") } },
                 { LinkRow(stringResource(R.string.contribute), stringResource(R.string.contribute_desc)) { openUrl(context, "$repo/blob/main/CONTRIBUTING.md") } },

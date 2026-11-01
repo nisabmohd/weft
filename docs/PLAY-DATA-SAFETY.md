@@ -4,7 +4,7 @@ What to enter in Play Console → Policy and programs → App content → **Data
 
 ## Before you submit
 
-The privacy policy URL is `https://nisabmohd.github.io/weft/privacy/` (the website, built from `PRIVACY.md` on every push to `main`; `https://github.com/nisabmohd/weft/blob/main/PRIVACY.md` shows the same text). Set it in Play Console → App content → Privacy policy.
+The privacy policy URL is `https://nisabmohd.vercel.app/weft/privacy` (on the developer's site, credited to mid apps; keep it in step with `PRIVACY.md`; the GitHub Pages copy at `https://nisabmohd.github.io/weft/privacy/` is built from `PRIVACY.md` on every push to `main`; `https://github.com/nisabmohd/weft/blob/main/PRIVACY.md` shows the same text). Set it in Play Console → App content → Privacy policy.
 
 ## Overview
 

@@ -106,6 +106,12 @@ class SettingsRepository(context: Context) {
     /** A Drive backup failed; [reason] is a `DriveResult` name. */
     suspend fun setBackupFailed(reason: String) = store.edit { it[LAST_BACKUP_ERROR] = reason }
     suspend fun setDriveBackupCount(count: Int) = store.edit { it[DRIVE_BACKUP_COUNT] = count }
+    /** Delete backups from Drive worked: none left, so no "Backed up today" either. */
+    suspend fun setBackupsDeleted() = store.edit {
+        it.remove(LAST_BACKUP_AT)
+        it.remove(LAST_BACKUP_ERROR)
+        it[DRIVE_BACKUP_COUNT] = 0
+    }
     suspend fun setExported(at: Long = System.currentTimeMillis()) = store.edit { it[LAST_EXPORT_AT] = at }
     suspend fun setExportFormat(format: ExportFormat) = store.edit { it[EXPORT_FORMAT] = format.name }
     suspend fun setOnboarded() = store.edit { it[ONBOARDED] = true }

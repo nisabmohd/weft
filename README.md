@@ -2,7 +2,7 @@
 
 Weft (formerly Sprout) is a small, open-source habit tracker for Android. It keeps your habits and notes on your phone, works without an account, and the APK is about 3 MB.
 
-**No ads · No tracking · No account · Free and open source (GPL v3)** · [Website](https://nisabmohd.github.io/weft/)
+**No ads · No tracking · No account · Free and open source (GPL v3)** · [Website](https://nisabmohd.vercel.app/weft)
 
 [<img src="docs/badges/github.png" alt="Get it on GitHub" height="80">](https://github.com/nisabmohd/weft/releases/latest)
 [<img src="docs/badges/obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/nisabmohd/weft)
@@ -54,7 +54,7 @@ Weft runs on Android 8.0 and later.
 
 ## Privacy
 
-Weft has no ads, no analytics and no trackers. It asks for two permissions: notifications, for reminders, and "Alarms & reminders" if you want them to arrive on the minute. Your data only leaves the phone when you export it or turn on Google Drive backup, which writes to a hidden folder in your own Drive that only Weft can see. See the [privacy policy](https://nisabmohd.github.io/weft/privacy/) ([`PRIVACY.md`](PRIVACY.md)).
+Weft has no ads, no analytics and no trackers. It asks for two permissions: notifications, for reminders, and "Alarms & reminders" if you want them to arrive on the minute. Your data only leaves the phone when you export it or turn on Google Drive backup, which writes to a hidden folder in your own Drive that only Weft can see. See the [privacy policy](https://nisabmohd.vercel.app/weft/privacy) ([`PRIVACY.md`](PRIVACY.md)).
 
 ## Build
 

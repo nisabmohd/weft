@@ -251,6 +251,8 @@
     <string name="github_issues">GitHub Issues</string>
     <string name="contribute">Contribute</string>
     <string name="contribute_desc">Code, design and translations welcome</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_desc">What Weft stores, and what it never collects</string>
     <string name="licences">Open-source licences</string>
     <string name="licences_desc">Libraries and fonts this app uses</string>
     <string name="made_by">Made by Nisab Mohd &amp; Contributors</string>

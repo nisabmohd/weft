@@ -281,10 +281,9 @@ fun DriveBackupContent(
             }
             ActionRow(R.drawable.ic_close, stringResource(R.string.drive_disconnect), colors.onSurface) {
                 accountSheet = false
-                scope.launch {
-                    drive.disconnect()
-                    onMessage(context.getString(R.string.drive_disconnected))
-                }
+                // Says so straight away; Google removes the access in the background.
+                scope.launch { drive.disconnect() }
+                onMessage(context.getString(R.string.drive_disconnected))
             }
             ActionRow(R.drawable.ic_delete, stringResource(R.string.drive_delete_backups), colors.error) { accountSheet = false; confirmDelete = true }
             Spacer(Modifier.padding(bottom = 12.dp).navigationBarsPadding())

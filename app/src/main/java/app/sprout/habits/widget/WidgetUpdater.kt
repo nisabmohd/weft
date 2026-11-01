@@ -34,6 +34,8 @@ class WidgetUpdater(
     }
 
     suspend fun updateAll() {
+        // Running widget sessions reload their data (see LiveWidgetData); new ones load it anyway.
+        WidgetConfig.refresh.value = WidgetConfig.refresh.value + 1
         val manager = GlanceAppWidgetManager(context)
         if (manager.getGlanceIds(WeekWidget::class.java).isNotEmpty()) WeekWidget().updateAll(context)
         if (manager.getGlanceIds(TodayWidget::class.java).isNotEmpty()) TodayWidget().updateAll(context)

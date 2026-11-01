@@ -206,14 +206,19 @@ class DriveBackup(
     /** Deletes every Weft backup in the connected account's Drive. */
     suspend fun deleteAll(token: String): DriveResult = oneAtATime.withLock {
         withDrive(token) { t -> listFiles(t).forEach { request("DELETE", "$API/files/${it.id}", t) } }.first
-            .also { if (it == DriveResult.DONE) settings.setDriveBackupCount(0) }
+            .also { if (it == DriveResult.DONE) settings.setBackupsDeleted() }
     }
 
-    /** Stops backing up: Weft's access is removed and the schedule cancelled. The backups stay in Drive. */
+    /**
+     * Stops backing up: the schedule is cancelled and Weft's access removed. The backups stay in
+     * Drive. The phone forgets the account first, so the screen changes at once; removing the
+     * access is a call to Google that can take a few seconds.
+     */
     suspend fun disconnect() {
-        settings.settings.first().driveAccount?.let { revoke(it) }
+        val account = settings.settings.first().driveAccount
         settings.setDriveAccount(null)
         context.getSystemService(JobScheduler::class.java)?.cancel(JOB_ID)
+        account?.let { revoke(it) }
     }
 
     /**

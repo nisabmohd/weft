@@ -55,8 +55,11 @@ def welcome_shows_once():
     assert d.scroll_to("Add your own habit"), "add-your-own row missing"
     d.tap("Add your own habit")
     assert d.exists("Your own habit") and d.exists("Add this habit"), "own-habit sheet missing"
-    d.back()  # keyboard
-    d.back()  # sheet
+    # Back until the sheet is gone: once for the keyboard (if it came up), once for the sheet.
+    for _ in range(3):
+        if not d.exists("Add this habit", timeout=1):
+            break
+        d.back()
     # Skipping the pick step keeps the sample habits (later checks use them).
     d.tap("Skip for now")
     # Step 2: the practice card and the ways to log, Undo and the Journal included.
@@ -628,6 +631,20 @@ def app_today():
 
 
 @check
+def widgets_can_shrink():
+    """Each widget may be resized below its starting size (its min/max resize sizes are set and
+    loaded); WidgetLayoutTest checks every size in between fits."""
+    out = d.shell("dumpsys appwidget")
+    for kind in ("Week", "Today", "Strip", "Streak"):
+        m = re.search(kind + r"WidgetReceiver\}\}\s+min=\((\d+)x(\d+)\)\s+minResize=\((\d+)x(\d+)\)", out)
+        assert m, f"{kind} widget isn't registered"
+        # Packed TypedValue dimensions: the dp value is in the upper bits.
+        min_w, min_h, rw, rh = (int(v) >> 8 for v in m.groups())
+        assert rw < min_w or rw <= 110, f"{kind} widget can't be made narrower than {min_w} dp"
+        assert rh < min_h or rh <= 50, f"{kind} widget can't be made shorter than {min_h} dp"
+
+
+@check
 def widget_today_renders():
     d.pin_widget("today")
     labels = d.widget_wait(lambda l: "Up next" in l or "All done for today" in l, timeout=8)
@@ -744,8 +761,11 @@ def widget_comes_back_after_force_stop():
 @check
 def widget_habit_name_opens_habit():
     habit = up_next(today_widget())[0]
-    # Cold: the app isn't running.
-    d.shell(f"am force-stop {d.PACKAGE}")
+    # Cold: the app isn't running, as after Android freed its memory. (Not a force stop: since
+    # Android 15 a force-stopped app's widgets show their loading layout until it's opened; see
+    # widget_comes_back_after_force_stop.)
+    d.home()
+    d.shell(f"am kill {d.PACKAGE}")
     time.sleep(1)
     d.widget_tap(habit)
     assert d.exists("Edit habit", timeout=8) and d.exists(habit), f"cold start didn't open {habit}"
@@ -786,7 +806,11 @@ def widget_follows_archive_and_restore():
     d.home()
     assert d.widget_wait(lambda l: f"{done}/{total - 1}" in l and habit not in up_next(l), WIDGET_S), \
         f"archived {habit} still on the widget"
+    # Archiving closes the habit's page; it comes back from Habits → Manage habits → Archived.
     d.open_app()
+    d.nav("Habits")
+    d.tap("Manage habits")
+    assert d.scroll_to("Restore"), f"archived {habit} not under Manage habits"
     d.tap("Restore")
     d.home()
     assert d.widget_wait(lambda l: f"{done}/{total}" in l, WIDGET_S), f"restored {habit} didn't come back"
@@ -807,7 +831,8 @@ def widget_week_renders_and_follows():
     assert pct, "Week widget has no %"
     habit = next(l[:-len(" this week")] for l in labels if l.endswith(" this week"))
     app_today()
-    assert d.scroll_to(f"Mark {habit} done") or d.scroll_to(f"Mark {habit} not done"), f"{habit} not on Today"
+    # One pass for either label: looking for "done" first scrolls past a card that says "not done".
+    assert d.scroll_to(f"Mark {habit} ", contains=True), f"{habit} not on Today"
     mark = f"Mark {habit} done" if d.exists(f"Mark {habit} done", timeout=1) else f"Mark {habit} not done"
     d.tap(mark)
     d.home()
@@ -848,17 +873,29 @@ def widget_streak_follows():
     habit = labels[0]
     count = next(x for x in labels if x.isdigit())
     app_today()
-    n = d.scroll_to(f"Mark {habit} done") or d.scroll_to(f"Mark {habit} not done")
+    n = d.scroll_to(f"Mark {habit} ", contains=True)  # either label, in one pass
     assert n, f"{habit} not on Today"
     was_done = "not done" in n.label
     d.tap(n.label)
     d.home()
-    assert d.widget_wait(lambda l: count not in l, WIDGET_S), "streak didn't change after today's log"
-    app_today()
-    d.scroll_to(habit)
-    d.tap(f"Mark {habit} done" if was_done else f"Mark {habit} not done")
-    d.home()
-    assert d.widget_wait(lambda l: count in l, WIDGET_S), "streak didn't go back after undo"
+    changed = d.widget_wait(lambda l: count not in l, WIDGET_S)
+    taps = 1
+    if not changed and not was_done:
+        # Today was Partial (the sample Read is 15 of 20): Partial and Done both count, so the
+        # streak stays. A second tap clears the day, which must change it.
+        app_today()
+        assert d.scroll_to(f"Mark {habit} not done"), f"{habit} not done on Today"
+        d.tap(f"Mark {habit} not done")
+        d.home()
+        changed = d.widget_wait(lambda l: count not in l, WIDGET_S)
+        taps = 2
+    assert changed, "streak didn't change after today's log"
+    if taps == 1:
+        app_today()
+        d.scroll_to(habit)
+        d.tap(f"Mark {habit} done" if was_done else f"Mark {habit} not done")
+        d.home()
+        assert d.widget_wait(lambda l: count in l, WIDGET_S), "streak didn't go back after undo"
 
 
 @check
@@ -1029,8 +1066,11 @@ def drive_state(account=None, last_backup_ms=None, failed=None, count=None):
 
 
 def backup_screen():
-    """More → Backups → Backup & restore."""
+    """More → Backups → Backup & restore (or stays there, if Weft is already on it)."""
     d.open_app()
+    if d.exists("Backup & restore", timeout=1) and not d.exists("Appearance", timeout=0.5):
+        d.scroll_to_top()
+        return
     d.nav("More")
     d.scroll_to_top()
     d.tap("Backups")
@@ -1284,6 +1324,7 @@ def reminders_are_scheduled():
 @check
 def touch_targets_48dp():
     problems = []
+    d.open_app()
     for tab in ["Today", "Habits", "Journal", "Insights", "More"]:
         d.nav(tab)
         problems += [f"{tab}: {p}" for p in d.small_targets()]

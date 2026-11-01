@@ -18,7 +18,14 @@ fun <T> liveWidgetData(context: Context, initial: T, load: suspend (WidgetDataSo
     val flow = remember {
         val c = context.container
         val source = WidgetDataSource(c.repository, c.settings)
-        combine(c.repository.observeAllHabits(), c.repository.observeEntries(0, Long.MAX_VALUE), c.settings.settings) { _, _, _ -> }
+        // The configuration too: day letters, dates and "Next: …" are built with the data.
+        combine(
+            c.repository.observeAllHabits(),
+            c.repository.observeEntries(0, Long.MAX_VALUE),
+            c.settings.settings,
+            WidgetConfig.current,
+            WidgetConfig.refresh,
+        ) { _, _, _, _, _ -> }
             .map { load(source) }
     }
     return flow.collectAsState(initial)

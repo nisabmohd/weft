@@ -247,6 +247,8 @@
     <string name="github_issues">GitHub Issues</string>
     <string name="contribute">Contribuir</string>
     <string name="contribute_desc">Código, design e traduções são bem-vindos</string>
+    <string name="privacy_policy">Política de privacidade</string>
+    <string name="privacy_policy_desc">O que o Weft guarda e o que nunca coleta</string>
     <string name="licences">Licenças de código aberto</string>
     <string name="licences_desc">Bibliotecas e fontes usadas por este app</string>
     <string name="made_by">Feito por Nisab Mohd e colaboradores</string>

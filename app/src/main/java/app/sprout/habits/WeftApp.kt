@@ -1,5 +1,6 @@
 package app.sprout.habits
 
+import app.sprout.habits.widget.WidgetConfig
 import android.content.Context
 import android.app.Application
 import android.content.res.Configuration
@@ -48,6 +49,7 @@ class WeftApp : Application() {
         if (uiMode != lastUiMode || locales != lastLocales) {
             lastUiMode = uiMode
             lastLocales = locales
+            WidgetConfig.current.value = Configuration(newConfig)
             container.appScope.launch { container.widgets.updateAll() }
         }
     }

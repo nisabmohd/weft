@@ -51,27 +51,30 @@ class StripWidget : GlanceAppWidget() {
 private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
     val context = LocalContext.current
     val colors = GlanceTheme.colors
-    val width = (LocalSize.current.width.value - 36).coerceAtLeast(100f)
+    val size = LocalSize.current
+    val layout = WidgetLayout.strip(size.width.value, size.height.value)
+    val width = (size.width.value - 36).coerceAtLeast(40f)
     fun color(p: androidx.glance.unit.ColorProvider) = p.getColor(context)
     Column(
         GlanceModifier
             .fillMaxSize()
             .background(colors.widgetBackground)
             .cornerRadius(28.dp)
-            .padding(horizontal = 18.dp, vertical = 14.dp)
+            .padding(horizontal = 18.dp, vertical = layout.padV.dp)
             .clickable(actionStartActivity(context.openAppIntent())),
         verticalAlignment = Alignment.Vertical.CenterVertically,
     ) {
         Row(GlanceModifier.fillMaxWidth()) {
-            Text(LocalContext.current.getString(R.string.widget_of_today, data.done, data.total), style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
+            Text(LocalContext.current.getString(R.string.widget_of_today, data.done, data.total), maxLines = 1, style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
             Spacer(GlanceModifier.defaultWeight())
-            Text(
+            if (layout.showNext) Text(
                 data.nextLabel?.let { context.getString(R.string.widget_next, it) }
                     ?: context.getString(if (data.total == 0) R.string.widget_nothing_today else R.string.widget_all_done),
                 maxLines = 1,
                 style = TextStyle(fontSize = WidgetType.supporting, color = colors.onSurfaceVariant),
             )
         }
+        if (!layout.showBar) return@Column
         Spacer(GlanceModifier.height(10.dp))
         Image(
             ImageProvider(bitmaps.strip(data.today, width, 10f, track = color(colors.outline).copy(alpha = 0.35f), skip = color(colors.surfaceVariant))),

@@ -247,6 +247,8 @@
     <string name="github_issues">GitHub Issues</string>
     <string name="contribute">योगदान दें</string>
     <string name="contribute_desc">कोड, डिज़ाइन और अनुवाद का स्वागत है</string>
+    <string name="privacy_policy">निजता नीति</string>
+    <string name="privacy_policy_desc">Weft क्या सहेजता है, और क्या कभी इकट्ठा नहीं करता</string>
     <string name="licences">ओपन-सोर्स लाइसेंस</string>
     <string name="licences_desc">इस ऐप में इस्तेमाल लाइब्रेरी और फ़ॉन्ट</string>
     <string name="made_by">Nisab Mohd और योगदानकर्ताओं ने बनाया</string>

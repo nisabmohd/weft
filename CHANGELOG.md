@@ -16,9 +16,12 @@ Changed:
 
 - The new Weft mark (a sock, from Tabler Icons) is on the launcher icon, reminder and note notifications, the widgets' loading screen, Welcome, About, More, the update dialog and the "Enjoying Weft?" prompt, and the app name is Weft in all 7 languages. Open-source licences lists Tabler Icons (MIT).
 - Exports are named `weft-backup-<date>.json` and `weft-<date>.csv`.
+- About has a Privacy policy link (https://nisabmohd.vercel.app/weft/privacy).
 
 Fixed:
 
+- Disconnect (Google Drive) took a few seconds to show; the screen now changes at once while Google removes the access in the background.
+- After Delete backups from Drive, Backup & restore still said "Backed up today"; it now says "No backups yet".
 - Google's Drive permission screen lets you untick Google Drive (it starts unticked). Weft then said it was connected and every backup failed with "Couldn't reach Google Drive"; it now stays disconnected and says "Weft needs Google Drive to keep your backups. Connect again and tick Google Drive".
 - The time wheel (Reminder time, Default reminder) closed its sheet when a wheel was scrolled past its first or last row, or dragged between the columns. Drags on the wheels now only move the wheels; drag the sheet's top to close it.
 - Connect Google Drive showed nothing when Google's sign-in screen failed (for example when the build isn't registered with Google); it now says "Couldn't reach Google Drive. Try again". Backing out of Google's screen still says nothing.
@@ -26,6 +29,9 @@ Fixed:
 - The This week widget showed a week across two months as "26 – 1 Nov"; it now says "26 Oct – 1 Nov", like the Habits tab.
 - Changing a day more than a week back (from a habit's calendar) didn't update the Streak widget.
 - Widgets kept their old colours after switching the phone between light and dark, and their old language after changing the language (in Weft or in the phone's settings).
+- Widgets couldn't be made smaller than the size they were added at, and could be stretched across the whole screen. Each can now shrink (Today and the strip to 2 × 1, This week to 3 × 2, Streak to 1 × 1) and has a largest size, and its layout adapts: a smaller ring, fewer rows, "Next: …" on one line, icons instead of names, or just the number.
+- A widget that was already on the home screen kept its old language after Weft's language was changed (until the phone restarted Weft), and kept showing the new day after the clock was set back. Widgets now redraw their text and reload their day on every language, dark mode, clock and time zone change.
+- Tapping the Today widget's ring (or the strip, or This week's header) brought Weft up on whatever tab was open last; it opens Today again.
 - On a day with nothing scheduled, the Today widgets said "All done for today"; they now say "Nothing due today".
 
 Internal:

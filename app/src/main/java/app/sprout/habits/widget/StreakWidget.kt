@@ -79,12 +79,11 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
     val hc = habitColors(habit.hue, bitmaps.dark)
     val ink = ColorProvider(hc.ink, hc.ink)
     val size = LocalSize.current
-    // Launchers give a 2x2 cell anywhere from about 100 to 200 dp; shrink instead of cutting off.
-    val compact = size.height.value < 170f
-    val tiny = size.height.value < 120f
-    val pad = if (compact) 12.dp else 18.dp
-    val marksWidth = (size.width.value - 2 * pad.value).coerceAtLeast(80f)
-    val markSize = if (compact) 14f else 18f
+    val layout = WidgetLayout.streak(size.width.value, size.height.value)
+    val compact = layout.compact
+    val pad = layout.pad.dp
+    val marksWidth = layout.marksWidth
+    val markSize = layout.markSize
     Column(
         GlanceModifier
             .fillMaxSize()
@@ -93,7 +92,7 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
             .padding(pad)
             .clickable(actionStartActivity(context.openHabitIntent(habit.id))),
     ) {
-        Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+        if (layout.showName) Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
             Image(ImageProvider(habit.icon), contentDescription = null, colorFilter = ColorFilter.tint(ink), modifier = GlanceModifier.size(if (compact) 18.dp else 24.dp))
             Spacer(GlanceModifier.width(8.dp))
             Text(
@@ -104,9 +103,13 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
             )
         }
         Spacer(GlanceModifier.defaultWeight())
-        Text("${data.streak}", maxLines = 1, style = TextStyle(fontSize = if (compact) WidgetType.screenTitle else WidgetType.display, fontWeight = FontWeight.Medium, color = ink))
+        Text(
+            "${data.streak}",
+            maxLines = 1,
+            style = TextStyle(fontSize = if (layout.micro) WidgetType.title else if (compact) WidgetType.screenTitle else WidgetType.display, fontWeight = FontWeight.Medium, color = ink),
+        )
         Text(LocalContext.current.getString(R.string.day_streak), maxLines = 1, style = TextStyle(fontSize = if (compact) WidgetType.caption else WidgetType.supporting, fontWeight = FontWeight.Medium, color = ink))
-        if (!tiny) {
+        if (layout.showMarks) {
             Spacer(GlanceModifier.height(if (compact) 6.dp else 10.dp))
             Image(
                 ImageProvider(bitmaps.marks(data.last7, habit.hue, marksWidth, markSize)),

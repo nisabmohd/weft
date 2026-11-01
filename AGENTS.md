@@ -11,6 +11,15 @@ These rules apply to every change, whether a person or an AI agent makes it. The
 - Release builds stay minified: R8 full mode, `isMinifyEnabled = true`, `isShrinkResources = true`. Check the APK size after changes that could grow it (target: under 5 MB; today it is about 2.8 MB).
 - Build, test and run the app after every change, and commit each working step on its own.
 
+## Names
+
+The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class names (`WeftApp`, `WeftType`…), export file names and links say **Weft**. These stored names stay `sprout` on purpose, so Sprout installs update to Weft and keep their data; never rename them:
+
+- The package / applicationId `app.sprout.habits` and the `app/sprout/habits` source folders. A new package would be a new app on Google Play, GitHub/Obtainium and F-Droid, leaving users behind on Sprout.
+- The database file `sprout.db`, the backup file's `"app":"sprout"` tag (old and new versions read each other's files), the Drive backup names `sprout-backup-*`, the `sprout://` links (still accepted next to `weft://`) and the `app.sprout.habits.action.*` intent actions.
+- The `SPROUT_KEYSTORE_*` variables and GitHub secrets, `keystore/sprout-release.jks` and its alias: renaming them only risks a broken release build.
+- GitHub update checks: old installs find a new version by the asset name ending `-github.apk` and by `SHA256SUMS.txt`, so release assets keep that ending and that file.
+
 ## Behaviour rules
 
 - Each habit has one outcome per scheduled day: DONE, PARTIAL (with an amount) or SKIP. A past scheduled day with no entry counts as SKIP. Today without an entry is open and counts as 0.
@@ -21,7 +30,7 @@ These rules apply to every change, whether a person or an AI agent makes it. The
 - A note is one habit, one date and free text.
 - Writing suggestions in New note (starter phrases, past notes, sentence completion) come only from a fixed phrase list in `strings.xml` and the user's own notes, worked out on the phone (`domain/NoteSuggestions.kt`). No model, no network. More → Journal turns them off or clears what they learned.
 - Notifications are a title and one line, with no action buttons. Tapping one opens the habit.
-- Each habit keeps its own fixed hue. App chrome follows dynamic color on Android 12 and later, and the green seed palette below that.
+- Each habit keeps its own fixed hue. App chrome follows the chosen accent (Amber by default), or dynamic color when the user turns it on (Android 12 and later).
 
 ## Design and text
 
@@ -30,7 +39,7 @@ These rules apply to every change, whether a person or an AI agent makes it. The
 - Gaps and sizes follow [`docs/SPACING.md`](docs/SPACING.md): 16 dp side padding, cards 8 dp apart, sections 16 dp apart, 16 dp inside a card, section labels with 16 dp above and 8 dp below, a 44 dp habit tile wherever a habit is listed.
 - Charts (Insights) are drawn with Compose `Canvas` and use only the app colors: primary for done, the light primary tone for partial, outline grey for the rest. Every chart mark that can be tapped shows its numbers and has a content description.
 - When a screen changes, retake its screenshot in `docs/screenshots/` (see `release/README.md` for how they are staged) in the same commit. Don't invent a new value; copy the same element on Today.
-- Text uses only the nine styles in [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md), available as `WeftType.*` from `ui/theme/Type.kt`. Never set a font size or weight anywhere else, and never read `MaterialTheme.typography` in a screen. Headings use Outfit; body text and numbers use the chosen font (Lexend by default).
+- Text uses only the nine styles in [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md), available as `WeftType.*` from `ui/theme/Type.kt`. Never set a font size or weight anywhere else, and never read `MaterialTheme.typography` in a screen. Every style, headings included, uses the chosen font (Lexend by default).
 - Haptics go through `ui/components/Haptics.kt`, so the same kind of action always feels the same. A new switch, chip, choice or stepper gets the matching one.
 - Text must grow with the user's font size. Only text inside a fixed-size shape (rings, segmented buttons, the navigation bar, the week columns) may cap its scaling, using `CappedFontScale`.
 - Filters, pickers and choices (dates, times, habits, amounts, week start) open in a bottom sheet, never a dialog, inline chips or menus. Use `DateRangeSheet`, `DatePickerSheet`, `TimePickerSheet` and `HabitFilterSheet` in `ui/components`. `TimePickerSheet` (the wheel) is the only time picker: every time setting uses it. Dialogs are only for confirming something (delete, import). Every sheet is a `WeftSheet` (ui/components): it opens fully and stops at 90% of the screen, so put long content in a scrolling list with `Modifier.weight(1f, fill = false)` and keep the main button below it. Full screens are only for creating or editing (New habit, New note).
