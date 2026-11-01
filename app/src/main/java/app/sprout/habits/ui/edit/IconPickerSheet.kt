@@ -1,9 +1,9 @@
 package app.sprout.habits.ui.edit
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import app.sprout.habits.ui.components.SproutSheet
+import app.sprout.habits.ui.components.WeftSheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,16 +68,16 @@ fun IconPickerSheet(
     val res = LocalContext.current.resources
     val matches = HabitIcon.entries.filter { query.isBlank() || res.getString(it.label).contains(query.trim(), ignoreCase = true) || it.key.replace('_', ' ').contains(query.trim(), ignoreCase = true) }
 
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding().imePadding()) {
-            Text(stringResource(R.string.choose_icon), style = SproutType.title, color = scheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
+            Text(stringResource(R.string.choose_icon), style = WeftType.title, color = scheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
             TextField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = { Text(stringResource(R.string.search_icons), style = SproutType.body) },
+                placeholder = { Text(stringResource(R.string.search_icons), style = WeftType.body) },
                 leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(20.dp)) },
                 singleLine = true,
-                textStyle = SproutType.body,
+                textStyle = WeftType.body,
                 shape = CircleShape,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = scheme.surfaceContainerHigh,
@@ -100,7 +100,7 @@ fun IconPickerSheet(
                     item(key = group.name, span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             stringResource(group.label),
-                            style = SproutType.captionStrong,
+                            style = WeftType.captionStrong,
                             color = scheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 12.dp, bottom = 2.dp),
                         )
@@ -115,7 +115,7 @@ fun IconPickerSheet(
                     item(key = "none", span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             stringResource(R.string.no_icons_match, query.trim()),
-                            style = SproutType.supporting,
+                            style = WeftType.supporting,
                             color = scheme.onSurfaceVariant,
                             modifier = Modifier.padding(vertical = 24.dp),
                         )
@@ -126,7 +126,7 @@ fun IconPickerSheet(
                 onClick = { onPick(picked) },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).height(48.dp),
             ) {
-                Text(stringResource(R.string.use_this_icon), style = SproutType.label)
+                Text(stringResource(R.string.use_this_icon), style = WeftType.label)
             }
         }
     }

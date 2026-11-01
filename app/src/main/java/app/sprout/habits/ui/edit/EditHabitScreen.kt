@@ -10,7 +10,7 @@ import app.sprout.habits.ui.components.SectionHeader
 import app.sprout.habits.ui.components.toggle
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -157,7 +157,7 @@ private fun EditHabitContent(
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
             Text(
                 stringResource(if (form.isNew) R.string.new_habit else R.string.edit_habit),
-                style = SproutType.title,
+                style = WeftType.title,
                 color = colors.onBackground,
                 modifier = Modifier.weight(1f).padding(start = 14.dp),
             )
@@ -184,7 +184,7 @@ private fun EditHabitContent(
                     onValueChange = { v -> onEdit { it.copy(name = v) } },
                     label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
-                    textStyle = SproutType.cardTitle,
+                    textStyle = WeftType.cardTitle,
                     shape = RoundedCornerShape(14.dp),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     modifier = Modifier.weight(1f).padding(start = 12.dp),
@@ -246,7 +246,7 @@ private fun EditHabitContent(
                             onClick = { if (form.trackType != value) haptics.tick(); edit { it.copy(trackType = value) } },
                             shape = SegmentedButtonDefaults.itemShape(index, options.size),
                             icon = {},
-                        ) { Text(label, style = SproutType.label) }
+                        ) { Text(label, style = WeftType.label) }
                     }
                 }
                 }
@@ -267,7 +267,7 @@ private fun EditHabitContent(
                 }
                 Text(
                     stringResource(if (form.trackType == TrackType.AMOUNT) R.string.step_hint else R.string.partial_hint),
-                    style = SproutType.caption,
+                    style = WeftType.caption,
                     color = colors.onSurfaceVariant,
                 )
             }
@@ -300,7 +300,7 @@ private fun EditHabitContent(
                                 CappedFontScale {
                                     Text(
                                         day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
-                                        style = SproutType.label,
+                                        style = WeftType.label,
                                         color = if (on) hc.on else colors.onSurface,
                                         // The full day name is on the toggle; don't also read "M".
                                         modifier = Modifier.clearAndSetSemantics {},
@@ -322,8 +322,8 @@ private fun EditHabitContent(
                         HabitTile(R.drawable.ic_bell_filled, hc.soft, hc.ink, shape = CircleShape)
                         Column(Modifier.weight(1f).padding(start = 14.dp, end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             // 16sp like the titles in the card below; 22sp looked too big next to them.
-                            Text(TodayViewModel.formatTime(form.reminderMinutes), style = SproutType.cardTitle, color = colors.onSurface)
-                            Text(stringResource(R.string.reminder_hint), style = SproutType.supporting, color = colors.onSurfaceVariant)
+                            Text(TodayViewModel.formatTime(form.reminderMinutes), style = WeftType.cardTitle, color = colors.onSurface)
+                            Text(stringResource(R.string.reminder_hint), style = WeftType.supporting, color = colors.onSurfaceVariant)
                         }
                         Switch(checked = form.reminderOn, onCheckedChange = { v -> haptics.toggle(v); needsNotifications(v); edit { it.copy(reminderOn = v) } })
                     }
@@ -334,7 +334,7 @@ private fun EditHabitContent(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         stringResource(R.string.exact_alarm_hint),
-                        style = SproutType.supporting,
+                        style = WeftType.supporting,
                         color = colors.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                     )
@@ -345,7 +345,7 @@ private fun EditHabitContent(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         stringResource(R.string.notifications_off_hint),
-                        style = SproutType.supporting,
+                        style = WeftType.supporting,
                         color = colors.error,
                         modifier = Modifier.weight(1f),
                     )
@@ -366,10 +366,10 @@ private fun EditHabitContent(
             if (!form.isNew) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(onClick = onArchive, modifier = Modifier.weight(1f).height(48.dp)) {
-                        Text(archiveLabel, style = SproutType.label)
+                        Text(archiveLabel, style = WeftType.label)
                     }
                     OutlinedButton(onClick = onDelete, modifier = Modifier.weight(1f).height(48.dp)) {
-                        Text(stringResource(R.string.action_delete), style = SproutType.label, color = colors.error)
+                        Text(stringResource(R.string.action_delete), style = WeftType.label, color = colors.error)
                     }
                 }
             }
@@ -418,8 +418,8 @@ private fun ToggleRow(title: String, subtitle: String, checked: Boolean, onChang
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = SproutType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
-            Text(subtitle, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
+            Text(subtitle, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Switch(checked = checked, onCheckedChange = null)
     }

@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.5.0
+
+Added:
+
+- Sprout is now called Weft, with a new icon. It's the same app: it updates in place and keeps your habits, notes and backups. Backups made by Sprout still import, and `sprout://` links still work.
+- Backup has its own screen: More → Backups opens Backup & restore, with the state of your last backup at the top and one button for what to do next.
+- Google Drive backup (Google Play and GitHub versions). On Backup & restore, Connect Google Drive (it backs up straight away), then Back up now, choose how often it backs up by itself (every night while charging, weekly, monthly or off), keep it to Wi-Fi, and restore any of your last 10 backups (each shows when, from which phone, how many habits and its size). Google account lets you switch account, disconnect, or delete the backups from Drive. Backups are the same data as Export to file, kept in a hidden folder in your own Drive that only Weft can see. Weft says so when you're offline, on mobile data with Wi-Fi only on, or your Drive is full, and the screen shows when a backup failed and why, with Try again. The F-Droid version has no Google code: its Backup & restore screen shows when you last exported, with Export now and a choice of JSON or CSV.
+- Long-press Weft's icon for two shortcuts: Add note and New habit.
+- `weft://` links open a screen: `weft://today`, `habits`, `journal`, `insights`, `more`, `note/new`, `habit/new` and `habit/<id>`.
+- Google Play version: About → Check for updates asks Google Play, and installs a new version with Play's own update screen. Weft also checks once a day on its own, and doesn't offer a version again after you back out of it.
+- Google Play version: "Rate on Play Store" in the "Enjoying Weft?" prompt shows Google Play's rating card inside the app, or the store page if Play can't show it.
+
+Changed:
+
+- The new Weft mark (a sock, from Tabler Icons) is on the launcher icon, reminder and note notifications, the widgets' loading screen, Welcome, About, More, the update dialog and the "Enjoying Weft?" prompt, and the app name is Weft in all 7 languages. Open-source licences lists Tabler Icons (MIT).
+- Exports are named `weft-backup-<date>.json` and `weft-<date>.csv`.
+
+Fixed:
+
+- Google's Drive permission screen lets you untick Google Drive (it starts unticked). Weft then said it was connected and every backup failed with "Couldn't reach Google Drive"; it now stays disconnected and says "Weft needs Google Drive to keep your backups. Connect again and tick Google Drive".
+- The time wheel (Reminder time, Default reminder) closed its sheet when a wheel was scrolled past its first or last row, or dragged between the columns. Drags on the wheels now only move the wheels; drag the sheet's top to close it.
+- Connect Google Drive showed nothing when Google's sign-in screen failed (for example when the build isn't registered with Google); it now says "Couldn't reach Google Drive. Try again". Backing out of Google's screen still says nothing.
+- Widgets moved to the new day at midnight only once you logged something; until then they showed yesterday, like "7/7, All done". They now update just after midnight, and after a clock or time zone change.
+- The This week widget showed a week across two months as "26 – 1 Nov"; it now says "26 Oct – 1 Nov", like the Habits tab.
+- Changing a day more than a week back (from a habit's calendar) didn't update the Streak widget.
+- Widgets kept their old colours after switching the phone between light and dark, and their old language after changing the language (in Weft or in the phone's settings).
+- On a day with nothing scheduled, the Today widgets said "All done for today"; they now say "Nothing due today".
+
+Internal:
+
+- Google Drive backup runs on Android's JobScheduler (no new library for scheduling); the backup times are unit-tested (`BackupScheduleTest`).
+- Widgets, notifications, shortcuts and links share one way of opening a screen (`AppLink`); a link to a deleted habit opens nothing.
+- Smoke checks for Backup & restore and Drive backup (each state, the failed card, the frequency sheet and its scheduled job, the account sheet, offline, no Google, no Drive code in the F-Droid APK), the shortcuts and the links.
+- The rename keeps every stored name so Sprout installs update in place: the package `app.sprout.habits`, `sprout.db`, the backup file's `"app":"sprout"` tag, Drive's `sprout-backup-*` files, the `app.sprout.habits.action.*` actions and the `SPROUT_KEYSTORE_*` variables. Class names say Weft (`WeftApp`, `WeftDatabase`, `WeftType`, `WeftTheme`, `WeftSheet`, `WeftNavHost`); the Room schema folder moved with `WeftDatabase`. Release APKs are `weft-<tag>-github.apk` / `-play.apk`.
+- A website at https://nisabmohd.github.io/weft/ (home page and privacy policy, for Google's OAuth consent screen and the store listings), built from `site/` and `PRIVACY.md` by `tools/build_site.py` and published by `.github/workflows/pages.yml`. The privacy policy adds the Google API Services User Data Policy (Limited Use) statement.
+- New store graphics: the 8 phone screenshots and the feature graphic were redrawn plainly: the logo's navy as a flat page, a two-line white caption and a plain phone (`tools/store_shots.py`, `tools/feature_graphic.py`). Same app screens as before (Blue accent).
+- Smoke checks for the widgets: each of the four on the home screen, following every change made in the app within 4 seconds (Done, Undo, Skip, archive and restore), the widget's circle updating the app, taps after Android stopped the app, opening a habit from the widget, the midnight change, and the launcher's long-press widget list.
+
 ## 1.4.0
 
 Added:

@@ -37,7 +37,7 @@ private val DRAG_HANDLE = 48.dp
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun SproutSheet(onDismissRequest: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun WeftSheet(onDismissRequest: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val density = LocalDensity.current
     val screen = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
     val navBar = with(density) { WindowInsets.navigationBars.getBottom(density).toDp() }

@@ -3,6 +3,7 @@ package app.sprout.habits.ui.components
 import android.text.format.DateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +36,12 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -44,9 +50,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.R
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import java.text.DateFormatSymbols
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -91,11 +98,18 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
     val haptics = LocalHapticFeedback.current
     val colors = MaterialTheme.colorScheme
 
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding()) {
-            Text(title, style = SproutType.title, color = colors.onSurface)
-            if (line != null) Text(line, style = SproutType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
-            Box(Modifier.fillMaxWidth().padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
+            Text(title, style = WeftType.title, color = colors.onSurface)
+            if (line != null) Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+            // Drags in the wheel area belong to the wheels: the sheet must not move or close when a
+            // wheel runs past its first or last row, or when the drag starts between the columns.
+            Box(
+                Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                    .nestedScroll(KeepInWheels)
+                    .pointerInput(Unit) { detectVerticalDragGestures { change, _ -> change.consume() } },
+                contentAlignment = Alignment.Center,
+            ) {
                 // The band behind the middle row.
                 Box(Modifier.fillMaxWidth().height(WheelRow).clip(CircleShape).background(colors.surfaceContainerHigh))
                 Row(
@@ -104,7 +118,7 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     WheelColumn(hours, hourState, stringResource(R.string.time_hour)) { haptics.stepTick() }
-                    Text(":", style = SproutType.screenTitleNumber, color = colors.onSurface)
+                    Text(":", style = WeftType.screenTitleNumber, color = colors.onSurface)
                     WheelColumn(minutes, minuteState, stringResource(R.string.time_minute)) { haptics.stepTick() }
                     if (!h24) WheelColumn(halves, halfState, stringResource(R.string.time_am_pm)) { haptics.stepTick() }
                 }
@@ -116,10 +130,16 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp).height(48.dp),
             ) {
-                Text(stringResource(R.string.set_time), style = SproutType.label)
+                Text(stringResource(R.string.set_time), style = WeftType.label)
             }
         }
     }
+}
+
+/** Takes whatever scroll and fling a wheel leaves over, so none of it reaches the sheet. */
+private val KeepInWheels = object : NestedScrollConnection {
+    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset = available
+    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity = available
 }
 
 /** The row in the middle of a column. */
@@ -153,7 +173,7 @@ private fun WheelColumn(items: List<String>, state: LazyListState, label: String
             ) {
                 Text(
                     items[i], textAlign = TextAlign.Center, maxLines = 1,
-                    style = if (on) SproutType.screenTitleNumber else SproutType.titleNumber,
+                    style = if (on) WeftType.screenTitleNumber else WeftType.titleNumber,
                     color = if (on) colors.onSurface else colors.onSurfaceVariant,
                 )
             }

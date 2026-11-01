@@ -5,7 +5,6 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import app.sprout.habits.data.HabitRepository
 import app.sprout.habits.data.SettingsRepository
-import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
@@ -20,13 +19,13 @@ class WidgetUpdater(
     private val settings: SettingsRepository,
 ) {
     fun start(scope: CoroutineScope) {
+        WidgetDayReceiver.scheduleNextDay(context)
         scope.launch {
-            // A 7-day look-back covers the week and streak widgets; older edits are rare and the
-            // periodic update picks them up.
-            val today = LocalDate.now().toEpochDay()
+            // Every entry, not a window around today: editing an old day changes a streak, and a
+            // window fixed at process start would go stale after a few days.
             combine(
                 repository.observeAllHabits(),
-                repository.observeEntries(today - 7, today + 7),
+                repository.observeEntries(0, Long.MAX_VALUE),
                 settings.settings,
             ) { _, _, _ -> Unit }
                 .debounce(300)

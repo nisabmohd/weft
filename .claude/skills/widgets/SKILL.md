@@ -13,4 +13,8 @@ adb shell am start -n app.sprout.habits/.PinWidgetActivity --es widget today   #
 ```
 then tap "Add to home screen", screenshot the home screen, tap a circle in the Today widget and check every widget updates (also after `am force-stop`).
 
+**Refresh:** `WidgetUpdater` (every habit, entry and setting change, all dates), `MarkDoneAction` (tap may start the process), `WidgetDayReceiver` (alarm just after midnight), `RescheduleReceiver` (boot, clock, zone, locale, app update), `WeftApp.onConfigurationChanged` (dark mode, per-app language; rings and marks are bitmaps baked in light or dark), `AppLanguage.set` on Android 8–12.
+
+**Smoke:** `python3 tools/verify/smoke.py widget launcher` pins each widget (it clears the launcher's home screen: test emulator only) and checks every change shows within 4 s, cold and killed starts, the midnight rollover (needs `adb root`), dark mode, language, an old-day edit, "Nothing due today" and the long-press widget list. Force stop resets widgets to the loading layout until Weft is opened (Android's rule); the check is that opening redraws them.
+
 **Pitfalls:** an action can start the process, so `MarkDoneAction` refreshes widgets itself; the launcher doesn't run the configure step for pinned widgets.

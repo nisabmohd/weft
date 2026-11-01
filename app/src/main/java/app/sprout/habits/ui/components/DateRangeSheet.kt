@@ -1,6 +1,6 @@
 package app.sprout.habits.ui.components
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.englishDates
 import app.sprout.habits.ui.datePattern
 import androidx.compose.foundation.verticalScroll
@@ -76,11 +76,11 @@ fun DateRangeSheet(
     var month by remember { mutableStateOf(YearMonth.from(end ?: today)) }
     val dm = datePattern("d MMM")
 
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).navigationBarsPadding()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.date_range), style = SproutType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
-                TextButton(onClick = onShortcut) { Text(shortcutLabel, style = SproutType.label) }
+                Text(stringResource(R.string.date_range), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
+                TextButton(onClick = onShortcut) { Text(shortcutLabel, style = WeftType.label) }
             }
             val s = start
             val e = end ?: start
@@ -91,7 +91,7 @@ fun DateRangeSheet(
                     s == e -> s.format(datePattern("d MMM yyyy"))
                     else -> stringResource(R.string.range_same_year, s.format(dm), e.format(dm), e.year)
                 },
-                style = SproutType.supporting,
+                style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
             )
             MonthHeader(month, today) { month = it }
@@ -118,7 +118,7 @@ fun DateRangeSheet(
                         s.month == e.month && englishDates() -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.dayOfMonth.toString(), e.format(dm)))
                         else -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.format(dm), e.format(dm)))
                     },
-                    style = SproutType.label,
+                    style = WeftType.label,
                 )
             }
         }
@@ -139,20 +139,20 @@ fun DatePickerSheet(
     var picked by remember { mutableStateOf(date) }
     var month by remember { mutableStateOf(YearMonth.from(date)) }
 
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).navigationBarsPadding()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.date), style = SproutType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
-                TextButton(onClick = { picked = today; month = YearMonth.from(today) }) { Text(stringResource(R.string.today), style = SproutType.label) }
+                Text(stringResource(R.string.date), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
+                TextButton(onClick = { picked = today; month = YearMonth.from(today) }) { Text(stringResource(R.string.today), style = WeftType.label) }
             }
-            Text(picked.format(datePattern("EEEE, d MMM yyyy")), style = SproutType.supporting, color = colors.onSurfaceVariant)
+            Text(picked.format(datePattern("EEEE, d MMM yyyy")), style = WeftType.supporting, color = colors.onSurfaceVariant)
             MonthHeader(month, today) { month = it }
             MonthGrid(month, weekStart, today, picked, picked) { picked = it }
             Button(
                 onClick = { onApply(picked) },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).height(48.dp),
             ) {
-                Text(stringResource(R.string.use_value, picked.format(datePattern("d MMM"))), style = SproutType.label)
+                Text(stringResource(R.string.use_value, picked.format(datePattern("d MMM"))), style = WeftType.label)
             }
         }
     }
@@ -166,7 +166,7 @@ private fun MonthHeader(month: YearMonth, today: LocalDate, onMonth: (YearMonth)
         }
         Text(
             month.format(datePattern("MMMM yyyy")),
-            style = SproutType.cardTitle,
+            style = WeftType.cardTitle,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
@@ -190,7 +190,7 @@ private fun MonthGrid(month: YearMonth, weekStart: DayOfWeek, today: LocalDate, 
                 weekOf(first, weekStart).forEach { d ->
                     Text(
                         d.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
-                        style = SproutType.tiny,
+                        style = WeftType.tiny,
                         color = colors.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f).padding(vertical = 6.dp),
@@ -227,7 +227,7 @@ private fun MonthGrid(month: YearMonth, weekStart: DayOfWeek, today: LocalDate, 
                                 ) {
                                     Text(
                                         "${day.dayOfMonth}",
-                                        style = SproutType.label,
+                                        style = WeftType.label,
                                         color = when {
                                             isEdge -> colors.onPrimary
                                             future -> colors.outline

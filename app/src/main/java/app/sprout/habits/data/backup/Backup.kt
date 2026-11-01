@@ -36,6 +36,7 @@ data class BackupFile(
     val settings: SettingsDto? = null,
 ) {
     companion object {
+        /** Kept from before the Weft rename, so Sprout and Weft read each other's files. */
         const val APP_ID = "sprout"
         const val FORMAT_VERSION = 1
     }
@@ -97,7 +98,7 @@ class BackupException(
     val detail: String = "",
 ) : Exception(message, cause) {
     /** Why the file was rejected; the UI shows its own translated text for each. */
-    enum class Reason { DAMAGED, NOT_SPROUT, NEWER, BAD_DATE }
+    enum class Reason { DAMAGED, NOT_WEFT, NEWER, BAD_DATE }
 }
 
 /** Converts between the database and a [BackupFile], and reads and writes JSON and CSV. */
@@ -220,13 +221,13 @@ class BackupManager(
             val backup = try {
                 json.decodeFromStream(BackupFile.serializer(), input)
             } catch (e: SerializationException) {
-                throw BackupException(BackupException.Reason.NOT_SPROUT, "This isn't a Sprout backup file.", e)
+                throw BackupException(BackupException.Reason.NOT_WEFT, "This isn't a Weft backup file.", e)
             } catch (e: IllegalArgumentException) {
-                throw BackupException(BackupException.Reason.NOT_SPROUT, "This isn't a Sprout backup file.", e)
+                throw BackupException(BackupException.Reason.NOT_WEFT, "This isn't a Weft backup file.", e)
             }
-            if (backup.app != BackupFile.APP_ID) throw BackupException(BackupException.Reason.NOT_SPROUT, "This isn't a Sprout backup file.")
+            if (backup.app != BackupFile.APP_ID) throw BackupException(BackupException.Reason.NOT_WEFT, "This isn't a Weft backup file.")
             if (backup.version > BackupFile.FORMAT_VERSION) {
-                throw BackupException(BackupException.Reason.NEWER, "This backup was made by a newer version of Sprout. Update the app, then try again.")
+                throw BackupException(BackupException.Reason.NEWER, "This backup was made by a newer version of Weft. Update the app, then try again.")
             }
             return backup
         }

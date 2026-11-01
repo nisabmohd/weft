@@ -1,6 +1,6 @@
 package app.sprout.habits.ui.components
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -146,13 +146,13 @@ fun NoteCard(
             }
             Column(Modifier.weight(1f).padding(start = if (showHabit) 12.dp else 0.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (showHabit) {
-                    Text(note.habitName, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(note.habitName, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     DayMarkView(note.mark, hc, marks, Modifier.size(16.dp))
                     Text(
                         if (showHabit) "${note.outcome} · ${note.time}" else listOfNotNull(note.outcome, dateLabel).joinToString(" · "),
-                        style = SproutType.supporting,
+                        style = WeftType.supporting,
                         color = colors.onSurfaceVariant,
                         maxLines = if (showHabit) 2 else 1,
                         overflow = TextOverflow.Ellipsis,
@@ -162,9 +162,9 @@ fun NoteCard(
             }
             // Trailing text is always plain, never a pill.
             if (!showHabit) {
-                Text(note.time, style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
+                Text(note.time, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
             }
         }
-        Text(note.text, style = SproutType.body, color = colors.onSurface)
+        Text(note.text, style = WeftType.body, color = colors.onSurface)
     }
 }

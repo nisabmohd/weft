@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 
 /*
  * The grouping rules, the same on every screen (the Journal's day groups are the model):
@@ -51,10 +51,10 @@ fun SectionHeader(
 ) {
     val colors = MaterialTheme.colorScheme
     Row(modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = SproutType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
+        Text(title, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
         when {
             trailing != null -> trailing()
-            meta != null -> Text(meta, style = SproutType.supporting, color = colors.onSurfaceVariant)
+            meta != null -> Text(meta, style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
     }
 }

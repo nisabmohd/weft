@@ -24,6 +24,7 @@ private val LICENCES = listOf(
     "Kotlin standard library and kotlinx.coroutines" to "Apache License 2.0",
     "kotlinx.serialization" to "Apache License 2.0",
     "Material Symbols (habit icons)" to "Apache License 2.0",
+    "Tabler Icons (the Weft sock mark)" to "MIT License",
     "Space Grotesk font" to "SIL Open Font License 1.1",
     "Outfit font" to "SIL Open Font License 1.1",
     "Lexend font" to "SIL Open Font License 1.1",

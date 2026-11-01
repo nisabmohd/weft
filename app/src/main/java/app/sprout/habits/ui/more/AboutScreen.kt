@@ -1,9 +1,10 @@
 package app.sprout.habits.ui.more
 
 import app.sprout.habits.ui.components.HabitTileSize
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.layout.Spacer
 import app.sprout.habits.ui.update.CheckForUpdates
+import app.sprout.habits.data.update.PlayUpdates
 import app.sprout.habits.data.update.UpdateManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,7 +41,7 @@ import app.sprout.habits.ui.openEmail
 import app.sprout.habits.ui.openUrl
 import app.sprout.habits.ui.theme.habitColors
 @Composable
-fun AboutScreen(updates: UpdateManager, onBack: () -> Unit, onOpenLicences: () -> Unit) {
+fun AboutScreen(updates: UpdateManager, playUpdates: PlayUpdates, onBack: () -> Unit, onOpenLicences: () -> Unit) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding().navigationBarsPadding()) {
@@ -51,13 +52,13 @@ fun AboutScreen(updates: UpdateManager, onBack: () -> Unit, onOpenLicences: () -
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Box(Modifier.padding(top = 16.dp).size(80.dp).background(colors.primaryContainer, RoundedCornerShape(24.dp)), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_seedling), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(40.dp))
+                Icon(painterResource(R.drawable.ic_weft), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(40.dp))
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.app_name), style = SproutType.screenTitle, color = colors.onBackground)
-                Text(stringResource(R.string.version_build, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), style = SproutType.supporting, color = colors.onSurfaceVariant)
+                Text(stringResource(R.string.app_name), style = WeftType.screenTitle, color = colors.onBackground)
+                Text(stringResource(R.string.version_build, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), style = WeftType.supporting, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(10.dp))
-                CheckForUpdates(updates)
+                CheckForUpdates(updates, playUpdates)
             }
             Column(
                 Modifier.fillMaxWidth().background(colors.primaryContainer, RoundedCornerShape(24.dp)).padding(18.dp),
@@ -65,11 +66,12 @@ fun AboutScreen(updates: UpdateManager, onBack: () -> Unit, onOpenLicences: () -
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(painterResource(R.drawable.ic_code), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(22.dp))
-                    Text(stringResource(R.string.free_open_source), style = SproutType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(start = 12.dp))
+                    Text(stringResource(R.string.free_open_source), style = WeftType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(start = 12.dp))
                 }
                 Text(
-                    stringResource(R.string.about_licence_text),
-                    style = SproutType.supporting,
+                    // The play and github builds can also back up to Google Drive, so their line says where else data can go.
+                    stringResource(if (BuildConfig.DRIVE_BACKUP) R.string.about_licence_text_drive else R.string.about_licence_text),
+                    style = WeftType.supporting,
                     color = colors.onPrimaryContainer,
                 )
             }
@@ -91,19 +93,19 @@ fun AboutScreen(updates: UpdateManager, onBack: () -> Unit, onOpenLicences: () -
             )
             // The developer, mid apps, with the contact address; tapping writes an email.
             SettingsCard { MidAppsRow { openEmail(context, BuildConfig.CONTACT_EMAIL, context.getString(R.string.app_name)) } }
-            Text(stringResource(R.string.made_by), style = SproutType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 24.dp))
+            Text(stringResource(R.string.made_by), style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 24.dp))
         }
     }
 }
 
-/** "Support Sprout" with a pink heart and a small Sponsor pill. */
+/** "Support Weft" with a pink heart and a small Sponsor pill. */
 @Composable
 private fun SupportRow(onClick: () -> Unit) {
     val pink = habitColors(330f)
-    SettingsRow(stringResource(R.string.support_sprout), stringResource(R.string.support_desc), onClick = onClick) {
+    SettingsRow(stringResource(R.string.support_weft), stringResource(R.string.support_desc), onClick = onClick) {
         Text(
             stringResource(R.string.sponsor),
-            style = SproutType.label,
+            style = WeftType.label,
             color = pink.ink,
             modifier = Modifier.background(pink.soft, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 6.dp),
         )
@@ -121,8 +123,8 @@ private fun MidAppsRow(onClick: () -> Unit) {
     ) {
         Image(painterResource(R.drawable.ic_mid_apps), contentDescription = null, modifier = Modifier.size(HabitTileSize))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(stringResource(R.string.mid_apps), style = SproutType.cardTitle, color = colors.onSurface)
-            Text(stringResource(R.string.about_contact, BuildConfig.CONTACT_EMAIL), style = SproutType.supporting, color = colors.onSurfaceVariant)
+            Text(stringResource(R.string.mid_apps), style = WeftType.cardTitle, color = colors.onSurface)
+            Text(stringResource(R.string.about_contact, BuildConfig.CONTACT_EMAIL), style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         Icon(painterResource(R.drawable.ic_sym_mail), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
     }
@@ -138,6 +140,6 @@ private fun LinkRow(title: String, subtitle: String, onClick: () -> Unit) =
 fun TopBar(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         HeaderIconButton(R.drawable.ic_arrow_back, stringResource(R.string.action_back), onClick = onBack)
-        Text(title, style = SproutType.title, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(start = 14.dp))
+        Text(title, style = WeftType.title, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(start = 14.dp))
     }
 }

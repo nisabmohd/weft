@@ -1,6 +1,9 @@
 <resources>
-    <!-- hsl(150 30% 96%), hsl(150 48% 30%) from design/TOKENS.md -->
-    <color name="sprout_bg">#FFF2F8F5</color>
-    <color name="sprout_primary">#FF287250</color>
+    <!-- weft_bg: hsl(150 30% 96%) from design/TOKENS.md. weft_primary: the icon's navy (weft-icon.zip). -->
+    <color name="weft_bg">#FFF2F8F5</color>
+    <color name="weft_primary">#FF2E4A7A</color>
     <color name="widget_bg">#FFFBFDFC</color>
+    <!-- Launcher shortcuts: the default accent's primaryContainer hsl(38 55% 86%) and onPrimaryContainer hsl(38 55% 14%). -->
+    <color name="shortcut_background">#FFEFE1C8</color>
+    <color name="shortcut_icon">#FF37290F</color>
 </resources>

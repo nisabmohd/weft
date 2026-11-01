@@ -4,7 +4,8 @@ import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import app.sprout.habits.SproutApp
+import app.sprout.habits.WeftApp
+import app.sprout.habits.widget.WidgetDayReceiver
 import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
  */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val container = (context.applicationContext as SproutApp).container
+        val container = (context.applicationContext as WeftApp).container
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -46,7 +47,10 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 }
 
-/** Alarms don't survive a reboot, and a clock or zone change moves wall-clock times. */
+/**
+ * Alarms don't survive a reboot, and a clock or zone change moves wall-clock times. Widgets are
+ * redrawn too: a clock or zone change can move them to another day, a language change renames them.
+ */
 class RescheduleReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
@@ -54,15 +58,20 @@ class RescheduleReceiver : BroadcastReceiver() {
             Intent.ACTION_TIME_CHANGED,
             Intent.ACTION_TIMEZONE_CHANGED,
             Intent.ACTION_MY_PACKAGE_REPLACED,
+            Intent.ACTION_LOCALE_CHANGED,
             AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED,
             -> Unit
             else -> return
         }
-        val container = (context.applicationContext as SproutApp).container
+        val container = (context.applicationContext as WeftApp).container
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 container.reminders.rescheduleAll()
+                container.widgets.updateAll()
+                WidgetDayReceiver.scheduleNextDay(context)
+                // Drive backups are timed on the wall clock (after 1 AM).
+                container.drive.reschedule()
             } finally {
                 pending.finish()
             }

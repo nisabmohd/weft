@@ -31,7 +31,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.datePattern
 import androidx.compose.ui.res.stringResource
 import app.sprout.habits.rememberStrings
@@ -44,7 +44,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.foundation.text.BasicTextField
-import app.sprout.habits.ui.components.SproutSheet
+import app.sprout.habits.ui.components.WeftSheet
 import androidx.compose.foundation.background
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.selection.selectable
@@ -152,7 +152,7 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
             Text(
                 stringResource(if (form.isNew) R.string.new_note else R.string.edit_note),
-                style = SproutType.title,
+                style = WeftType.title,
                 color = colors.onBackground,
                 modifier = Modifier.weight(1f).padding(start = 12.dp),
             )
@@ -175,7 +175,7 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
                 if (habit == null) {
                     Text(
                         stringResource(R.string.note_no_habits),
-                        style = SproutType.body,
+                        style = WeftType.body,
                         color = colors.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp),
                     )
@@ -266,10 +266,10 @@ private fun HabitPickerSheet(
 ) {
     val colors = MaterialTheme.colorScheme
     // Fully open right away so every habit is visible; the list scrolls if there are many.
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.choose_habit),
-            style = SproutType.title,
+            style = WeftType.title,
             color = colors.onSurface,
             modifier = Modifier.padding(start = 24.dp, bottom = 8.dp),
         )
@@ -290,7 +290,7 @@ private fun HabitPickerSheet(
                     HabitTile(HabitIcon.fromKey(h.icon).drawable, c.soft, c.ink)
                     Text(
                         h.name,
-                        style = SproutType.cardTitle,
+                        style = WeftType.cardTitle,
                         color = colors.onSurface,
                         modifier = Modifier.weight(1f).padding(start = 12.dp),
                     )
@@ -331,7 +331,7 @@ private fun HabitRow(habit: Habit, entry: Entry?, date: LocalDate, onPickHabit: 
     ) {
         HabitTile(HabitIcon.fromKey(habit.icon).drawable, hc.mid, hc.ink)
         Column(Modifier.weight(1f).padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(habit.name, style = SproutType.cardTitle, color = hc.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(habit.name, style = WeftType.cardTitle, color = hc.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Row(
                 Modifier.clickable(onClickLabel = stringResource(R.string.change_date), onClick = onPickDate),
                 verticalAlignment = Alignment.CenterVertically,
@@ -339,7 +339,7 @@ private fun HabitRow(habit: Habit, entry: Entry?, date: LocalDate, onPickHabit: 
                 DayMarkView(mark, hc, MarkColors(colors.outlineVariant, colors.onSurfaceVariant, colors.outline), Modifier.size(16.dp))
                 Text(
                     "$outcome · ${date.format(datePattern("EEEE, d MMM"))}",
-                    style = SproutType.supporting,
+                    style = WeftType.supporting,
                     color = hc.ink.copy(alpha = 0.8f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -370,7 +370,7 @@ private fun NoteField(
 ) {
     val colors = MaterialTheme.colorScheme
     val noteLabel = stringResource(R.string.note)
-    val textStyle = SproutType.noteEditor.copy(color = colors.onSurface)
+    val textStyle = WeftType.noteEditor.copy(color = colors.onSurface)
     val transformation = if (ghost != null) GhostText(field.selection.end, ghost, colors.onSurfaceVariant) else VisualTransformation.None
     BasicTextField(
         value = field,

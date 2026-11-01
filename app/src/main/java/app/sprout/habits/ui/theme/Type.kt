@@ -44,10 +44,10 @@ fun BodyFont.family(): FontFamily = when (this) {
 
 /**
  * The type scale from TYPOGRAPHY.md, as Material slots so Material components pick it up too.
- * Screens never read these slots or set a size or weight themselves: they use [SproutType].
+ * Screens never read these slots or set a size or weight themselves: they use [WeftType].
  * Every style, headings included, uses [body], the font chosen in More.
  */
-fun sproutTypography(body: BodyFont, scale: Float): Typography {
+fun weftTypography(body: BodyFont, scale: Float): Typography {
     val bodyFamily = body.family()
     fun style(family: FontFamily, size: Int, weight: FontWeight, lineHeight: Float = 1.3f) = TextStyle(
         fontFamily = family,
@@ -90,7 +90,7 @@ fun sproutTypography(body: BodyFont, scale: Float): Typography {
  * The only text styles screens use; TYPOGRAPHY.md says what each one is for. Colour is not part
  * of a style: set it where the text is drawn.
  */
-object SproutType {
+object WeftType {
     /** 40 SemiBold: big input numbers, the Welcome headline. */
     val display: TextStyle @Composable @ReadOnlyComposable get() = MaterialTheme.typography.displayLarge
 
@@ -143,7 +143,7 @@ val NavLabelMinSize = 9.sp
 /** The smallest a habit detail stat value ("11 days") may shrink to when its card is too narrow for it. */
 val StatValueMinSize = 16.sp
 
-/** Sizes for the Glance widgets, which can't use Compose text styles. Same scale as [SproutType]. */
+/** Sizes for the Glance widgets, which can't use Compose text styles. Same scale as [WeftType]. */
 object WidgetType {
     val display = 40.sp
     val screenTitle = 28.sp

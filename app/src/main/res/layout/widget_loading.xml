@@ -9,6 +9,6 @@
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_seedling"
-        android:tint="@color/sprout_primary" />
+        android:src="@drawable/ic_weft"
+        android:tint="@color/weft_primary" />
 </FrameLayout>

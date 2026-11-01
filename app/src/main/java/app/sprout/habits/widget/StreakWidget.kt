@@ -53,7 +53,7 @@ class StreakWidget : GlanceAppWidget() {
         val bitmaps = WidgetBitmaps(context)
         provideContent {
             val live by liveWidgetData(context, data) { it.streak(habitId) }
-            SproutGlanceTheme { StreakContent(live, bitmaps) }
+            WeftGlanceTheme { StreakContent(live, bitmaps) }
         }
     }
 

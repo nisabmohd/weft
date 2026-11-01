@@ -219,7 +219,8 @@ class HabitsViewModel(
             }
         }
 
-        private fun rangeLabel(from: LocalDate, to: LocalDate): String = if (from.month == to.month && englishDates()) {
+        /** "21 – 27 Sep", or "26 Oct – 1 Nov" across two months. The Week widget uses it too. */
+        fun rangeLabel(from: LocalDate, to: LocalDate): String = if (from.month == to.month && englishDates()) {
             "${from.dayOfMonth} – ${to.format(datePattern("d MMM"))}"
         } else {
             "${from.format(datePattern("d MMM"))} – ${to.format(datePattern("d MMM"))}"

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Sprout"
+rootProject.name = "Weft"
 include(":app")
 include(":baselineprofile")

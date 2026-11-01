@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end smoke check of every Sprout feature on a connected emulator or phone.
+"""End-to-end smoke check of every Weft feature on a connected emulator or phone.
 
 Installs a fresh debug build (which seeds the sample habits from SampleData on first launch), then runs one short
 check per feature and prints PASS/FAIL. Exit code is the number of failures.
@@ -559,7 +559,7 @@ def insights_render():
 @check
 def more_settings_and_about():
     d.nav("More")
-    assert d.exists("Export to file"), "backup rows missing"
+    assert d.exists("Backups"), "Backups row missing"
     assert d.exists("Theme"), "appearance section missing"
     d.tap("Dark")
     assert d.exists("Dark"), "theme option missing"
@@ -567,7 +567,7 @@ def more_settings_and_about():
     w, h = d.screen_size()
     for _ in range(3):
         d.swipe(w // 2, int(h * 0.8), w // 2, int(h * 0.3))
-    d.tap("About Sprout")
+    d.tap("About Weft")
     assert d.scroll_to("Open-source licences"), "About screen incomplete"
     # The developer row (1.3.8): mid apps and the contact address.
     assert d.scroll_to("mid apps"), "mid apps row missing"
@@ -581,7 +581,7 @@ def more_language_sheet():
     d.nav("More")
     assert d.scroll_to("Language"), "Language row missing"
     d.tap("Language")
-    assert d.exists("Help translate Sprout"), "Language sheet missing"
+    assert d.exists("Help translate Weft"), "Language sheet missing"
     assert d.scroll_to("日本語"), "Japanese not listed"
     d.tap("Español")
     assert d.exists("Más", timeout=8), "app did not switch to Spanish"
@@ -589,6 +589,690 @@ def more_language_sheet():
     d.tap("Idioma")
     d.tap("Predeterminado del sistema")
     assert d.exists("More", timeout=8), "app did not return to the phone's language"
+
+
+# --- widgets: pinned on the home screen, they must follow every change at once -----------------
+# "At once" = within WIDGET_S seconds of the change (the app debounces 300 ms, then redraws).
+WIDGET_S = 4.0
+
+
+def today_ratio(labels):
+    """(done, total) from the Today widget's "3/7"."""
+    m = next((re.fullmatch(r"(\d+)/(\d+)", l) for l in labels if re.fullmatch(r"(\d+)/(\d+)", l)), None)
+    assert m, f"Today widget shows no done/total: {labels}"
+    return int(m.group(1)), int(m.group(2))
+
+
+def ratio_is(done, total):
+    return lambda labels: f"{done}/{total}" in labels
+
+
+def up_next(labels):
+    """Habits the Today widget offers to mark done."""
+    return [l[len("Mark "):-len(" done")] for l in labels
+            if l.startswith("Mark ") and l.endswith(" done") and not l.endswith(" not done")]
+
+
+def today_widget():
+    """Goes home and waits for the Today widget's labels (a failed check may have left the app open)."""
+    d.home()
+    labels = d.widget_wait(lambda l: any(re.fullmatch(r"\d+/\d+", x) for x in l), timeout=8)
+    assert labels, "Today widget not on the home screen"
+    return labels
+
+
+def app_today():
+    d.open_app()
+    d.nav("Today")
+    d.scroll_to_top()
+
+
+@check
+def widget_today_renders():
+    d.pin_widget("today")
+    labels = d.widget_wait(lambda l: "Up next" in l or "All done for today" in l, timeout=8)
+    assert labels, "Today widget didn't render"
+    done, total = today_ratio(labels)
+    assert f"{done} of {total} done today" in labels, "ring has no TalkBack label"
+    assert total > 0, "Today widget counts no habits"
+    if "Up next" in labels:
+        assert up_next(labels), "Up next lists no habits with a circle"
+
+
+@check
+def widget_follows_app_done_and_undo():
+    labels = today_widget()
+    done, total = today_ratio(labels)
+    habit = up_next(labels)[0]
+    app_today()
+    assert d.scroll_to(f"Mark {habit} done"), f"{habit} not on Today"
+    d.tap(f"Mark {habit} done")
+    d.home()
+    assert d.widget_wait(ratio_is(done + 1, total), WIDGET_S), f"widget didn't count {habit} done from the app"
+    assert habit not in up_next(d.widget_wait(lambda l: True)), f"{habit} still in Up next after it was done"
+    # Undo in the app (the circle again) must take it back off the widget.
+    app_today()
+    assert d.scroll_to(f"Mark {habit} not done"), f"{habit} not done on Today"
+    d.tap(f"Mark {habit} not done")
+    d.home()
+    assert d.widget_wait(ratio_is(done, total), WIDGET_S), "widget didn't follow the undo"
+
+
+@check
+def widget_follows_snackbar_undo_and_skip():
+    labels = today_widget()
+    done, total = today_ratio(labels)
+    habit = up_next(labels)[0]
+    app_today()
+    n = d.scroll_to(habit)
+    assert n, f"{habit} not on Today"
+    w, _ = d.screen_size()
+    y = n.center[1]
+    # Swipe right = Done, then the snackbar's Undo, read from one dump (it lasts about 4 s).
+    d.swipe(int(w * 0.12), y, int(w * 0.88), y, 250)
+    undo = next((x for x in d.dump() if x.label == "Undo"), None)
+    assert undo, "no Undo snackbar after swipe right"
+    d.tap_xy(*undo.center)
+    d.home()
+    assert d.widget_wait(ratio_is(done, total), WIDGET_S), "widget kept the Done the snackbar undid"
+    assert habit in up_next(d.widget_wait(lambda l: True)), f"{habit} didn't come back to Up next"
+    # Swipe left = Skip: off Up next, not counted done.
+    app_today()
+    n = d.scroll_to(habit)
+    d.swipe(int(w * 0.62), n.center[1], int(w * 0.02), n.center[1], 250)
+    d.home()
+    labels = d.widget_wait(lambda l: habit not in up_next(l), WIDGET_S)
+    assert labels, f"skipped {habit} still in Up next"
+    assert today_ratio(labels)[0] == done, "a Skip was counted as done"
+    app_today()
+    n = d.scroll_to(habit)
+    d.swipe(int(w * 0.12), n.center[1], int(w * 0.88), n.center[1], 250)  # right on a skip = undo
+    d.home()
+    assert d.widget_wait(lambda l: habit in up_next(l), WIDGET_S), f"{habit} didn't return after undoing the skip"
+
+
+@check
+def widget_circle_marks_done_everywhere():
+    labels = today_widget()
+    done, total = today_ratio(labels)
+    habit = up_next(labels)[0]
+    d.widget_tap(f"Mark {habit} done")
+    assert d.widget_wait(ratio_is(done + 1, total), WIDGET_S), "widget circle didn't update the widget"
+    app_today()
+    assert d.scroll_to(f"Mark {habit} not done"), "app didn't show the widget's Done"
+    d.tap(f"Mark {habit} not done")
+    d.home()
+    assert d.widget_wait(ratio_is(done, total), WIDGET_S), "widget didn't follow undo after a widget tap"
+
+
+@check
+def widget_circle_works_after_process_death():
+    """Android kills a background app to free memory; the widget's circle must still work."""
+    done, total = today_ratio(today_widget())
+    habit = up_next(today_widget())[0]
+    pid = d.shell(f"pidof {d.PACKAGE}").strip()
+    if pid:
+        d.shell(f"kill -9 {pid}")  # needs adb root; falls back to am kill below
+        d.shell(f"am kill {d.PACKAGE}")
+        time.sleep(1)
+    d.widget_tap(f"Mark {habit} done")
+    # The tap has to start the process first, so allow a little longer.
+    assert d.widget_wait(ratio_is(done + 1, total), WIDGET_S + 4), "widget circle did nothing after the process died"
+    app_today()
+    assert d.scroll_to(f"Mark {habit} not done"), "app (cold start) didn't show the widget's Done"
+    d.tap(f"Mark {habit} not done")
+    d.home()
+    assert d.widget_wait(ratio_is(done, total), WIDGET_S), "widget didn't follow the undo"
+
+
+@check
+def widget_comes_back_after_force_stop():
+    """
+    Force stop (Settings → app → Force stop) makes Android put widgets back to their loading
+    layout, and nothing of a stopped app may run until it is opened. Opening Weft must redraw
+    every widget at once.
+    """
+    done, total = today_ratio(today_widget())
+    d.shell(f"am force-stop {d.PACKAGE}")
+    time.sleep(2)
+    d.open_app()
+    d.home()
+    assert d.widget_wait(ratio_is(done, total), WIDGET_S), "widget stayed blank after the app was reopened"
+    assert up_next(today_widget()), "widget's circles didn't come back after a force stop"
+
+
+@check
+def widget_habit_name_opens_habit():
+    habit = up_next(today_widget())[0]
+    # Cold: the app isn't running.
+    d.shell(f"am force-stop {d.PACKAGE}")
+    time.sleep(1)
+    d.widget_tap(habit)
+    assert d.exists("Edit habit", timeout=8) and d.exists(habit), f"cold start didn't open {habit}"
+    # Warm: the app is open on another tab (singleTop, so this arrives in onNewIntent).
+    d.back()
+    d.nav("More")
+    d.home()
+    d.widget_tap(habit)
+    assert d.exists("Edit habit", timeout=6) and d.exists(habit), f"widget didn't open {habit} over the More tab"
+    # Warm, on the same habit's page already: still that page, not a second copy.
+    d.home()
+    d.widget_tap(habit)
+    assert d.exists("Edit habit", timeout=6), "second tap lost the habit page"
+    d.back()
+    assert not d.exists("Edit habit", timeout=1.5), "the habit page opened twice"
+    d.home()
+
+
+@check
+def widget_ring_opens_today():
+    today_widget()
+    d.open_app()
+    d.nav("More")
+    d.home()
+    d.widget_tap("done today", contains=True)
+    assert d.exists("Today", timeout=6) and d.exists("of today", contains=True), "ring didn't open the app"
+    d.home()
+
+
+@check
+def widget_follows_archive_and_restore():
+    labels = today_widget()
+    done, total = today_ratio(labels)
+    habit = up_next(labels)[0]
+    d.widget_tap(habit)
+    assert d.exists("Edit habit", timeout=8), f"{habit} page didn't open"
+    d.tap("Archive")
+    d.home()
+    assert d.widget_wait(lambda l: f"{done}/{total - 1}" in l and habit not in up_next(l), WIDGET_S), \
+        f"archived {habit} still on the widget"
+    d.open_app()
+    d.tap("Restore")
+    d.home()
+    assert d.widget_wait(lambda l: f"{done}/{total}" in l, WIDGET_S), f"restored {habit} didn't come back"
+
+
+@check
+def widget_week_renders_and_follows():
+    d.pin_widget("week")
+    labels = d.widget_wait(lambda l: "This week" in l, timeout=8)
+    assert labels, "Week widget didn't render"
+    rng = labels[labels.index("This week") + 1]
+    # "21 – 27 Sep" in one month, "26 Oct – 1 Nov" across two (it once said "26 – 1 Nov").
+    assert re.fullmatch(r"\d+ – \d+ \w+|\d+ \w+ – \d+ \w+", rng), f"bad week range {rng!r}"
+    first, last = rng.split(" – ")
+    if first.isdigit():
+        assert int(first) < int(last.split()[0]), f"range {rng!r} spans two months but names one"
+    pct = next((l for l in labels if re.fullmatch(r"\d+%", l)), None)
+    assert pct, "Week widget has no %"
+    habit = next(l[:-len(" this week")] for l in labels if l.endswith(" this week"))
+    app_today()
+    assert d.scroll_to(f"Mark {habit} done") or d.scroll_to(f"Mark {habit} not done"), f"{habit} not on Today"
+    mark = f"Mark {habit} done" if d.exists(f"Mark {habit} done", timeout=1) else f"Mark {habit} not done"
+    d.tap(mark)
+    d.home()
+    assert d.widget_wait(lambda l: next((x for x in l if re.fullmatch(r"\d+%", x)), None) != pct, WIDGET_S), \
+        "Week widget % didn't change after a log"
+    app_today()
+    d.scroll_to(habit)
+    d.tap(f"Mark {habit} not done" if mark == f"Mark {habit} done" else f"Mark {habit} done")
+    d.home()
+    assert d.widget_wait(lambda l: pct in l, WIDGET_S), "Week widget % didn't go back after undo"
+
+
+@check
+def widget_strip_follows():
+    d.pin_widget("strip")
+    labels = d.widget_wait(lambda l: any(re.fullmatch(r"\d+ of \d+ today", x) for x in l), timeout=8)
+    assert labels, "Strip widget didn't render"
+    line = next(x for x in labels if re.fullmatch(r"\d+ of \d+ today", x))
+    done, total = map(int, re.findall(r"\d+", line))
+    assert any(x.startswith("Next: ") or x == "All done" for x in labels), "strip has no Next line"
+    app_today()
+    habit = next(x.label[len("Mark "):-len(" done")] for x in d.dump() if x.label.startswith("Mark ") and x.label.endswith(" done") and " not " not in x.label)
+    d.tap(f"Mark {habit} done")
+    d.home()
+    assert d.widget_wait(lambda l: f"{done + 1} of {total} today" in l, WIDGET_S), "strip didn't count the Done"
+    app_today()
+    d.scroll_to(f"Mark {habit} not done")
+    d.tap(f"Mark {habit} not done")
+    d.home()
+    assert d.widget_wait(lambda l: f"{done} of {total} today" in l, WIDGET_S), "strip didn't follow the undo"
+
+
+@check
+def widget_streak_follows():
+    d.pin_widget("streak")
+    labels = d.widget_wait(lambda l: "day streak" in l or "days streak" in l, timeout=8)
+    assert labels, "Streak widget didn't render"
+    habit = labels[0]
+    count = next(x for x in labels if x.isdigit())
+    app_today()
+    n = d.scroll_to(f"Mark {habit} done") or d.scroll_to(f"Mark {habit} not done")
+    assert n, f"{habit} not on Today"
+    was_done = "not done" in n.label
+    d.tap(n.label)
+    d.home()
+    assert d.widget_wait(lambda l: count not in l, WIDGET_S), "streak didn't change after today's log"
+    app_today()
+    d.scroll_to(habit)
+    d.tap(f"Mark {habit} done" if was_done else f"Mark {habit} not done")
+    d.home()
+    assert d.widget_wait(lambda l: count in l, WIDGET_S), "streak didn't go back after undo"
+
+
+@check
+def widget_rolls_over_at_midnight():
+    """Needs a rootable emulator (adb root) to move the clock; restores it afterwards."""
+    if "cannot run as root" in d.adb("root") or "production" in d.adb("root"):
+        print("      skipped: emulator can't run adb as root")
+        return
+    time.sleep(2)
+    d.pin_widget("today")
+    labels = today_widget()
+    habit = up_next(labels)[0]
+    d.widget_tap(f"Mark {habit} done")  # so today has a Done that tomorrow mustn't show
+    assert d.widget_wait(lambda l: today_ratio(l)[0] > 0, WIDGET_S)
+    start = time.time()
+    real = int(d.shell("date +%s").strip())
+    d.shell("settings put global auto_time 0")
+    try:
+        # 20 s before local midnight. Setting the clock is itself a TIME_SET the app must handle.
+        tomorrow = int(d.shell("date -d \"$(date +%Y-%m-%d) 00:00:00\" +%s").strip()) + 86400
+        d.shell(f"date @{tomorrow - 20}")
+        time.sleep(2)
+        d.home()
+        assert d.widget_wait(lambda l: today_ratio(l)[0] > 0, WIDGET_S), "a clock change dropped today's Done"
+        # The midnight alarm: no log, no app open, the widget must move to the new day by itself.
+        assert d.widget_wait(lambda l: today_ratio(l)[0] == 0, 60), "widget still shows yesterday after midnight"
+        # A clock change back (TIME_SET) must bring yesterday's day back.
+        d.shell(f"date @{real + int(time.time() - start)}")
+        assert d.widget_wait(lambda l: today_ratio(l)[0] > 0, WIDGET_S + 4), "widget didn't follow the clock back"
+    finally:
+        d.shell(f"date @{real + int(time.time() - start)}")
+        d.shell("settings put global auto_time 1")
+    app_today()
+    if d.scroll_to(f"Mark {habit} not done"):
+        d.tap(f"Mark {habit} not done")
+
+@check
+def widget_nothing_due_today():
+    """With no habit due (all archived), the Today widget says so instead of "All done"."""
+    d.pin_widget("today")
+    today_widget()
+    d.open_app()
+    d.nav("Habits")
+    d.tap("Manage habits")
+    for _ in range(20):
+        n = d.find("Archive", timeout=1.5)
+        if not n:
+            break
+        d.tap_xy(*n.center)
+    try:
+        d.home()
+        labels = d.widget_wait(lambda l: "Nothing due today" in l, WIDGET_S)
+        assert labels, "Today widget with no habits doesn't say \"Nothing due today\""
+        assert "0/0" in labels and "All done for today" not in labels, f"empty day reads as done: {labels}"
+    finally:
+        d.open_app()
+        for _ in range(20):
+            n = d.scroll_to("Restore")
+            if not n:
+                break
+            d.tap_xy(*n.center)
+        d.back()
+    d.home()
+    assert d.widget_wait(lambda l: any(re.fullmatch(r"\d+/[1-9]\d*", x) for x in l), WIDGET_S), "habits didn't come back"
+
+
+@check
+def widget_streak_follows_an_old_day():
+    """Changing a day more than a week back (habit calendar) moves the Streak widget."""
+    import datetime
+    d.pin_widget("streak")
+    labels = d.widget_wait(lambda l: "day streak" in l or "days streak" in l, timeout=8)
+    assert labels, "Streak widget didn't render"
+    habit, count = labels[0], next(x for x in labels if x.isdigit())
+    if int(count) < 10:
+        print(f"      skipped: {habit}'s streak is {count}, needs 10+ to reach 9 days back")
+        return
+    day = datetime.date.today() - datetime.timedelta(days=9)
+    name = day.strftime("%A %-d %B")
+    d.open_app()
+    d.nav("Habits")
+    d.tap("Week")
+    d.tap(habit)
+    assert d.exists("best streak"), "habit detail didn't open"
+    time.sleep(0.8)
+    if day.month != datetime.date.today().month:
+        d.tap("Previous month")
+    n = d.scroll_to(name + ":", contains=True)
+    assert n, "calendar day 9 days back missing"
+    d.tap_xy(*n.center)
+    d.tap("Skip")
+    d.tap("Save")
+    d.home()
+    assert d.widget_wait(lambda l: count not in l, WIDGET_S), "Streak widget ignored a change 9 days back"
+    d.open_app()
+    n = d.scroll_to(name + ":", contains=True)
+    d.tap_xy(*n.center)
+    d.tap("Done")
+    d.tap("Save")
+    d.back()
+    d.home()
+    assert d.widget_wait(lambda l: count in l, WIDGET_S), "Streak widget didn't go back"
+
+
+@check
+def widget_follows_dark_mode():
+    """Rings and marks are drawn into bitmaps; a dark-mode switch must redraw them."""
+    d.pin_widget("today")
+    labels = today_widget()
+    ring = next(n for n in d.widget_nodes() if n.label.endswith(" done today"))
+    d.shell("cmd uimode night no")
+    time.sleep(3)
+    light = d.brightness(ring.bounds)
+    try:
+        d.shell("cmd uimode night yes")
+        time.sleep(4)
+        ring = next(n for n in d.widget_nodes() if n.label.endswith(" done today"))
+        dark = d.brightness(ring.bounds)
+        assert dark < light - 30, f"ring didn't turn dark (brightness {light:.0f} → {dark:.0f})"
+    finally:
+        d.shell("cmd uimode night no")
+        time.sleep(2)
+
+
+@check
+def widget_follows_language():
+    """A language picked in Weft reaches the widgets at once."""
+    d.pin_widget("today")
+    today_widget()
+    d.open_app()
+    d.nav("More")
+    d.scroll_to("Language")
+    d.tap("Language")
+    d.scroll_to("Español")
+    d.tap("Español")
+    assert d.exists("Más", timeout=8), "app did not switch to Spanish"
+    try:
+        d.home()
+        assert d.widget_wait(lambda l: "hoy" in l, WIDGET_S + 2), "widget stayed in English after switching to Spanish"
+    finally:
+        d.open_app()
+        d.nav("Más")
+        d.scroll_to("Idioma")
+        d.tap("Idioma")
+        d.tap("Predeterminado del sistema")
+        d.exists("More", timeout=8)
+    d.home()
+    assert d.widget_wait(lambda l: "today" in l, WIDGET_S + 2), "widget stayed in Spanish after going back"
+
+
+# --- Backup & restore and Google Drive backup (play and github builds). A real backup needs Play
+# services, a Google account and the OAuth client; these check the screens and what fails without
+# them. The debug build's DriveStateActivity sets the Drive state without an account (it closes
+# Weft's task, so every check opens Weft again after it). ------------------------------------
+
+def drive_state(account=None, last_backup_ms=None, failed=None, count=None):
+    extras = ""
+    if account:
+        extras += f" --es account {account}"
+        if last_backup_ms:
+            extras += f" --el lastBackupAt {last_backup_ms}"
+        if count is not None:
+            extras += f" --ei count {count}"
+        if failed:
+            extras += f" --es failed {failed}"
+    d.shell(f"am start -W -f 0x10008000 -n {d.PACKAGE}/.DriveStateActivity{extras}")
+    time.sleep(1)
+
+
+def backup_screen():
+    """More → Backups → Backup & restore."""
+    d.open_app()
+    d.nav("More")
+    d.scroll_to_top()
+    d.tap("Backups")
+    assert d.exists("Backup & restore", timeout=3), "Backups didn't open Backup & restore"
+
+
+@check
+def backup_row_follows_drive():
+    drive_state()
+    d.open_app()
+    d.nav("More")
+    d.scroll_to_top()
+    assert d.exists("Backups") and d.exists("Google Drive not connected"), "Backups row isn't 'not connected'"
+    for gone in ["Export to file", "Import from file", "Back up now"]:
+        assert not d.exists(gone, timeout=1), f"{gone!r} still on More"
+    drive_state("tester@example.com", int(time.time() * 1000) - 3600_000)
+    d.open_app()
+    d.nav("More")
+    d.scroll_to_top()
+    assert d.exists("Last backup today, ", contains=True) or d.exists("Last backup yesterday, ", contains=True), \
+        "Backups row doesn't show the last backup"
+    drive_state("tester@example.com", failed="FULL")
+    d.open_app()
+    d.nav("More")
+    d.scroll_to_top()
+    assert d.exists("Last backup failed"), "Backups row doesn't show the failure"
+    drive_state()
+
+
+@check
+def drive_not_connected():
+    drive_state()
+    backup_screen()
+    for label in ["Back up to Google Drive", "Connect Google Drive", "Backup to a file", "Export to file", "Import from file"]:
+        assert d.exists(label, timeout=3), f"Backup & restore (not connected) misses {label!r}"
+    for label in ["Back up now", "Frequency", "Wi-Fi only", "Restore from Drive", "Google account"]:
+        assert not d.exists(label, timeout=1), f"{label!r} shown before connecting"
+
+
+@check
+def drive_connected_rows():
+    drive_state("tester@example.com", int(time.time() * 1000) - 3600_000, count=7)
+    backup_screen()
+    for label in ["Google Drive · tester@example.com", "Back up now", "Automatic backup", "Frequency", "Daily", "Wi-Fi only",
+                  "Don't use mobile data", "Restore", "Restore from Drive", "Import from file", "JSON backup", "Other",
+                  "Export to file", "Google account", "Switch account or disconnect"]:
+        assert d.scroll_to(label), f"connected screen misses {label!r}"
+    assert d.exists("7 backups, newest ", contains=True), "Restore from Drive doesn't count the backups"
+    d.scroll_to_top()
+    assert d.exists("Backed up today, ", contains=True) or d.exists("Backed up yesterday, ", contains=True), \
+        "status card doesn't show the last backup"
+    wifi = next(n for n in d.dump() if n.label == "Wi-Fi only")
+    sw = next((n for n in d.dump() if n.checkable and n.bounds[1] <= wifi.center[1] <= n.bounds[3]), None)
+    assert sw is None or sw.checked, "Wi-Fi only isn't on by default"
+
+
+@check
+def drive_failed_card():
+    for reason, text in [("FULL", "Drive is full"), ("NEEDS_CONSENT", "Google needs you to allow Weft again"),
+                         ("FAILED", "Couldn't reach Google Drive")]:
+        drive_state("tester@example.com", failed=reason)
+        backup_screen()
+        assert d.exists("Last backup failed") and d.exists(text), f"failed card misses {text!r}"
+        assert d.exists("Try again") and not d.exists("Back up now", timeout=1), "failed card has no Try again"
+    drive_state("tester@example.com")
+
+
+@check
+def drive_frequency_sheet_schedules():
+    drive_state("tester@example.com")
+    backup_screen()
+    d.tap("Frequency")
+    for label in ["Backup frequency", "Every night while charging", "Sunday night", "On the 1st", "Only when you tap Back up now"]:
+        assert d.exists(label, timeout=3), f"frequency sheet misses {label!r}"
+    d.tap("Weekly")
+    assert d.exists("Weekly"), "row didn't take the new frequency"
+    jobs = d.shell("dumpsys jobscheduler")
+    assert "/2000003101: " in jobs and ".data.backup.DriveBackupJob" in jobs, "no scheduled Drive backup job"
+    d.tap("Frequency")
+    d.tap("Off")
+    time.sleep(1)
+    # Pending jobs are listed as "JOB #u0a…/2000003101: …"; Off must leave none.
+    jobs = d.shell("dumpsys jobscheduler")
+    assert not re.search(r"JOB #u0a\d+/2000003101: ", jobs), "Off left a Drive job scheduled"
+    d.tap("Frequency")
+    d.tap("Daily")
+
+
+@check
+def drive_export_format_sheet():
+    drive_state("tester@example.com")
+    backup_screen()
+    assert d.scroll_to("Export to file"), "Export to file missing"
+    d.tap("Export to file")
+    for label in ["File format", "JSON", "A backup you can import again", "CSV", "Opens in any spreadsheet"]:
+        assert d.exists(label, timeout=3), f"format sheet misses {label!r}"
+    d.back()
+
+
+@check
+def drive_account_sheet():
+    drive_state("tester@example.com")
+    backup_screen()
+    assert d.scroll_to("Google account"), "Google account row missing"
+    d.tap("Google account")
+    for label in ["tester@example.com", "Switch account", "Disconnect", "Delete backups from Drive"]:
+        assert d.exists(label, timeout=3), f"account sheet misses {label!r}"
+    d.tap("Delete backups from Drive")
+    assert d.exists("Delete backups from Drive?"), "delete has no confirmation"
+    d.tap("Cancel")
+    d.tap("Google account")
+    d.tap("Disconnect")
+    assert d.exists("Connect Google Drive", timeout=6), "Disconnect didn't go back to Connect Google Drive"
+
+
+@check
+def drive_offline_says_so():
+    drive_state("tester@example.com")
+    d.shell("cmd connectivity airplane-mode enable")
+    time.sleep(3)
+    try:
+        for label in ["Back up now", "Restore from Drive"]:
+            backup_screen()
+            assert d.scroll_to(label), f"{label} missing"
+            d.tap(label)
+            assert d.exists("No internet connection", contains=True, timeout=4), f"{label} offline didn't say so"
+            assert label != "Restore from Drive" or not d.exists("Your current habits and notes", contains=True, timeout=1), \
+                "restore sheet stayed open offline"
+            assert not d.exists("Last backup failed", timeout=1), "an offline backup was marked failed"
+            time.sleep(4.5)  # let the snackbar go
+        drive_state()
+        backup_screen()
+        d.tap("Connect Google Drive")
+        assert d.exists("No internet connection", contains=True, timeout=4), "Connect offline didn't say so"
+    finally:
+        d.shell("cmd connectivity airplane-mode disable")
+        time.sleep(3)
+
+
+@check
+def drive_without_google_fails_cleanly():
+    """No Play services or no OAuth client: a clear message, no crash, and the screen still works."""
+    drive_state("tester@example.com")
+    backup_screen()
+    d.tap("Back up now")
+    labels = [n.label for n in d.dump()]
+    if any("Choose an account" in l or "Sign in" in l for l in labels):
+        print("      skipped: Google's account screen opened (this phone has Google); check by hand")
+        d.back()
+        return
+    assert d.exists("Couldn't reach Google Drive", contains=True, timeout=25) or d.exists("Wi-Fi only is on", contains=True), \
+        "no result message after Back up now"
+    assert d.exists("Backup & restore"), "app left Backup & restore"
+    drive_state()
+
+
+@check
+def drive_absent_in_foss():
+    """The foss APK (if built) has no Drive code."""
+    apk = os.path.join(ROOT, "app/build/outputs/apk/foss/debug/app-foss-debug.apk")
+    if not os.path.exists(apk):
+        print("      skipped: no foss debug APK built")
+        return
+    import zipfile
+    with zipfile.ZipFile(apk) as z:
+        dex = b"".join(z.read(n) for n in z.namelist() if n.endswith(".dex"))
+    assert b"googleapis.com/drive" not in dex and b"com/google/android/gms/auth" not in dex, "foss APK contains Drive code"
+
+
+# --- Launcher shortcuts and weft:// links ---------------------------------------------------
+
+def open_link(uri):
+    d.shell(f"am start -W -a android.intent.action.VIEW -d {uri} {d.PACKAGE}")
+    time.sleep(1.5)
+
+
+@check
+def links_open_each_screen():
+    cases = [("weft://journal", "Filter by habit"), ("weft://insights", "Change date range"),
+             ("weft://habits", "Manage habits"), ("weft://more", "Backups"), ("weft://today", "of today")]
+    for uri, marker in cases:
+        open_link(uri)
+        assert d.exists(marker, contains=True, timeout=4), f"{uri} didn't open its tab"
+    open_link("weft://note/new")
+    assert d.exists("New note", timeout=4), "weft://note/new didn't open New note"
+    d.tap("Close")
+    open_link("weft://habit/new")
+    assert d.exists("New habit", timeout=4), "weft://habit/new didn't open New habit"
+    d.tap("Close")
+    open_link("sprout://journal")  # the name before the rename to Weft still works
+    assert d.exists("Filter by habit", contains=True, timeout=4), "sprout://journal didn't open the Journal"
+
+
+@check
+def links_ignore_bad_input():
+    open_link("weft://today")
+    for uri in ["weft://habit/999999", "weft://habit/abc", "weft://nothing", "weft://habit/-1"]:
+        open_link(uri)
+        assert d.exists("of today", contains=True, timeout=3) and not d.exists("Edit habit", timeout=1), f"{uri} opened something"
+
+
+@check
+def link_opens_a_habit():
+    open_link("weft://habit/1")
+    assert d.exists("Edit habit", timeout=4), "weft://habit/1 didn't open the habit page"
+    d.back()
+
+
+@check
+def launcher_shortcuts():
+    """Long-press Weft's icon: Add note and New habit, each opening its screen."""
+    for name, screen in [("Add note", "New note"), ("New habit", "New habit")]:
+        d.home()
+        w, h = d.screen_size()
+        d.swipe(w // 2, int(h * 0.85), w // 2, int(h * 0.2), 300)
+        icon = d.find("Weft", timeout=4)
+        assert icon, "Weft not in the launcher's app list"
+        x, y = icon.center
+        d.swipe(x, y, x, y, 1200)
+        assert d.exists(name, timeout=4), f"long-press menu has no {name!r}"
+        d.tap(name)
+        assert d.exists(screen, timeout=6), f"shortcut {name!r} didn't open {screen}"
+        d.tap("Close")
+
+
+@check
+def launcher_long_press_lists_widgets():
+    """Long-press Weft's icon in the app list: the launcher's Widgets entry lists all four."""
+    d.home()
+    w, h = d.screen_size()
+    d.swipe(w // 2, int(h * 0.85), w // 2, int(h * 0.2), 300)  # open all apps
+    icon = d.find("Weft", timeout=4)
+    assert icon, "Weft not in the launcher's app list"
+    x, y = icon.center
+    d.swipe(x, y, x, y, 1200)
+    shortcut = d.find("Widgets", timeout=4)
+    assert shortcut, "long-press menu has no Widgets entry"
+    d.tap_xy(*shortcut.center)
+    # Each entry is labelled "Today widget, 4 wide by 2 high …", even when only partly on screen.
+    for name in ["This week", "Today", "Today strip", "Streak"]:
+        assert d.exists(f"{name} widget, ", contains=True, timeout=4), f"long-press widget list misses {name}"
+    d.home()
 
 
 @check

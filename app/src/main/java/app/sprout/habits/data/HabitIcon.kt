@@ -91,7 +91,7 @@ enum class HabitIcon(val key: String, @StringRes val label: Int, val group: Icon
     KINDNESS("volunteer_activism", R.string.icon_kindness, IconGroup.PEOPLE, R.drawable.ic_sym_volunteer_activism);
 
     companion object {
-        /** Keys from 0.3.0 and earlier, when Sprout had 8 icons of its own. */
+        /** Keys from 0.3.0 and earlier, when Weft had 8 icons of its own. */
         private val LEGACY = mapOf(
             "sun" to MORNING,
             "book" to READ,

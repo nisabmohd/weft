@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press Weft's icon. Each opens a weft:// link (ui/nav/AppLink.kt). -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_note"
+        android:enabled="true"
+        android:icon="@drawable/shortcut_note"
+        android:shortcutShortLabel="@string/add_note"
+        android:shortcutLongLabel="@string/add_note">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="weft://note/new"
+            android:targetClass="app.sprout.habits.MainActivity"
+            android:targetPackage="app.sprout.habits" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="new_habit"
+        android:enabled="true"
+        android:icon="@drawable/shortcut_habit"
+        android:shortcutShortLabel="@string/new_habit"
+        android:shortcutLongLabel="@string/new_habit">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="weft://habit/new"
+            android:targetClass="app.sprout.habits.MainActivity"
+            android:targetPackage="app.sprout.habits" />
+    </shortcut>
+</shortcuts>

@@ -1,6 +1,6 @@
-# Sprout typography rule (applies to every screen)
+# Weft typography rule (applies to every screen)
 
-Use **only** these 9 text styles. Define them once in `ui/theme/Type.kt` as `SproutType.*`, and never write a raw `fontSize` / `fontWeight` anywhere else.
+Use **only** these 9 text styles. Define them once in `ui/theme/Type.kt` as `WeftType.*`, and never write a raw `fontSize` / `fontWeight` anywhere else.
 Weights are only **Regular (400)** and **SemiBold (600)**. Line height: about 1.3 for titles and labels, 1.5 for body and notes.
 
 | Style | Font | Size | Weight | Colour | Use it for (and nothing else) |

@@ -1,7 +1,7 @@
 package app.sprout.habits.ui.components
 
 import androidx.compose.ui.text.font.FontFamily
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,10 +36,10 @@ fun ChoiceSheet(
     footer: (@Composable () -> Unit)? = null,
     rows: @Composable ColumnScope.() -> Unit,
 ) {
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Text(
             title,
-            style = SproutType.title,
+            style = WeftType.title,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp),
         )
@@ -73,8 +73,8 @@ fun ChoiceRow(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = SproutType.cardTitle.copy(fontFamily = fontFamily ?: SproutType.cardTitle.fontFamily), color = colors.onSurface)
-            subtitle?.let { Text(it, style = SproutType.supporting.copy(fontFamily = fontFamily ?: SproutType.supporting.fontFamily), color = colors.onSurfaceVariant) }
+            Text(title, style = WeftType.cardTitle.copy(fontFamily = fontFamily ?: WeftType.cardTitle.fontFamily), color = colors.onSurface)
+            subtitle?.let { Text(it, style = WeftType.supporting.copy(fontFamily = fontFamily ?: WeftType.supporting.fontFamily), color = colors.onSurfaceVariant) }
         }
         trailing?.invoke()
         RadioButton(selected = selected, onClick = null)

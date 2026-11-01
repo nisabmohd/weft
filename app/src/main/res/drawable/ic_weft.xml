@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Weft mark for in-app use: the sock from Tabler Icons (MIT, licenses/icons/tabler-icons-MIT.txt),
+     the same glyph as the launcher icon (weft-icon.zip),
+     shifted to centre it optically like the launcher icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group android:translateX="1.06" android:translateY="0.2">
+        <path
+            android:pathData="M13,3v6l4.798,5.142a4,4 0,0 1,-5.441 5.86l-6.736,-6.41a2,2 0,0 1,-0.621 -1.451v-9.141h8M7.895,15.768c0.708,-0.721 1.105,-1.677 1.105,-2.768a4,4 0,0 0,-4 -4"
+            android:strokeWidth="2"
+            android:strokeColor="#FF000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

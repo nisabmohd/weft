@@ -1,6 +1,6 @@
 package app.sprout.habits.ui.more
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import app.sprout.habits.ui.openUrl
 /**
  * "Language": the phone's language first, then every shipped language in its own script with the
  * English name under it. Picking one applies it at once; the card at the bottom links to
- * translating Sprout.
+ * translating Weft.
  */
 @Composable
 fun LanguageSheet(current: String?, onPick: (String?) -> Unit, onDismiss: () -> Unit) {
@@ -71,8 +71,8 @@ private fun HelpTranslateCard(onClick: () -> Unit) {
             Icon(painterResource(R.drawable.ic_translate), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(20.dp))
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(stringResource(R.string.help_translate), style = SproutType.cardTitle, color = colors.onSurface)
-            Text(stringResource(R.string.help_translate_desc), style = SproutType.supporting, color = colors.onSurfaceVariant)
+            Text(stringResource(R.string.help_translate), style = WeftType.cardTitle, color = colors.onSurface)
+            Text(stringResource(R.string.help_translate_desc), style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         Icon(painterResource(R.drawable.ic_open_external), contentDescription = null, tint = colors.onSurface, modifier = Modifier.size(18.dp))
     }

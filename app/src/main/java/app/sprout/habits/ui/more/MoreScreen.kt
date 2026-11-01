@@ -3,7 +3,7 @@ package app.sprout.habits.ui.more
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.today.UndoSnackbarHost
 import app.sprout.habits.ui.update.UpdateBadge
 import app.sprout.habits.domain.isNewerVersion
@@ -33,6 +33,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +49,11 @@ import androidx.compose.ui.unit.dp
 import app.sprout.habits.BuildConfig
 import androidx.compose.runtime.setValue
 import app.sprout.habits.R
+import app.sprout.habits.data.backup.DriveBackup
 import app.sprout.habits.ui.components.TabHeader
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.data.Settings
 import app.sprout.habits.data.SettingsRepository
-import app.sprout.habits.data.backup.BackupManager
 import app.sprout.habits.notify.Notifications
 import app.sprout.habits.ui.components.ColorSwatchRow
 import app.sprout.habits.ui.components.Swatch
@@ -80,7 +81,8 @@ private val TEXT_SCALES = listOf(0.85f to R.string.text_small, 1f to R.string.te
 fun MoreScreen(
     settings: Settings,
     repository: SettingsRepository,
-    backup: BackupManager,
+    drive: DriveBackup,
+    onOpenBackup: () -> Unit,
     onOpenAbout: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -107,8 +109,19 @@ fun MoreScreen(
         ) {
 
             item(key = "backup") {
+                // One row that opens Backup & restore (FEATURE-BACKUP-SCREEN.md, 2026-10-31).
                 SectionLabel(stringResource(R.string.backup_restore), first = true)
-                BackupRows(backup) { msg -> scope.launch { snackbar.showSnackbar(msg) } }
+                val backingUp by drive.backingUp.collectAsState()
+                val icon = when {
+                    !drive.enabled -> R.drawable.ic_smartphone
+                    settings.driveAccount != null -> R.drawable.ic_cloud_done
+                    else -> R.drawable.ic_cloud
+                }
+                SettingsCard {
+                    SettingsRow(stringResource(R.string.backups), backupsRowLine(settings, drive.enabled, backingUp), icon = icon, onClick = onOpenBackup) {
+                        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                    }
+                }
             }
 
             item(key = "appearance") {
@@ -117,7 +130,7 @@ fun MoreScreen(
                 SettingsGroup(
                     {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(stringResource(R.string.theme), style = SproutType.cardTitle)
+                            Text(stringResource(R.string.theme), style = WeftType.cardTitle)
                             // Each segment is a fixed share of the row, so labels stop scaling at 1.3x.
                             CappedFontScale {
                             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
@@ -133,7 +146,7 @@ fun MoreScreen(
                                             activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
                                             activeContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                         ),
-                                    ) { Text(label, style = SproutType.label) }
+                                    ) { Text(label, style = WeftType.label) }
                                 }
                             }
                             }
@@ -206,9 +219,9 @@ fun MoreScreen(
                     SettingsCard {
                         val update = settings.availableUpdate?.takeIf { isNewerVersion(it, BuildConfig.VERSION_NAME) }
                         SettingsRow(
-                            stringResource(R.string.about_sprout),
+                            stringResource(R.string.about_weft),
                             stringResource(R.string.version_open_source, BuildConfig.VERSION_NAME),
-                            icon = R.drawable.ic_seedling,
+                            icon = R.drawable.ic_weft,
                             onClick = onOpenAbout,
                             badge = if (update != null) { { UpdateBadge() } } else null,
                         ) {
@@ -266,7 +279,7 @@ fun MoreScreen(
 @Composable
 private fun AccentPicker(selectedHue: Float, onSelect: (Float) -> Unit) {
     Column(Modifier.padding(horizontal = 8.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(stringResource(R.string.accent), style = SproutType.cardTitle, modifier = Modifier.padding(start = 8.dp))
+        Text(stringResource(R.string.accent), style = WeftType.cardTitle, modifier = Modifier.padding(start = 8.dp))
         ColorSwatchRow(
             swatches = ACCENT_HUES.map { hue ->
                 val scheme = seedColorScheme(hue, false)
@@ -285,8 +298,8 @@ private fun TextSizeRow(scale: Float, onChange: (Float) -> Unit) {
     val label = stringResource(TEXT_SCALES[index].second)
     Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.text_size), style = SproutType.cardTitle, modifier = Modifier.weight(1f))
-            Text(label, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.text_size), style = WeftType.cardTitle, modifier = Modifier.weight(1f))
+            Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Slider(
             value = index.toFloat(),

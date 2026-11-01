@@ -4,6 +4,8 @@ import android.content.Context
 import app.sprout.habits.data.HabitRepository
 import app.sprout.habits.data.SettingsRepository
 import app.sprout.habits.data.backup.BackupManager
+import app.sprout.habits.data.backup.DriveBackup
+import app.sprout.habits.data.update.PlayUpdates
 import app.sprout.habits.data.update.UpdateManager
 import app.sprout.habits.notify.ReminderNotifier
 import app.sprout.habits.notify.ReminderScheduler
@@ -11,19 +13,21 @@ import app.sprout.habits.widget.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import app.sprout.habits.data.SproutDatabase
+import app.sprout.habits.data.WeftDatabase
 
 /** Holds the app's long-lived objects. The only dependency "graph" in the app. */
 class AppContainer(private val context: Context) {
-    private val database by lazy { SproutDatabase.create(context) }
+    private val database by lazy { WeftDatabase.create(context) }
     val repository by lazy { HabitRepository(database) { settings.hideSampleBanner() } }
     val settings by lazy { SettingsRepository(context) }
     val reminders by lazy { ReminderScheduler(context, repository) }
     val reminderNotifier by lazy { ReminderNotifier(context, repository) }
     val widgets by lazy { WidgetUpdater(context, repository, settings) }
     val backup by lazy { BackupManager(repository, settings) }
+    val drive by lazy { DriveBackup(context, backup, settings) }
     val strings: Strings = ResourceStrings(context)
     val updates by lazy { UpdateManager(context, settings) }
+    val playUpdates by lazy { PlayUpdates(context, settings) }
 
     /** Lives as long as the process, for work that isn't tied to a screen. */
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.theme.habitColors
 
 /** The habit tile (SPACING.md → Sizes): 44dp, 14dp corners, a 22dp icon. Everywhere a habit is listed. */
@@ -91,7 +91,7 @@ fun ProgressRing(progress: Float, hue: Float, label: String, modifier: Modifier 
             )
         }
         CappedFontScale {
-            Text(label, style = SproutType.tiny, color = MaterialTheme.colorScheme.onSurface, softWrap = false)
+            Text(label, style = WeftType.tiny, color = MaterialTheme.colorScheme.onSurface, softWrap = false)
         }
     }
 }

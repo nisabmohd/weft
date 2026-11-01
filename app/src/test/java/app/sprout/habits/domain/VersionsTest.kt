@@ -17,7 +17,7 @@ class VersionsTest {
 
     @Test fun highlightsTakeFiveBulletsWithoutMarkdown() {
         val body = """
-            # Sprout 1.1.0
+            # Weft 1.1.0
 
             New:
 

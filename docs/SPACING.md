@@ -1,4 +1,4 @@
-# Sprout spacing and size rule (applies to every screen)
+# Weft spacing and size rule (applies to every screen)
 
 Everything sits on a **4dp grid**. Use only the values below, so no screen feels tighter or looser than another.
 When in doubt, copy the same element on the **Today** screen.

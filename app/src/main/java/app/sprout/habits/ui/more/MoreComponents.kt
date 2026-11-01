@@ -1,12 +1,14 @@
 package app.sprout.habits.ui.more
 
+import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.components.GroupGap
 import app.sprout.habits.ui.components.SectionGapBelow
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.SectionHeader
 import app.sprout.habits.ui.components.toggle
 import androidx.compose.ui.platform.LocalHapticFeedback
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +73,7 @@ fun SettingsRow(
     subtitle: String? = null,
     icon: Int? = null,
     onClick: (() -> Unit)? = null,
+    titleColor: Color = Color.Unspecified,
     /** Shown after the subtitle, e.g. the "Update available" pill. */
     badge: (@Composable () -> Unit)? = null,
     trailing: @Composable RowScope.() -> Unit = {},
@@ -88,12 +91,12 @@ fun SettingsRow(
             androidx.compose.foundation.layout.Spacer(Modifier.size(16.dp))
         }
         Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = SproutType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
+            Text(title, style = WeftType.cardTitle, color = titleColor.takeOrElse { MaterialTheme.colorScheme.onSurface })
             if (badge == null) {
-                subtitle?.let { Text(it, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    subtitle?.let { Text(it, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f, fill = false)) }
+                    subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f, fill = false)) }
                     badge()
                 }
             }
@@ -104,7 +107,7 @@ fun SettingsRow(
 
 /** A row that toggles as a whole and reads as a switch to TalkBack. */
 @Composable
-fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+fun SwitchRow(title: String, subtitle: String?, checked: Boolean, icon: Int? = null, onChange: (Boolean) -> Unit) {
     val haptics = LocalHapticFeedback.current
     Row(
         Modifier
@@ -114,9 +117,14 @@ fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boo
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Same leading icon as SettingsRow, so a switch lines up with the rows around it.
+        if (icon != null) {
+            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(22.dp))
+            androidx.compose.foundation.layout.Spacer(Modifier.size(16.dp))
+        }
         Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = SproutType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
-            subtitle?.let { Text(it, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
+            subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         Switch(checked = checked, onCheckedChange = null)
     }
@@ -124,4 +132,4 @@ fun SwitchRow(title: String, subtitle: String?, checked: Boolean, onChange: (Boo
 
 @Composable
 fun TrailingValue(text: String) =
-    Text(text, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(text, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)

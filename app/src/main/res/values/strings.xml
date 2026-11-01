@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Sprout</string>
+    <string name="app_name" translatable="false">Weft</string>
     <!-- For small fixed-size rings, where "75 %" would not fit. -->
     <string name="widget_week_description">Every habit and its week</string>
     <string name="widget_today_description">Today\'s progress and what\'s next</string>
@@ -175,35 +175,75 @@
     <string name="default_reminder_desc">Suggested time for new reminders</string>
     <string name="notifications">Notifications</string>
     <string name="system_settings">System settings</string>
-    <string name="about_sprout">About Sprout</string>
+    <string name="about_weft">About Weft</string>
     <string name="version_open_source">Version %1$s · open source</string>
     <string name="accent">Accent</string>
     <string name="text_size">Text size</string>
     <string name="language">Language</string>
     <string name="backup_error_damaged">This backup is damaged and can\'t be imported.</string>
-    <string name="backup_error_not_sprout">This isn\'t a Sprout backup file.</string>
-    <string name="backup_error_newer">This backup was made by a newer version of Sprout. Update the app, then try again.</string>
+    <string name="backup_error_not_weft">This isn\'t a Weft backup file.</string>
+    <string name="backup_error_newer">This backup was made by a newer version of Weft. Update the app, then try again.</string>
     <string name="backup_error_date">The backup has a date that can\'t be read: %1$s</string>
     <string name="save_failed">Couldn\'t save the file.</string>
     <string name="backup_saved">Backup saved</string>
     <string name="csv_saved">CSV saved</string>
     <string name="read_failed">Couldn\'t read the file.</string>
     <string name="export_to_file">Export to file</string>
-    <string name="export_desc">JSON or CSV, works without an account</string>
     <string name="import_from_file">Import from file</string>
     <string name="import_desc">Replace current data with a backup</string>
-    <string name="export_dialog_text">A JSON backup can be imported again. CSV opens in any spreadsheet.</string>
-    <string name="json_backup">JSON backup</string>
+    <string name="backup_to_file">Backup to a file</string>
+    <string name="drive_back_up_now">Back up now</string>
+    <string name="drive_backing_up">Backing up…</string>
+    <string name="drive_no_backups_yet">No backups yet</string>
+    <string name="drive_last_today">Last backup today, %1$s</string>
+    <string name="drive_last_yesterday">Last backup yesterday, %1$s</string>
+    <string name="drive_last_date">Last backup %1$s</string>
+    <string name="drive_frequency">Backup frequency</string>
+    <string name="drive_daily">Daily</string>
+    <string name="drive_daily_desc">Every night while charging</string>
+    <string name="drive_weekly">Weekly</string>
+    <string name="drive_weekly_desc">Sunday night</string>
+    <string name="drive_monthly">Monthly</string>
+    <string name="drive_monthly_desc">On the 1st</string>
+    <string name="drive_off">Off</string>
+    <string name="drive_off_desc">Only when you tap Back up now</string>
+    <string name="drive_wifi_only">Wi-Fi only</string>
+    <string name="drive_wifi_only_desc">Don\'t use mobile data</string>
+    <string name="drive_wifi_needed">Wi-Fi only is on. Connect to Wi-Fi, or turn Wi-Fi only off</string>
+    <string name="drive_restore_title">Restore from Drive</string>
+    <string name="drive_restore_desc">Pick a backup to bring back</string>
+    <string name="drive_restore_text">Your current habits and notes will be replaced by the backup you pick.</string>
+    <string name="drive_restore">Restore</string>
+    <string name="drive_time_today">Today, %1$s</string>
+    <string name="drive_time_yesterday">Yesterday, %1$s</string>
+    <string name="drive_replace_title">Replace current data?</string>
+    <string name="drive_replace_text">This can\'t be undone. Export a file first if you want to keep it.</string>
+    <string name="drive_restored_from">Restored backup from %1$s</string>
+    <string name="drive_switch_account">Switch account</string>
+    <string name="drive_disconnect">Disconnect</string>
+    <string name="drive_disconnected">Disconnected from Google Drive. Your backups stay in Drive.</string>
+    <string name="drive_delete_backups">Delete backups from Drive</string>
+    <string name="drive_delete_title">Delete backups from Drive?</string>
+    <string name="drive_delete_text">This deletes every Weft backup in %1$s. Your data on this phone stays.</string>
+    <string name="drive_deleted">Backups deleted from Drive</string>
+    <string name="drive_connected_to">Connected to %1$s</string>
+    <string name="about_licence_text_drive">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them or back them up. Drive backups stay in your own Google account.</string>
+    <string name="drive_backed_up">Backed up to Google Drive</string>
+    <string name="drive_failed">Couldn\'t reach Google Drive. Try again</string>
+    <string name="drive_refused">Weft needs Google Drive to keep your backups. Connect again and tick Google Drive</string>
+    <string name="drive_no_backup">No Weft backup in this Google Drive yet</string>
+    <string name="drive_offline">No internet connection. Try again when you\'re online</string>
+    <string name="drive_full">Your Google Drive is full. Free up space, then try again</string>
     <string name="csv">CSV</string>
     <string name="replace_data_title">Replace your data?</string>
-    <string name="replace_data_text">This backup has %1$s, %2$s and %3$s. Importing it replaces everything in Sprout.</string>
+    <string name="replace_data_text">This backup has %1$s, %2$s and %3$s. Importing it replaces everything in Weft.</string>
     <string name="backup_restored">Backup restored</string>
     <string name="restore_failed">Couldn\'t restore the backup.</string>
     <string name="replace">Replace</string>
     <string name="about">About</string>
     <string name="version_build">Version %1$s (build %2$d)</string>
     <string name="free_open_source">Free and open source</string>
-    <string name="about_licence_text">Licensed under the GNU GPL v3. Sprout has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them.</string>
+    <string name="about_licence_text">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them.</string>
     <string name="rate_on_play">Rate on Play Store</string>
     <string name="rate_desc">Takes 10 seconds, helps a lot</string>
     <string name="source_code">Source code</string>
@@ -214,7 +254,7 @@
     <string name="licences">Open-source licences</string>
     <string name="licences_desc">Libraries and fonts this app uses</string>
     <string name="made_by">Made by Nisab Mohd &amp; Contributors</string>
-    <string name="support_sprout">Support Sprout</string>
+    <string name="support_weft">Support Weft</string>
     <string name="support_desc">Free forever, kept alive by sponsors</string>
     <string name="sponsor">Sponsor</string>
     <string name="name">Name</string>
@@ -339,10 +379,10 @@
     <string name="edit">Edit</string>
     <string name="archived">Archived</string>
     <string name="drag_to_reorder">Drag to reorder</string>
-    <string name="support_title">Enjoying Sprout?</string>
-    <string name="support_text_play">Sprout is free and open source. A rating or a star helps others find it.</string>
-    <string name="support_text_star">Sprout is free and open source. A star helps others find it.</string>
-    <string name="support_text">Sprout is free and open source. A star helps others find it, and sponsoring keeps it growing.</string>
+    <string name="support_title">Enjoying Weft?</string>
+    <string name="support_text_play">Weft is free and open source. A rating or a star helps others find it.</string>
+    <string name="support_text_star">Weft is free and open source. A star helps others find it.</string>
+    <string name="support_text">Weft is free and open source. A star helps others find it, and sponsoring keeps it growing.</string>
     <string name="star_github">Star on GitHub</string>
     <string name="maybe_later">Maybe later</string>
     <string name="channel_reminders">Habit reminders</string>
@@ -358,6 +398,7 @@
     <string name="widget_done_today">%1$d of %2$d done today</string>
     <string name="widget_today_lower">today</string>
     <string name="widget_all_done_today">All done for today</string>
+    <string name="widget_nothing_today">Nothing due today</string>
     <string name="widget_up_next">Up next</string>
     <string name="widget_ratio">%1$d/%2$d</string>
     <string name="no_habits_yet">No habits to show yet.</string>
@@ -371,7 +412,7 @@
     <string name="last_7_days">Last 7 days</string>
     <string name="pick_a_habit">Pick a habit</string>
     <string name="language_system">System default</string>
-    <string name="help_translate">Help translate Sprout</string>
+    <string name="help_translate">Help translate Weft</string>
     <string name="help_translate_desc">Add or improve a language</string>
     <string name="nav_habits">Habits</string>
     <string name="nav_insights">Insights</string>
@@ -388,7 +429,7 @@
     <string name="downloading">Downloading…</string>
     <string name="downloading_percent">Downloading… %1$d%%</string>
     <string name="install">Install</string>
-    <string name="allow_installs_hint">Allow Sprout to install apps, then tap Install.</string>
+    <string name="allow_installs_hint">Allow Weft to install apps, then tap Install.</string>
     <string name="update_failed">The download didn\'t finish. You can get it from the release page.</string>
     <string name="open_release_page">Open release page</string>
     <plurals name="journal_show_for_habits">
@@ -554,4 +595,46 @@
         <item>Hard but did it</item>
         <item>Kept it short</item>
     </string-array>
+    <!-- Backup & restore screen (1.5.0, FEATURE-BACKUP-SCREEN.md) -->
+    <string name="backups">Backups</string>
+    <string name="backups_drive_off">Google Drive not connected</string>
+    <string name="backups_last_failed">Last backup failed</string>
+    <string name="backed_up_today">Backed up today, %1$s</string>
+    <string name="backed_up_yesterday">Backed up yesterday, %1$s</string>
+    <string name="backed_up_date">Backed up %1$s</string>
+    <string name="drive_account_line">Google Drive · %1$s</string>
+    <string name="drive_reason_offline">No connection</string>
+    <string name="drive_reason_full">Drive is full</string>
+    <string name="drive_reason_consent">Google needs you to allow Weft again</string>
+    <string name="drive_reason_failed">Couldn\'t reach Google Drive</string>
+    <string name="automatic_backup">Automatic backup</string>
+    <string name="drive_frequency_short">Frequency</string>
+    <string name="backup_other">Other</string>
+    <string name="export_anywhere_desc">Save a copy anywhere, no account needed</string>
+    <string name="google_account">Google account</string>
+    <string name="google_account_desc">Switch account or disconnect</string>
+    <string name="drive_connect_title">Back up to Google Drive</string>
+    <string name="drive_connect_text">Saved to your own Drive every night. Only Weft can see these files.</string>
+    <string name="drive_connect_button">Connect Google Drive</string>
+    <string name="file_backup_text">Your data stays on this phone. Export a file and keep it somewhere safe.</string>
+    <string name="export_now">Export now</string>
+    <string name="export_section">Export</string>
+    <string name="export_format">File format</string>
+    <string name="json" translatable="false">JSON</string>
+    <string name="export_json_desc">A backup you can import again</string>
+    <string name="export_csv_desc">Opens in any spreadsheet</string>
+    <string name="import_short_desc">JSON backup</string>
+    <string name="last_exported_today">Last exported today, %1$s</string>
+    <string name="last_exported_yesterday">Last exported yesterday, %1$s</string>
+    <string name="last_exported_date">Last exported %1$s</string>
+    <string name="try_again">Try again</string>
+    <string name="drive_time_date" translatable="false">%1$s</string>
+    <string name="drive_newest_today">newest today</string>
+    <string name="drive_newest_yesterday">newest yesterday</string>
+    <string name="drive_newest_date">newest %1$s</string>
+    <string name="drive_restore_summary">%1$s, %2$s</string>
+    <plurals name="drive_backup_count">
+        <item quantity="one">%d backup</item>
+        <item quantity="other">%d backups</item>
+    </plurals>
 </resources>

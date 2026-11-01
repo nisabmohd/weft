@@ -1,6 +1,6 @@
 package app.sprout.habits.ui.update
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -51,6 +51,11 @@ import app.sprout.habits.data.update.AppUpdate
 import app.sprout.habits.data.update.DownloadState
 import app.sprout.habits.data.update.UpdateCheck
 import app.sprout.habits.data.update.UpdateManager
+import app.sprout.habits.data.update.PlayUpdateCheck
+import app.sprout.habits.data.update.PlayUpdates
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import app.sprout.habits.support.LaunchPrompts
 import app.sprout.habits.ui.openUrl
 import kotlinx.coroutines.launch
@@ -79,13 +84,13 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
         Surface(shape = RoundedCornerShape(28.dp), color = colors.surfaceContainerLowest) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(Modifier.size(64.dp).background(colors.primaryContainer, RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(R.drawable.ic_seedling), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
+                    Icon(painterResource(R.drawable.ic_weft), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
                 }
                 Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.update_available), style = SproutType.title, color = colors.onSurface, textAlign = TextAlign.Center)
+                Text(stringResource(R.string.update_available), style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center)
                 Text(
                     stringResource(R.string.update_version_line, update.version, currentVersion),
-                    style = SproutType.supporting,
+                    style = WeftType.supporting,
                     color = colors.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp),
@@ -95,11 +100,11 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                         Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainerHigh, RoundedCornerShape(16.dp)).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text(stringResource(R.string.whats_new), style = SproutType.label, color = colors.onSurface)
+                        Text(stringResource(R.string.whats_new), style = WeftType.label, color = colors.onSurface)
                         update.notes.forEach { line ->
                             Row(verticalAlignment = Alignment.Top) {
                                 Box(Modifier.padding(top = 8.dp).size(6.dp).background(colors.primary, CircleShape))
-                                Text(line, style = SproutType.supporting, color = colors.onSurface, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp))
+                                Text(line, style = WeftType.supporting, color = colors.onSurface, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp))
                             }
                         }
                     }
@@ -113,14 +118,14 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                             else LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
                             Text(
                                 if (fraction == null) stringResource(R.string.downloading) else stringResource(R.string.downloading_percent, (fraction * 100).toInt()),
-                                style = SproutType.supporting,
+                                style = WeftType.supporting,
                                 color = colors.onSurfaceVariant,
                             )
                         }
                     }
                     is DownloadState.Ready -> {
                         if (!canInstall) {
-                            Text(stringResource(R.string.allow_installs_hint), style = SproutType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
+                            Text(stringResource(R.string.allow_installs_hint), style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
                             Spacer(Modifier.height(12.dp))
                         }
                         PrimaryButton(stringResource(R.string.install)) {
@@ -128,7 +133,7 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                         }
                     }
                     DownloadState.Failed -> {
-                        Text(stringResource(R.string.update_failed), style = SproutType.supporting, color = colors.error, textAlign = TextAlign.Center)
+                        Text(stringResource(R.string.update_failed), style = WeftType.supporting, color = colors.error, textAlign = TextAlign.Center)
                         Spacer(Modifier.height(12.dp))
                         PrimaryButton(stringResource(R.string.open_release_page)) { openUrl(context, update.pageUrl); onDismiss() }
                     }
@@ -142,7 +147,7 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                     }
                 }
                 TextButton(onClick = onLater, modifier = Modifier.padding(top = 4.dp).heightIn(min = 48.dp)) {
-                    Text(stringResource(R.string.later), style = SproutType.label)
+                    Text(stringResource(R.string.later), style = WeftType.label)
                 }
             }
         }
@@ -152,44 +157,76 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
 @Composable
 private fun PrimaryButton(label: String, onClick: () -> Unit) {
     Button(onClick = onClick, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-        Text(label, style = SproutType.label)
+        Text(label, style = WeftType.label)
     }
 }
 
 private enum class CheckState { IDLE, CHECKING, LATEST, ERROR }
 
 /**
- * About's "Check for updates" pill: Checking… → "You're on the latest version" or the Update
- * dialog. The F-Droid build says where its updates come from instead. The Play build's pill opens
- * the store listing, and shows nothing until Sprout is listed there.
+ * About's "Check for updates" pill: Checking… → "You're on the latest version" or the update. The
+ * github build shows its Update dialog; the play build hands over to Google Play's update screen.
+ * The F-Droid build says where its updates come from instead.
  */
 @Composable
-fun CheckForUpdates(updates: UpdateManager) {
-    val colors = MaterialTheme.colorScheme
+fun CheckForUpdates(updates: UpdateManager, play: PlayUpdates) {
+    if (play.enabled) { PlayCheckForUpdates(play); return }
     if (!updates.enabled) {
-        when {
-            BuildConfig.PLAY_LISTED -> PlayUpdatesPill()
-            BuildConfig.PLAY_STORE -> Unit
-            else -> Text(stringResource(R.string.updates_from_fdroid), style = SproutType.supporting, color = colors.onSurfaceVariant)
+        if (!BuildConfig.PLAY_STORE) {
+            Text(stringResource(R.string.updates_from_fdroid), style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return
     }
     val scope = rememberCoroutineScope()
     var state by remember { mutableStateOf(CheckState.IDLE) }
     var found by remember { mutableStateOf<AppUpdate?>(null) }
+    UpdatesPill(state) {
+        if (state == CheckState.LATEST) { state = CheckState.IDLE; return@UpdatesPill }
+        state = CheckState.CHECKING
+        scope.launch {
+            state = when (val r = updates.check()) {
+                is UpdateCheck.Available -> { found = r.update; CheckState.IDLE }
+                UpdateCheck.UpToDate -> CheckState.LATEST
+                UpdateCheck.Failed -> CheckState.ERROR
+            }
+        }
+    }
+    found?.let { update ->
+        UpdateDialog(
+            update = update,
+            updates = updates,
+            onLater = { found = null; scope.launch { updates.later(update) } },
+            onDismiss = { found = null },
+        )
+    }
+}
+
+/** The play build's pill: asks Google Play, and opens its update screen when there is one. */
+@Composable
+private fun PlayCheckForUpdates(play: PlayUpdates) {
+    val scope = rememberCoroutineScope()
+    var state by remember { mutableStateOf(CheckState.IDLE) }
+    // On success Play restarts the app into the new version; anything else is the user backing out.
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {}
+    UpdatesPill(state) {
+        if (state == CheckState.LATEST) { state = CheckState.IDLE; return@UpdatesPill }
+        state = CheckState.CHECKING
+        scope.launch {
+            state = when (play.check()) {
+                PlayUpdateCheck.AVAILABLE -> if (play.start(launcher)) CheckState.IDLE else CheckState.ERROR
+                PlayUpdateCheck.UP_TO_DATE -> CheckState.LATEST
+                PlayUpdateCheck.FAILED -> CheckState.ERROR
+            }
+        }
+    }
+}
+
+@Composable
+private fun UpdatesPill(state: CheckState, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
     val latest = state == CheckState.LATEST
     Button(
-        onClick = {
-            if (state == CheckState.LATEST) { state = CheckState.IDLE; return@Button }
-            state = CheckState.CHECKING
-            scope.launch {
-                state = when (val r = updates.check()) {
-                    is UpdateCheck.Available -> { found = r.update; CheckState.IDLE }
-                    UpdateCheck.UpToDate -> CheckState.LATEST
-                    UpdateCheck.Failed -> CheckState.ERROR
-                }
-            }
-        },
+        onClick = onClick,
         enabled = state != CheckState.CHECKING,
         modifier = Modifier.heightIn(min = 40.dp).semantics { liveRegion = LiveRegionMode.Polite },
         contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, end = 16.dp),
@@ -219,39 +256,18 @@ fun CheckForUpdates(updates: UpdateManager) {
                     CheckState.ERROR -> R.string.update_check_failed
                 },
             ),
-            style = SproutType.label,
-        )
-    }
-    found?.let { update ->
-        UpdateDialog(
-            update = update,
-            updates = updates,
-            onLater = { found = null; scope.launch { updates.later(update) } },
-            onDismiss = { found = null },
+            style = WeftType.label,
         )
     }
 }
 
-/** The Play build's "Check for updates": Google Play's own page for Sprout, which offers the update. */
+/**
+ * The automatic check on app start, at most once a day and only if no other prompt showed: the
+ * github build's Update dialog, or Google Play's update screen in the play build.
+ */
 @Composable
-private fun PlayUpdatesPill() {
-    val context = LocalContext.current
-    val colors = MaterialTheme.colorScheme
-    Button(
-        onClick = { openUrl(context, BuildConfig.PLAY_STORE_URL) },
-        modifier = Modifier.heightIn(min = 40.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, end = 16.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = colors.surfaceContainerHigh, contentColor = colors.onSurface),
-    ) {
-        Icon(painterResource(R.drawable.ic_refresh), contentDescription = null, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.size(8.dp))
-        Text(stringResource(R.string.check_for_updates), style = SproutType.label)
-    }
-}
-
-/** The automatic check on app start (github build): at most once a day, and only if no other prompt showed. */
-@Composable
-fun UpdatePrompt(updates: UpdateManager) {
+fun UpdatePrompt(updates: UpdateManager, play: PlayUpdates) {
+    if (play.enabled) { PlayUpdatePrompt(play); return }
     if (!updates.enabled) return
     val scope = rememberCoroutineScope()
     var found by remember { mutableStateOf<AppUpdate?>(null) }
@@ -269,12 +285,23 @@ fun UpdatePrompt(updates: UpdateManager) {
     }
 }
 
-/** A small "Update available" pill, for More → About Sprout. */
+@Composable
+private fun PlayUpdatePrompt(play: PlayUpdates) {
+    val scope = rememberCoroutineScope()
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        if (result.resultCode != Activity.RESULT_OK) scope.launch { play.later() }
+    }
+    LaunchedEffect(Unit) {
+        if (play.checkIfDue() && LaunchPrompts.claim()) play.start(launcher)
+    }
+}
+
+/** A small "Update available" pill, for More → About Weft. */
 @Composable
 fun UpdateBadge() {
     Text(
         stringResource(R.string.update_available),
-        style = SproutType.captionStrong,
+        style = WeftType.captionStrong,
         color = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(11.dp))

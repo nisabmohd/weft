@@ -8,14 +8,14 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(entities = [Habit::class, Entry::class, Note::class], version = 4, exportSchema = true)
-abstract class SproutDatabase : RoomDatabase() {
+abstract class WeftDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun entryDao(): EntryDao
     abstract fun noteDao(): NoteDao
 
     companion object {
-        fun create(context: Context): SproutDatabase =
-            Room.databaseBuilder(context, SproutDatabase::class.java, "sprout.db")
+        fun create(context: Context): WeftDatabase =
+            Room.databaseBuilder(context, WeftDatabase::class.java, "sprout.db")
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
 

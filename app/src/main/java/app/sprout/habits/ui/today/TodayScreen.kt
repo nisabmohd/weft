@@ -2,7 +2,7 @@ package app.sprout.habits.ui.today
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +49,12 @@ import app.sprout.habits.ui.components.HeaderIconButton
 import app.sprout.habits.ui.components.TabHeader
 import app.sprout.habits.support.SupportPromptDialog
 import app.sprout.habits.ui.openUrl
+import app.sprout.habits.data.update.PlayReview
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import app.sprout.habits.domain.DayOutcome
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -73,11 +79,19 @@ fun TodayScreen(
     }
     val showSupport by viewModel.supportPrompt.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val reviewScope = rememberCoroutineScope()
     if (showSupport) {
         SupportPromptDialog(
             showRate = BuildConfig.PLAY_LISTED,
             showSponsor = !BuildConfig.PLAY_STORE,
-            onRate = { openUrl(context, BuildConfig.PLAY_STORE_URL); viewModel.supportPromptClosed(dismissed = false) },
+            // Google Play's rating card over the app; the store listing if Play can't show it.
+            onRate = {
+                viewModel.supportPromptClosed(dismissed = false)
+                reviewScope.launch {
+                    val activity = context.findActivity()
+                    if (activity == null || !PlayReview.launch(activity)) openUrl(context, BuildConfig.PLAY_STORE_URL)
+                }
+            },
             onStar = { openUrl(context, BuildConfig.REPO_URL); viewModel.supportPromptClosed(dismissed = false) },
             onSponsor = { openUrl(context, BuildConfig.SPONSOR_URL); viewModel.supportPromptClosed(dismissed = false) },
             onLater = { viewModel.supportPromptClosed(dismissed = true) },
@@ -110,7 +124,7 @@ fun TodayScreen(
                 // New note picks the habit, the same way as the Journal's Add note.
                 onClick = { onAddNote(state.selectedDate.toEpochDay()) },
                 icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(22.dp)) },
-                text = { Text(stringResource(R.string.add_note), style = SproutType.label) },
+                text = { Text(stringResource(R.string.add_note), style = WeftType.label) },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 shape = RoundedCornerShape(18.dp),
@@ -197,11 +211,11 @@ private fun ScoreCard(state: TodayUiState) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(stringResource(R.string.percent, state.scorePercent), style = SproutType.screenTitleNumber, color = colors.onSurface)
+            Text(stringResource(R.string.percent, state.scorePercent), style = WeftType.screenTitleNumber, color = colors.onSurface)
             Spacer(Modifier.width(8.dp))
             Text(
                 stringResource(if (state.isToday) R.string.of_today else R.string.of_the_day),
-                style = SproutType.supporting,
+                style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 4.dp),
             )
@@ -209,7 +223,7 @@ private fun ScoreCard(state: TodayUiState) {
             // Takes the rest of the row and wraps at large text sizes.
             Text(
                 summary(state),
-                style = SproutType.label,
+                style = WeftType.label,
                 color = colors.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 modifier = Modifier.weight(1f).padding(bottom = 4.dp),
@@ -251,8 +265,8 @@ private fun EmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(stringResource(R.string.today_empty), style = SproutType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
-        Text(stringResource(R.string.today_empty_hint), style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.today_empty), style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
+        Text(stringResource(R.string.today_empty_hint), style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -266,10 +280,10 @@ private fun SampleDataCard(onRemove: () -> Unit) {
             .background(colors.primaryContainer, RoundedCornerShape(24.dp))
             .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
     ) {
-        Text(stringResource(R.string.sample_card_title), style = SproutType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(end = 12.dp))
+        Text(stringResource(R.string.sample_card_title), style = WeftType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(end = 12.dp))
         Text(
             stringResource(R.string.sample_card_body),
-            style = SproutType.supporting,
+            style = WeftType.supporting,
             color = colors.onPrimaryContainer,
             modifier = Modifier.padding(top = 4.dp, end = 12.dp),
         )
@@ -279,7 +293,13 @@ private fun SampleDataCard(onRemove: () -> Unit) {
             colors = ButtonDefaults.textButtonColors(contentColor = colors.onPrimaryContainer),
             modifier = Modifier.align(Alignment.End).padding(top = 4.dp),
         ) {
-            Text(stringResource(R.string.sample_remove), style = SproutType.label)
+            Text(stringResource(R.string.sample_remove), style = WeftType.label)
         }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

@@ -10,7 +10,7 @@ import app.sprout.habits.ui.components.ChoiceRow
 import app.sprout.habits.ui.components.ChoiceSheet
 import app.sprout.habits.ui.components.tick
 import app.sprout.habits.ui.theme.BodyFont
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.theme.family
 import androidx.compose.ui.platform.LocalHapticFeedback
 
@@ -41,7 +41,7 @@ fun FontSheet(current: BodyFont, onPick: (BodyFont) -> Unit, onDismiss: () -> Un
                 stringResource(fontDescription(font)),
                 selected = current == font,
                 fontFamily = family,
-                trailing = { Text("Aa", style = SproutType.title.copy(fontFamily = family), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                trailing = { Text("Aa", style = WeftType.title.copy(fontFamily = family), color = MaterialTheme.colorScheme.onSurfaceVariant) },
             ) {
                 if (current != font) haptics.tick()
                 onPick(font)

@@ -17,12 +17,12 @@ android {
         applicationId = "app.sprout.habits"
         minSdk = 26
         targetSdk = 36
-        versionCode = 21
-        versionName = "1.4.0"
+        versionCode = 22
+        versionName = "1.5.0"
         // Component tests (app/src/androidTest): ./gradlew :app:connectedFossDebugAndroidTest
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Where the About screen's links point. Set once the GitHub repo exists.
-        buildConfigField("String", "REPO_URL", "\"https://github.com/nisabmohd/sprout-habit-tracker\"")
+        buildConfigField("String", "REPO_URL", "\"https://github.com/nisabmohd/weft\"")
         buildConfigField("String", "SPONSOR_URL", "\"https://github.com/sponsors/nisabmohd\"")
         // The developer, mid apps: About's contact row and the store listings use this address.
         buildConfigField("String", "CONTACT_EMAIL", "\"hello.midapps@gmail.com\"")
@@ -31,15 +31,16 @@ android {
 
     flavorDimensions += "distribution"
     productFlavors {
-        // Google sign-in + Drive appDataFolder backup.
+        // Google Play's In-App Updates and In-App Review (src/play), and Google Drive backup (src/drive).
         create("play") {
             dimension = "distribution"
             buildConfigField("boolean", "PLAY_STORE", "true")
-            // True since 1.4.0: Sprout is live on Google Play. It turns on "Rate on Play Store"
+            // True since 1.4.0: the app is live on Google Play (as Sprout, renamed Weft 2026-11-01). It turns on "Rate on Play Store"
             // (About and the support prompt) and About's "Check for updates", which both open
             // the store listing. The other builds never link to Google Play.
             buildConfigField("boolean", "PLAY_LISTED", "true")
             buildConfigField("boolean", "GITHUB_UPDATES", "false")
+            buildConfigField("boolean", "DRIVE_BACKUP", "true")
         }
         // No Google or Play Services code at all, and no network (F-Droid updates it).
         create("foss") {
@@ -48,15 +49,26 @@ android {
             buildConfigField("boolean", "PLAY_STORE", "false")
             buildConfigField("boolean", "PLAY_LISTED", "false")
             buildConfigField("boolean", "GITHUB_UPDATES", "false")
+            buildConfigField("boolean", "DRIVE_BACKUP", "false")
         }
-        // The APK on GitHub Releases: foss plus a check for new releases that downloads and installs them.
+        // The APK on GitHub Releases: a check for new releases that downloads and installs them,
+        // and Google Drive backup (src/drive; needs Google Play services on the phone).
         create("github") {
             dimension = "distribution"
             versionNameSuffix = "-github"
             buildConfigField("boolean", "PLAY_STORE", "false")
             buildConfigField("boolean", "PLAY_LISTED", "false")
             buildConfigField("boolean", "GITHUB_UPDATES", "true")
+            buildConfigField("boolean", "DRIVE_BACKUP", "true")
         }
+    }
+
+    sourceSets {
+        // src/play: Google Play only (In-App Updates, In-App Review); src/drive: Google Drive backup,
+        // in the play and github builds. foss has neither: it gets the stand-ins.
+        getByName("play").java.srcDir("src/drive/java")
+        getByName("github").java.srcDirs("src/drive/java", "src/noPlay/java")
+        getByName("foss").java.srcDirs("src/noDrive/java", "src/noPlay/java")
     }
 
     signingConfigs {
@@ -170,6 +182,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.profileinstaller)
     baselineProfile(project(":baselineprofile"))
+    "playImplementation"(libs.play.app.update)
+    "playImplementation"(libs.play.review)
+    "playImplementation"(libs.play.services.auth)
+    "githubImplementation"(libs.play.services.auth)
 
     testImplementation(libs.junit)
 

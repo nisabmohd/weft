@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.SectionHeader
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -94,7 +94,7 @@ fun ManageHabitsScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
-            Text(stringResource(R.string.manage_habits), style = SproutType.title, color = colors.onBackground, modifier = Modifier.padding(start = 14.dp))
+            Text(stringResource(R.string.manage_habits), style = WeftType.title, color = colors.onBackground, modifier = Modifier.padding(start = 14.dp))
         }
         LazyColumn(
             state = listState,
@@ -105,7 +105,7 @@ fun ManageHabitsScreen(
             item(key = "hint") {
                 Text(
                     stringResource(R.string.reorder_hint),
-                    style = SproutType.supporting,
+                    style = WeftType.supporting,
                     color = colors.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
                 )
@@ -209,7 +209,7 @@ private fun HabitRow(
         Spacer(Modifier.width(14.dp))
         Text(
             habit.name,
-            style = SproutType.cardTitle,
+            style = WeftType.cardTitle,
             color = colors.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

@@ -1,7 +1,7 @@
 package app.sprout.habits.ui.nav
 
 import app.sprout.habits.ui.theme.NavLabelMinSize
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.foundation.text.TextAutoSize
@@ -72,6 +72,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.sprout.habits.AppContainer
 import app.sprout.habits.data.Settings
 import app.sprout.habits.ui.more.AboutScreen
+import app.sprout.habits.ui.more.BackupRestoreScreen
 import app.sprout.habits.ui.more.LicencesScreen
 import app.sprout.habits.ui.more.MoreScreen
 import app.sprout.habits.R
@@ -80,6 +81,7 @@ import app.sprout.habits.data.SampleData
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.ui.today.TodayScreen
 import app.sprout.habits.ui.today.TodayViewModel
+import java.time.LocalDate
 import kotlin.reflect.KClass
 
 private enum class Tab(val route: Any, val routeClass: KClass<*>, @StringRes val label: Int, @DrawableRes val icon: Int) {
@@ -91,20 +93,32 @@ private enum class Tab(val route: Any, val routeClass: KClass<*>, @StringRes val
 }
 
 @Composable
-fun SproutNavHost(
+fun WeftNavHost(
     container: AppContainer,
     settings: Settings,
-    habitToOpen: Long?,
-    onHabitOpened: () -> Unit,
+    link: AppLink?,
+    onLinkHandled: () -> Unit,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
-    LaunchedEffect(habitToOpen) {
-        habitToOpen?.let { id ->
-            navController.navigate(HabitDetailRoute(id)) { launchSingleTop = true }
-            onHabitOpened()
+    fun openTab(tab: Tab) = navController.navigate(tab.route) {
+        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+    LaunchedEffect(link) {
+        when (link) {
+            null -> return@LaunchedEffect
+            // A deleted habit (old widget, old notification, made-up link) opens nothing.
+            is AppLink.Habit -> if (container.repository.getHabit(link.id) != null) {
+                navController.navigate(HabitDetailRoute(link.id)) { launchSingleTop = true }
+            }
+            AppLink.NewNote -> navController.navigate(WriteNoteRoute(epochDay = LocalDate.now().toEpochDay())) { launchSingleTop = true }
+            AppLink.NewHabit -> navController.navigate(EditHabitRoute()) { launchSingleTop = true }
+            is AppLink.OpenTab -> Tab.entries.firstOrNull { it.name.equals(link.tab, ignoreCase = true) }?.let { openTab(it) }
         }
+        onLinkHandled()
     }
     val currentTab = Tab.entries.firstOrNull { tab -> destination?.hierarchy?.any { it.hasRoute(tab.routeClass) } == true }
 
@@ -211,13 +225,17 @@ fun SproutNavHost(
                 MoreScreen(
                     settings,
                     container.settings,
-                    container.backup,
+                    container.drive,
+                    onOpenBackup = { navController.navigate(BackupRoute) },
                     onOpenAbout = { navController.navigate(AboutRoute) },
                 )
                 }
             }
+            composable<BackupRoute> {
+                BackupRestoreScreen(settings, container.settings, container.backup, container.drive, onBack = { navController.popBackStack() })
+            }
             composable<AboutRoute> {
-                AboutScreen(container.updates, onBack = { navController.popBackStack() }, onOpenLicences = { navController.navigate(LicencesRoute) })
+                AboutScreen(container.updates, container.playUpdates, onBack = { navController.popBackStack() }, onOpenLicences = { navController.navigate(LicencesRoute) })
             }
             composable<LicencesRoute> { LicencesScreen(onBack = { navController.popBackStack() }) }
         }
@@ -230,13 +248,7 @@ fun SproutNavHost(
             // Keeps showing the last tab while the bar slides out.
             var lastTab by remember { mutableStateOf(Tab.TODAY) }
             if (currentTab != null) lastTab = currentTab
-            SproutNavigationBar(lastTab) { tab ->
-                navController.navigate(tab.route) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            WeftNavigationBar(lastTab) { tab -> openTab(tab) }
         }
     }
     }
@@ -268,7 +280,7 @@ private fun backIn() = slideInHorizontally(tween(MOTION_MS)) { -it / 8 } + fadeI
 private fun backOut() = slideOutHorizontally(tween(MOTION_MS)) { it / 8 } + fadeOut(tween(MOTION_MS / 2))
 
 @Composable
-private fun SproutNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
+private fun WeftNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
     val colors = MaterialTheme.colorScheme
     // Five labels have to fit in one row; past 1.3x they would wrap mid-word.
     CappedFontScale {
@@ -284,7 +296,7 @@ private fun SproutNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
                 icon = { Icon(painterResource(tab.icon), contentDescription = null, Modifier.size(22.dp)) },
                 label = {
                     // Long translations ("Gewohnheiten", "Statistiques") shrink to fit instead of being cut off.
-                    val style = if (selected) SproutType.captionStrong else SproutType.caption
+                    val style = if (selected) WeftType.captionStrong else WeftType.caption
                     BasicText(
                         stringResource(tab.label),
                         maxLines = 1,

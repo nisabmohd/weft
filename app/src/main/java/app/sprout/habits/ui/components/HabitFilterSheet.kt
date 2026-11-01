@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -66,10 +66,10 @@ fun HabitFilterSheet(
     val colors = MaterialTheme.colorScheme
     var picked by remember { mutableStateOf(selected) }
     val haptics = LocalHapticFeedback.current
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.filter_by_habit), style = SproutType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
-            TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = SproutType.label) }
+            Text(stringResource(R.string.filter_by_habit), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
+            TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = WeftType.label) }
         }
         LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
             items(options, key = { it.habitId }) { o ->
@@ -84,7 +84,7 @@ fun HabitFilterSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     HabitTile(o.icon, hc.soft, hc.ink)
-                    Text(o.name, style = SproutType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(start = 12.dp))
+                    Text(o.name, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(start = 12.dp))
                     Checkbox(checked = checked, onCheckedChange = null)
                 }
             }
@@ -92,7 +92,7 @@ fun HabitFilterSheet(
         Button(
             onClick = { onApply(picked) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).navigationBarsPadding().height(48.dp),
-        ) { Text(applyLabel(picked.size), style = SproutType.label) }
+        ) { Text(applyLabel(picked.size), style = WeftType.label) }
     }
 }
 
@@ -174,7 +174,7 @@ fun DefaultRangeChip(label: String, openLabel: String, onOpen: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(end = 6.dp).size(18.dp))
-        Text(label, style = SproutType.label, color = colors.onSecondaryContainer, maxLines = 1)
+        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1)
     }
 }
 
@@ -194,7 +194,7 @@ fun CustomRangeChip(label: String, openLabel: String, clearLabel: String, onOpen
             .padding(start = 12.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, style = SproutType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = 6.dp))
+        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = 6.dp))
         SmallClearButton(clearLabel, 24.dp, Color.Transparent, colors.onSecondaryContainer, onClear)
     }
 }
@@ -222,7 +222,7 @@ fun HabitFilterChip(selected: List<HabitFilterOption>, label: String, removeLabe
         }
         Text(
             label,
-            style = SproutType.label,
+            style = WeftType.label,
             color = colors.onSecondaryContainer,
             maxLines = 1,
             modifier = Modifier.padding(horizontal = 6.dp),

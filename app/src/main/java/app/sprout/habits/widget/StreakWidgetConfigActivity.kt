@@ -1,6 +1,6 @@
 package app.sprout.habits.widget
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
@@ -40,7 +40,7 @@ import androidx.lifecycle.lifecycleScope
 import app.sprout.habits.R
 import app.sprout.habits.data.Habit
 import app.sprout.habits.data.HabitIcon
-import app.sprout.habits.ui.theme.SproutTheme
+import app.sprout.habits.ui.theme.WeftTheme
 import app.sprout.habits.ui.theme.habitColors
 import kotlinx.coroutines.launch
 
@@ -62,7 +62,7 @@ class StreakWidgetConfigActivity : ComponentActivity() {
         }
         drawEdgeToEdge(dark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES)
         setContent {
-            SproutTheme {
+            WeftTheme {
                 val habits by produceState<List<Habit>?>(null) {
                     value = WidgetDataSource(container.repository, container.settings).habitsForPicker()
                 }
@@ -72,7 +72,7 @@ class StreakWidgetConfigActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item {
-                        Text(stringResource(R.string.pick_a_habit), style = SproutType.title, modifier = Modifier.padding(4.dp, 8.dp, 4.dp, 12.dp))
+                        Text(stringResource(R.string.pick_a_habit), style = WeftType.title, modifier = Modifier.padding(4.dp, 8.dp, 4.dp, 12.dp))
                     }
                     items(habits.orEmpty(), key = { it.id }) { habit -> HabitRow(habit) { pick(appWidgetId, habit.id) } }
                 }
@@ -109,6 +109,6 @@ private fun HabitRow(habit: Habit, onClick: () -> Unit) {
         Box(Modifier.size(40.dp).background(hc.soft, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
             Icon(painterResource(HabitIcon.fromKey(habit.icon).drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(20.dp))
         }
-        Text(habit.name, style = SproutType.cardTitle, modifier = Modifier.padding(start = 14.dp))
+        Text(habit.name, style = WeftType.cardTitle, modifier = Modifier.padding(start = 14.dp))
     }
 }

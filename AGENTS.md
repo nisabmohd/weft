@@ -1,13 +1,13 @@
 # Rules for contributors and AI agents
 
-These rules apply to every change, whether a person or an AI agent makes it. They keep Sprout small, fast and consistent. If a rule gets in your way, open an issue before breaking it.
+These rules apply to every change, whether a person or an AI agent makes it. They keep Weft small, fast and consistent. If a rule gets in your way, open an issue before breaking it.
 
 ## Hard rules
 
 - Ask before adding any dependency. Most of the app's size comes from libraries, so the default answer is to use the platform or write the few lines yourself. The libraries already in use are listed in `gradle/libs.versions.toml`.
 - Never add `material-icons-extended`. Icons are vector drawables in `app/src/main/res/drawable`, drawn with the same 24 × 24 grid and 1.9 stroke as the rest.
 - No dependency injection framework (use `AppContainer`), no chart library (use Compose `Canvas`), no image library, no networking library.
-- The `foss` flavor must never contain Google or Play Services code. Put anything Google-specific in the `play` source set.
+- The `foss` flavor must never contain Google or Play Services code. Put Play-only code in `src/play` (stand-ins in `src/noPlay`) and Google Drive code in `src/drive` (play and github; stand-ins in `src/noDrive`).
 - Release builds stay minified: R8 full mode, `isMinifyEnabled = true`, `isShrinkResources = true`. Check the APK size after changes that could grow it (target: under 5 MB; today it is about 2.8 MB).
 - Build, test and run the app after every change, and commit each working step on its own.
 
@@ -30,10 +30,10 @@ These rules apply to every change, whether a person or an AI agent makes it. The
 - Gaps and sizes follow [`docs/SPACING.md`](docs/SPACING.md): 16 dp side padding, cards 8 dp apart, sections 16 dp apart, 16 dp inside a card, section labels with 16 dp above and 8 dp below, a 44 dp habit tile wherever a habit is listed.
 - Charts (Insights) are drawn with Compose `Canvas` and use only the app colors: primary for done, the light primary tone for partial, outline grey for the rest. Every chart mark that can be tapped shows its numbers and has a content description.
 - When a screen changes, retake its screenshot in `docs/screenshots/` (see `release/README.md` for how they are staged) in the same commit. Don't invent a new value; copy the same element on Today.
-- Text uses only the nine styles in [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md), available as `SproutType.*` from `ui/theme/Type.kt`. Never set a font size or weight anywhere else, and never read `MaterialTheme.typography` in a screen. Headings use Outfit; body text and numbers use the chosen font (Lexend by default).
+- Text uses only the nine styles in [`docs/TYPOGRAPHY.md`](docs/TYPOGRAPHY.md), available as `WeftType.*` from `ui/theme/Type.kt`. Never set a font size or weight anywhere else, and never read `MaterialTheme.typography` in a screen. Headings use Outfit; body text and numbers use the chosen font (Lexend by default).
 - Haptics go through `ui/components/Haptics.kt`, so the same kind of action always feels the same. A new switch, chip, choice or stepper gets the matching one.
 - Text must grow with the user's font size. Only text inside a fixed-size shape (rings, segmented buttons, the navigation bar, the week columns) may cap its scaling, using `CappedFontScale`.
-- Filters, pickers and choices (dates, times, habits, amounts, week start) open in a bottom sheet, never a dialog, inline chips or menus. Use `DateRangeSheet`, `DatePickerSheet`, `TimePickerSheet` and `HabitFilterSheet` in `ui/components`. `TimePickerSheet` (the wheel) is the only time picker: every time setting uses it. Dialogs are only for confirming something (delete, import). Every sheet is a `SproutSheet` (ui/components): it opens fully and stops at 90% of the screen, so put long content in a scrolling list with `Modifier.weight(1f, fill = false)` and keep the main button below it. Full screens are only for creating or editing (New habit, New note).
+- Filters, pickers and choices (dates, times, habits, amounts, week start) open in a bottom sheet, never a dialog, inline chips or menus. Use `DateRangeSheet`, `DatePickerSheet`, `TimePickerSheet` and `HabitFilterSheet` in `ui/components`. `TimePickerSheet` (the wheel) is the only time picker: every time setting uses it. Dialogs are only for confirming something (delete, import). Every sheet is a `WeftSheet` (ui/components): it opens fully and stops at 90% of the screen, so put long content in a scrolling list with `Modifier.weight(1f, fill = false)` and keep the main button below it. Full screens are only for creating or editing (New habit, New note).
 - Tab headers (`TabHeader`, plus the filter chips on Journal and Insights) sit above the list, not inside it, so they stay in place while the list scrolls.
 - Widgets follow the system: wallpaper colors on Android 12+ and the system light or dark mode. Never apply the in-app theme, accent or dynamic-color setting to them.
 - Every clickable element is at least 48 dp and has a label TalkBack can read. Gestures such as swipe and press and hold also get an accessibility action.

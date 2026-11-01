@@ -1,6 +1,6 @@
 package app.sprout.habits.support
 
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,7 @@ import app.sprout.habits.R
 import app.sprout.habits.ui.theme.habitColors
 
 /**
- * "Enjoying Sprout?": rate (play build, once listed), star on GitHub, sponsor (not in the play
+ * "Enjoying Weft?": rate (play build, once listed), star on GitHub, sponsor (not in the play
  * build: Google Play doesn't allow asking for money outside its own billing), or maybe later.
  */
 @Composable
@@ -50,9 +50,9 @@ fun SupportPromptDialog(
         Surface(shape = RoundedCornerShape(28.dp), color = colors.surfaceContainerLowest) {
             Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(Modifier.size(64.dp).background(colors.primaryContainer, RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(R.drawable.ic_seedling), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
+                    Icon(painterResource(R.drawable.ic_weft), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
                 }
-                Text(stringResource(R.string.support_title), style = SproutType.title, color = colors.onSurface)
+                Text(stringResource(R.string.support_title), style = WeftType.title, color = colors.onSurface)
                 Text(
                     stringResource(
                         when {
@@ -61,7 +61,7 @@ fun SupportPromptDialog(
                             else -> R.string.support_text_star
                         },
                     ),
-                    style = SproutType.supporting,
+                    style = WeftType.supporting,
                     color = colors.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
@@ -70,13 +70,13 @@ fun SupportPromptDialog(
                     Button(onClick = onRate, modifier = Modifier.fillMaxWidth().height(48.dp)) {
                         Icon(painterResource(R.drawable.ic_thumb_up), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.rate_on_play), style = SproutType.label)
+                        Text(stringResource(R.string.rate_on_play), style = WeftType.label)
                     }
                 }
                 FilledTonalButton(onClick = onStar, modifier = Modifier.fillMaxWidth().height(48.dp)) {
                     Icon(painterResource(R.drawable.ic_star), contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.star_github), style = SproutType.label)
+                    Text(stringResource(R.string.star_github), style = WeftType.label)
                 }
                 if (showSponsor) {
                     FilledTonalButton(
@@ -86,10 +86,10 @@ fun SupportPromptDialog(
                     ) {
                         Icon(painterResource(R.drawable.ic_heart), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.sponsor), style = SproutType.label)
+                        Text(stringResource(R.string.sponsor), style = WeftType.label)
                     }
                 }
-                TextButton(onClick = onLater) { Text(stringResource(R.string.maybe_later), style = SproutType.label) }
+                TextButton(onClick = onLater) { Text(stringResource(R.string.maybe_later), style = WeftType.label) }
             }
         }
     }

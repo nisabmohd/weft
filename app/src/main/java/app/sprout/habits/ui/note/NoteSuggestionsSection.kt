@@ -52,7 +52,7 @@ import app.sprout.habits.ui.components.SectionHeader
 import app.sprout.habits.ui.components.groupedShape
 import app.sprout.habits.ui.components.tick
 import app.sprout.habits.ui.datePattern
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import java.time.LocalDate
 
 /*
@@ -95,7 +95,7 @@ fun NoteSuggestions(
         val similar = remember(data, typed, noteId) { similarNotes(data.notes, typed, excludeId = noteId) }
         if (similar.isNotEmpty()) {
             Section(stringResource(R.string.suggest_similar), pluralStringResource(R.plurals.suggest_found, similar.size, similar.size), afterChips = afterChips) {
-                val bold = SpanStyle(fontWeight = SproutType.label.fontWeight)
+                val bold = SpanStyle(fontWeight = WeftType.label.fontWeight)
                 NoteRows(
                     similar.map { s ->
                         PastRow(
@@ -201,7 +201,7 @@ private fun ChipRow(labels: List<String>, highlightFirst: Boolean, onPick: (Int,
             ) {
                 Text(
                     label,
-                    style = SproutType.label,
+                    style = WeftType.label,
                     color = if (filled) colors.onSecondaryContainer else colors.onSurface,
                     maxLines = 1,
                     modifier = Modifier.clearAndSetSemantics {},
@@ -237,8 +237,8 @@ private fun NoteRows(rows: List<PastRow>, onUse: (String) -> Unit) {
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(row.text, style = SproutType.body, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
-                Text(strings.label(day, today, long = false), style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1)
+                Text(row.text, style = WeftType.body, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
+                Text(strings.label(day, today, long = false), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1)
             }
         }
     }

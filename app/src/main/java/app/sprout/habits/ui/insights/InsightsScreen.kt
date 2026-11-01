@@ -18,7 +18,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.unit.LayoutDirection
 import app.sprout.habits.ui.components.CustomRangeChip
 import app.sprout.habits.ui.components.DefaultRangeChip
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -171,12 +171,12 @@ private fun SummaryCard(ui: InsightsUi) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(stringResource(R.string.percent, ui.scorePercent), style = SproutType.screenTitleNumber, color = colors.onSurface, softWrap = false)
+            Text(stringResource(R.string.percent, ui.scorePercent), style = WeftType.screenTitleNumber, color = colors.onSurface, softWrap = false)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.insights_average), style = SproutType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
+            Text(stringResource(R.string.insights_average), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
             Spacer(Modifier.width(12.dp))
             // Takes the rest of the row and wraps at large text sizes.
-            Text(summary, style = SproutType.label, color = colors.onSurfaceVariant, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(bottom = 4.dp))
+            Text(summary, style = WeftType.label, color = colors.onSurfaceVariant, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(bottom = 4.dp))
         }
         // One segment per habit, filled up to that habit's score for the range.
         SegmentBar(ui.rates.map { BarSegment(it.hue, it.percent / 100f) }, Modifier.clearAndSetSemantics {})
@@ -265,12 +265,12 @@ private fun RowScope.PatternTile(shape: RoundedCornerShape, icon: Int, pill: Col
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(painterResource(icon), contentDescription = null, tint = pillContent, modifier = Modifier.size(18.dp))
-            Text(label, style = SproutType.label, color = pillContent, modifier = Modifier.padding(start = 6.dp))
+            Text(label, style = WeftType.label, color = pillContent, modifier = Modifier.padding(start = 6.dp))
         }
-        Text(value, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
+        Text(value, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
         // One line at normal text sizes; with large text the label and detail wrap rather than
         // clip, and the row's IntrinsicSize.Min keeps both cards the same height.
-        Text(detail, style = SproutType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+        Text(detail, style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
     }
 }
 
@@ -308,7 +308,7 @@ private fun ChartTooltip(text: String, at: IntOffset?, onDismiss: () -> Unit) {
     Popup(popupPositionProvider = position, onDismissRequest = onDismiss) {
         Text(
             text,
-            style = SproutType.caption,
+            style = WeftType.caption,
             color = colors.inverseOnSurface,
             modifier = Modifier.background(colors.inverseSurface, RoundedCornerShape(8.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
         )
@@ -369,7 +369,7 @@ private fun WeeklyRhythm(ui: InsightsUi) {
                     ui.columns.forEach { column ->
                         Text(
                             column.label,
-                            style = SproutType.tiny,
+                            style = WeftType.tiny,
                             color = if (column.isBest) colors.onSurface else colors.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             maxLines = 1,
@@ -394,7 +394,7 @@ private const val BAR_HEIGHT = 128
 private fun LegendSquare(label: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(10.dp).background(color, RoundedCornerShape(3.dp)))
-        Text(label, style = SproutType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp))
+        Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp))
     }
 }
 
@@ -427,7 +427,7 @@ private fun HabitBreakdown(rates: List<HabitRateUi>, byStreak: Boolean, onSort: 
                 ) {
                     HabitTile(r.icon, hc.soft, hc.ink)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(r.name, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(r.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         // "5 done · 1 partial", or "7 of 7 days" when nothing was partial. The streak has its own toggle.
                         Text(
                             if (r.partialDays > 0) {
@@ -436,7 +436,7 @@ private fun HabitBreakdown(rates: List<HabitRateUi>, byStreak: Boolean, onSort: 
                             } else {
                                 pluralStringResource(R.plurals.days_kept, r.scheduledDays, r.doneDays, r.scheduledDays)
                             },
-                            style = SproutType.supporting,
+                            style = WeftType.supporting,
                             color = colors.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -492,7 +492,7 @@ private fun SortToggle(byStreak: Boolean, onChange: (Boolean) -> Unit) {
                 ) {
                     Text(
                         label,
-                        style = SproutType.label,
+                        style = WeftType.label,
                         color = if (selected) colors.onSurface else colors.onSurfaceVariant,
                         softWrap = false,
                     )

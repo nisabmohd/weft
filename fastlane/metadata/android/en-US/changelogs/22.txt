@@ -1,0 +1,6 @@
+• Sprout is now Weft, with a new icon. Same app: your habits, notes and backups stay.
+• Backup has its own screen: More → Backups shows when you last exported, with Export now and a choice of JSON or CSV.
+• Long-press the icon for Add note and New habit.
+• Widgets move to the new day at midnight and after a clock or time zone change, follow light/dark and language changes, and update after editing an older day.
+• The This week widget names both months for a week across two ("26 Oct – 1 Nov").
+• "Nothing due today" on days with nothing scheduled.

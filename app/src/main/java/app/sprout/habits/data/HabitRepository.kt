@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 /** The single entry point to habits, entries and notes. */
 /** [onUserChange] runs after each habit edit and each logged day (it hides the sample banner). */
-class HabitRepository(private val db: SproutDatabase, private val onUserChange: suspend () -> Unit = {}) {
+class HabitRepository(private val db: WeftDatabase, private val onUserChange: suspend () -> Unit = {}) {
     private val habits = db.habitDao()
     private val entries = db.entryDao()
     private val notes = db.noteDao()

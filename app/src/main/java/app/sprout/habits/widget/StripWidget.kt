@@ -42,7 +42,7 @@ class StripWidget : GlanceAppWidget() {
         val bitmaps = WidgetBitmaps(context)
         provideContent {
             val live by liveWidgetData(context, data) { it.today() }
-            SproutGlanceTheme { StripContent(live, bitmaps) }
+            WeftGlanceTheme { StripContent(live, bitmaps) }
         }
     }
 }
@@ -66,7 +66,8 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
             Text(LocalContext.current.getString(R.string.widget_of_today, data.done, data.total), style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
             Spacer(GlanceModifier.defaultWeight())
             Text(
-                data.nextLabel?.let { context.getString(R.string.widget_next, it) } ?: context.getString(R.string.widget_all_done),
+                data.nextLabel?.let { context.getString(R.string.widget_next, it) }
+                    ?: context.getString(if (data.total == 0) R.string.widget_nothing_today else R.string.widget_all_done),
                 maxLines = 1,
                 style = TextStyle(fontSize = WidgetType.supporting, color = colors.onSurfaceVariant),
             )

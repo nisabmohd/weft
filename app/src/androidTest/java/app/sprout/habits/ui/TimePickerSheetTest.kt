@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.sprout.habits.ui.components.TimePickerSheet
-import app.sprout.habits.ui.theme.SproutTheme
+import app.sprout.habits.ui.theme.WeftTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +21,7 @@ class TimePickerSheetTest {
     private var picked: Int? = null
 
     private fun show(minutes: Int, line: String? = "Read") = rule.setContent {
-        SproutTheme { TimePickerSheet("Reminder time", minutes, onApply = { picked = it }, onDismiss = {}, line = line) }
+        WeftTheme { TimePickerSheet("Reminder time", minutes, onApply = { picked = it }, onDismiss = {}, line = line) }
     }
 
     @Test fun showsTitleLineAndButton() {

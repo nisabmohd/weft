@@ -4,7 +4,7 @@ import app.sprout.habits.ui.components.GroupGap
 import app.sprout.habits.ui.components.SectionGapBelow
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.SectionHeader
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -50,7 +50,7 @@ import app.sprout.habits.ui.components.TabHeader
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.today.UndoSnackbarHost
-import app.sprout.habits.ui.components.SproutSheet
+import app.sprout.habits.ui.components.WeftSheet
 import app.sprout.habits.ui.components.NoteCardUi
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.material3.SnackbarResult
@@ -60,6 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import android.content.Intent
 import app.sprout.habits.ui.components.DateRangeSheet
 import app.sprout.habits.ui.components.HabitFilterChip
+import app.sprout.habits.ui.components.ActionRow
 import app.sprout.habits.ui.components.FilterChipRow
 import app.sprout.habits.ui.components.groupedShape
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -182,7 +183,7 @@ fun JournalScreen(
             ExtendedFloatingActionButton(
                 onClick = onAddNote,
                 icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(22.dp)) },
-                text = { Text(stringResource(R.string.add_note), style = SproutType.label) },
+                text = { Text(stringResource(R.string.add_note), style = WeftType.label) },
                 containerColor = colors.primaryContainer,
                 contentColor = colors.onPrimaryContainer,
                 shape = RoundedCornerShape(18.dp),
@@ -239,15 +240,15 @@ private fun EmptyJournal(title: String, text: String, action: String?, onAction:
         Box(Modifier.size(72.dp).background(colors.secondaryContainer, RoundedCornerShape(24.dp)), contentAlignment = Alignment.Center) {
             Icon(painterResource(R.drawable.ic_sym_edit_note), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.size(32.dp))
         }
-        Text(title, style = SproutType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
-        Text(text, style = SproutType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
+        Text(title, style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
+        Text(text, style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
         if (action != null) {
             FilledTonalButton(
                 onClick = onAction,
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = colors.secondaryContainer, contentColor = colors.onSecondaryContainer),
                 modifier = Modifier.padding(top = 20.dp).heightIn(min = 40.dp),
             ) {
-                Text(action, style = SproutType.label)
+                Text(action, style = WeftType.label)
             }
         }
     }
@@ -259,10 +260,10 @@ private fun NoteActionsSheet(note: NoteCardUi, onEdit: (() -> Unit)?, onDelete: 
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
     val shareTitle = stringResource(R.string.action_share)
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(note.habitName, style = SproutType.title, color = colors.onSurface)
-            Text(note.text, style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(note.habitName, style = WeftType.title, color = colors.onSurface)
+            Text(note.text, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         if (onEdit != null) ActionRow(R.drawable.ic_habit_pen, stringResource(R.string.edit_note), colors.onSurface, onEdit)
         ActionRow(R.drawable.ic_share, shareTitle, colors.onSurface) {
@@ -272,20 +273,5 @@ private fun NoteActionsSheet(note: NoteCardUi, onEdit: (() -> Unit)?, onDelete: 
         }
         ActionRow(R.drawable.ic_delete, stringResource(R.string.delete_note), colors.error, onDelete)
         Spacer(Modifier.padding(bottom = 12.dp).navigationBarsPadding())
-    }
-}
-
-@Composable
-private fun ActionRow(icon: Int, label: String, color: Color, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(painterResource(icon), contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
-        Text(label, style = SproutType.body, color = color, modifier = Modifier.padding(start = 16.dp))
     }
 }

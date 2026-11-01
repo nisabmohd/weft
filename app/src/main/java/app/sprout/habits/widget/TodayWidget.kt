@@ -50,7 +50,7 @@ class TodayWidget : GlanceAppWidget() {
         val bitmaps = WidgetBitmaps(context)
         provideContent {
             val live by liveWidgetData(context, data) { it.today() }
-            SproutGlanceTheme { TodayContent(live, bitmaps) }
+            WeftGlanceTheme { TodayContent(live, bitmaps) }
         }
     }
 }
@@ -84,7 +84,14 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         Spacer(GlanceModifier.width(16.dp))
         Column(GlanceModifier.defaultWeight()) {
             Text(
-                LocalContext.current.getString(if (data.upNext.isEmpty()) R.string.widget_all_done_today else R.string.widget_up_next),
+                LocalContext.current.getString(
+                    when {
+                        // A day with nothing scheduled (or every habit hidden from widgets) isn't "all done".
+                        data.total == 0 -> R.string.widget_nothing_today
+                        data.upNext.isEmpty() -> R.string.widget_all_done_today
+                        else -> R.string.widget_up_next
+                    },
+                ),
                 style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurfaceVariant),
             )
             data.upNext.take(2).forEach { habit ->

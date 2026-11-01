@@ -22,7 +22,7 @@ fun ThemeSettings.isDark(): Boolean = when (mode) {
 }
 
 @Composable
-fun SproutTheme(
+fun WeftTheme(
     settings: ThemeSettings = ThemeSettings(),
     content: @Composable () -> Unit,
 ) {
@@ -35,7 +35,7 @@ fun SproutTheme(
         else -> remember(settings.accentHue, dark) { seedColorScheme(settings.accentHue, dark) }
     }
     val typography = remember(settings.font, settings.textScale) {
-        sproutTypography(settings.font, settings.textScale)
+        weftTypography(settings.font, settings.textScale)
     }
     CompositionLocalProvider(LocalDarkTheme provides dark) {
         MaterialTheme(colorScheme = colorScheme, typography = typography, content = content)

@@ -15,14 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sprout.habits.ui.WelcomeScreen
 import app.sprout.habits.ui.drawEdgeToEdge
-import app.sprout.habits.ui.nav.SproutNavHost
-import app.sprout.habits.ui.theme.SproutTheme
+import app.sprout.habits.ui.nav.WeftNavHost
+import app.sprout.habits.ui.theme.WeftTheme
 import app.sprout.habits.ui.theme.isDark
+import app.sprout.habits.ui.nav.AppLink
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
-    /** A habit to open, from a tapped notification or widget; consumed by the nav host. */
-    private val openHabit = MutableStateFlow<Long?>(null)
+    /** Where an outside tap should land (widget, notification, shortcut, weft:// link); consumed by the nav host. */
+    private val pendingLink = MutableStateFlow<AppLink?>(null)
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLanguage.wrap(newBase))
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
         Notifications.createChannels(this)
         if (savedInstanceState == null) handleIntent(intent)
         drawEdgeToEdge(dark = false)
-        val container = (application as SproutApp).container
+        val container = (application as WeftApp).container
         setContent {
             // Null until DataStore has loaded, so the first real frame already has the right theme.
             // Until then draw an empty frame over the window background (light or night), so the
@@ -49,13 +50,14 @@ class MainActivity : ComponentActivity() {
             }
             val dark = current.theme.isDark()
             LaunchedEffect(dark) { drawEdgeToEdge(dark) }
-            SproutTheme(current.theme) {
+            WeftTheme(current.theme) {
                 if (!current.onboarded) {
                     WelcomeScreen(container, onDone = { container.settings.setOnboarded() })
                 } else {
-                    val habitToOpen by openHabit.collectAsStateWithLifecycle()
-                    SproutNavHost(container, current, habitToOpen = habitToOpen, onHabitOpened = { openHabit.value = null })
-                    UpdatePrompt(container.updates)
+                    // Held until Get started is done, then opened.
+                    val link by pendingLink.collectAsStateWithLifecycle()
+                    WeftNavHost(container, current, link = link, onLinkHandled = { pendingLink.value = null })
+                    UpdatePrompt(container.updates, container.playUpdates)
                 }
             }
         }
@@ -74,14 +76,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == ACTION_OPEN_HABIT) {
-            intent.getLongExtra(EXTRA_HABIT_ID, 0L).takeIf { it != 0L }?.let { openHabit.value = it }
-        }
+        AppLink.from(intent)?.let { pendingLink.value = it }
     }
 
     companion object {
-        const val ACTION_OPEN_HABIT = "app.sprout.habits.action.OPEN_HABIT"
-        const val EXTRA_HABIT_ID = "habitId"
+        const val ACTION_OPEN_HABIT = AppLink.ACTION_OPEN_HABIT
+        const val EXTRA_HABIT_ID = AppLink.EXTRA_HABIT_ID
         private const val KEY_LANGUAGE = "language"
     }
 }

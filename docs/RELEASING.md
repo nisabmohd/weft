@@ -32,7 +32,7 @@ Releases are built by GitHub Actions (`.github/workflows/release.yml`) when a ta
    git push origin v1.0.0
    ```
 
-3. The release appears on GitHub with `sprout-v1.0.0-github.apk`, `sprout-v1.0.0-play.apk` and `SHA256SUMS.txt`. Its notes are that version's section of `CHANGELOG.md`, so rename `## Unreleased` to `## 1.0.0` before tagging.
+3. The release appears on GitHub with `weft-v1.0.0-github.apk`, `weft-v1.0.0-play.apk` and `SHA256SUMS.txt`. Its notes are that version's section of `CHANGELOG.md`, so rename `## Unreleased` to `## 1.0.0` before tagging.
 
 The app's update check reads the latest release: its tag is the version, its `- ` lines are the What's new list (first five), it downloads the asset ending in `-github.apk`, and it checks it against `SHA256SUMS.txt`. Uploading a release by hand? Attach the `github` APK (`./gradlew :app:assembleGithubRelease`) and `SHA256SUMS.txt` with the same names, or installs from GitHub stop getting update checks.
 

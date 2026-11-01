@@ -1,7 +1,5 @@
 package app.sprout.habits.widget
 
-import app.sprout.habits.ui.englishDates
-import app.sprout.habits.ui.datePattern
 import app.sprout.habits.data.Entry
 import app.sprout.habits.data.Habit
 import app.sprout.habits.data.HabitIcon
@@ -19,6 +17,7 @@ import app.sprout.habits.ui.components.markFor
 import app.sprout.habits.ui.today.TodayViewModel
 import java.time.LocalDate
 import java.time.LocalTime
+import app.sprout.habits.ui.habits.HabitsViewModel
 import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -74,7 +73,7 @@ class WidgetDataSource(private val repository: HabitRepository, private val sett
             row(habit, h.entries, days, todayDay)
         }
         return WeekWidgetData(
-            range = if (englishDates()) "${days.first().dayOfMonth} – ${days.last().format(datePattern("d MMM"))}" else "${days.first().format(datePattern("d MMM"))} – ${days.last().format(datePattern("d MMM"))}",
+            range = HabitsViewModel.rangeLabel(days.first(), days.last()),
             percent = (score(credits) * 100).roundToInt(),
             dayLetters = days.map { it.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()) },
             todayIndex = days.indexOf(today),

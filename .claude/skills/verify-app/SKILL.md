@@ -1,6 +1,6 @@
 ---
 name: verify-app
-description: Build Sprout and check every feature on the emulator with the smoke suite. Use after any change, before committing, or when asked to verify, test or check the app.
+description: Build Weft and check every feature on the emulator with the smoke suite. Use after any change, before committing, or when asked to verify, test or check the app.
 ---
 
 # Verify the app
@@ -18,6 +18,9 @@ description: Build Sprout and check every feature on the emulator with the smoke
    ```
 4. For a failure, look at the screen before guessing: `adb exec-out screencap -p > /tmp/s.png` and read it, or list labels with `python3 -c "import sys; sys.path.insert(0,'tools/verify'); import device as d; print([n.label for n in d.dump() if n.label])"`.
 5. For UI changes also check dark mode (`adb shell cmd uimode night yes`) and the largest text (`adb shell settings put system font_scale 2.0`, plus More → Text size → Largest). Reset both afterwards.
+
+## Groups added in 1.5.0
+`widget` and `launcher` (they clear the launcher's home screen; test emulator only; the midnight check needs `adb root`), `drive` (uses the debug `DriveStateActivity`; toggles airplane mode), `link` (weft:// links and the launcher shortcuts). Run one group with `python3 tools/verify/smoke.py drive`.
 
 ## Pitfalls
 - Snackbars last about 4 s and a UI dump takes 1–2 s: read the snackbar and tap Undo from one `dump()`.

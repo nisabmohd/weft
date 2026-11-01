@@ -1,6 +1,6 @@
 # Features
 
-What Sprout does today, and where each part lives in the code. Paths are under `app/src/main/java/app/sprout/habits/`.
+What Weft does today, and where each part lives in the code. Paths are under `app/src/main/java/app/sprout/habits/`.
 
 ## Today
 
@@ -14,7 +14,7 @@ Every tab starts with the same header (`ui/components/TabHeader.kt`): the title,
 
 ## Sample data
 
-First run is Get started (`ui/WelcomeScreen.kt`, after Burrow's): a pitch page with a panel of what Sprout looks like in use, then two steps with dots on top. Step 1 picks habits: five suggestions (Wake up at 7, Read, Drink water, Workout, Evening journal), plus your own: the last row, "Add your own habit", opens a sheet with the Name field from New habit. Step 2 is a practice card (the real Today card and amount sheet, nothing saved) that ticks off swipe right, swipe left, tap the circle, press and hold (log part of it as Partial), Undo (every change shows Today's Undo bar) and add a note; a note written in the amount sheet then shows as a Journal note card, so you see where notes are kept. "Go to Today" saves: picked habits replace the sample habits; "Skip for now" keeps the sample habits and their banner.
+First run is Get started (`ui/WelcomeScreen.kt`, after Burrow's): a pitch page with a panel of what Weft looks like in use, then two steps with dots on top. Step 1 picks habits: five suggestions (Wake up at 7, Read, Drink water, Workout, Evening journal), plus your own: the last row, "Add your own habit", opens a sheet with the Name field from New habit. Step 2 is a practice card (the real Today card and amount sheet, nothing saved) that ticks off swipe right, swipe left, tap the circle, press and hold (log part of it as Partial), Undo (every change shows Today's Undo bar) and add a note; a note written in the amount sheet then shows as a Journal note card, so you see where notes are kept. "Go to Today" saves: picked habits replace the sample habits; "Skip for now" keeps the sample habits and their banner.
 
 A fresh install starts with eight sample habits (from the designs), two weeks of history and notes on several days, in the app language (`data/SampleData.kt`). They're added only on the very first launch, never on an update or after a restore. A card on Today removes them (only the sample habits, with their entries and notes); their ids are kept in DataStore (`sampleHabitIds`). The card goes for good the first time you log or change a habit (`sampleBannerHidden`); after that the sample habits are deleted like any other habit. Sample habits have reminders only in debug builds.
 
@@ -60,7 +60,9 @@ Code: `widget/`.
 
 Everything, including preferences, can be exported to a JSON file and imported again through the system file picker. The app needs no storage permission. A CSV export opens in any spreadsheet.
 
-Code: `data/backup/`, `ui/more/BackupSection.kt`.
+Since 1.5.0 backup has its own screen: More → **Backups** opens **Backup & restore**, which starts with a card showing the last backup and the one action that matters (Back up now, Try again, Connect Google Drive, or Export now in the F-Droid build). The Google Play and GitHub builds can also back up to the user's own Google Drive: Connect an account, then Back up now, a schedule (every night while charging, weekly, monthly or off; Wi-Fi only by default) and Restore from any of the last 10 backups. The files sit in Drive's hidden app folder, which only Weft can see. Details and edge cases: [`DRIVE-BACKUP.md`](DRIVE-BACKUP.md). The F-Droid build has no Drive.
+
+Code: `data/backup/`, `ui/more/BackupRestoreScreen.kt`, `ui/more/BackupSection.kt`, `ui/more/DriveSection.kt`, `src/drive/`.
 
 ## Settings
 
@@ -68,14 +70,20 @@ The More tab covers backup, the app language (English, Hindi, Spanish, German, F
 
 Code: `ui/more/`, `data/SettingsRepository.kt`, `ui/theme/`, `AppLanguage.kt`; text in `res/values*/strings.xml`.
 
+## Shortcuts and links
+
+Long-press Weft's icon for **Add note** and **New habit** (1.5.0). `weft://` links open a tab (`weft://today`, `habits`, `journal`, `insights`, `more`), New note (`weft://note/new`), New habit (`weft://habit/new`) or a habit's page (`weft://habit/<id>`); they never change data. `sprout://` (the name before the rename to Weft) works the same. Widgets and notifications use the same path, so a habit that was deleted opens nothing.
+
+Code: `ui/nav/AppLink.kt`, `res/xml/shortcuts.xml`.
+
 ## Updates
 
-The GitHub build checks GitHub Releases for a newer version: from About → Check for updates, and on its own at most once a day. A newer version shows the Update available dialog with up to five What's new lines from the release notes; Update downloads the APK with progress, checks it against the release's SHA256SUMS.txt and opens Android's installer (Android asks once to allow installs from Sprout). Later hides that version until the next one. More → About Sprout shows an "Update available" pill. The update dialog and the support prompt never show on the same launch. The F-Droid and Play builds have no checker; their stores update them. Once Sprout is listed on Google Play (`PLAY_LISTED` in `app/build.gradle.kts`), the Play build's About gets a Check for updates button that opens the store listing; until then it shows nothing there.
+The GitHub build checks GitHub Releases for a newer version: from About → Check for updates, and on its own at most once a day. A newer version shows the Update available dialog with up to five What's new lines from the release notes; Update downloads the APK with progress, checks it against the release's SHA256SUMS.txt and opens Android's installer (Android asks once to allow installs from Weft). Later hides that version until the next one. More → About Weft shows an "Update available" pill. The update dialog and the support prompt never show on the same launch. The F-Droid build has no checker; F-Droid updates it. The Play build (1.5.0) uses Google Play's In-App Updates: About → Check for updates asks Play and opens Play's update screen, and the same check runs once a day on launch; a version the user backed out of isn't offered again.
 
-Code: `data/update/UpdateManager.kt`, `ui/update/UpdateUi.kt`, `domain/Versions.kt`; the permission and FileProvider are in `src/github/AndroidManifest.xml`.
+Code: `data/update/UpdateManager.kt`, `ui/update/UpdateUi.kt`, `domain/Versions.kt`, `src/play/.../PlayUpdates.kt`; the permission and FileProvider are in `src/github/AndroidManifest.xml`.
 
 ## Support
 
-About ends with the developer, mid apps (its mark, and "Contact: hello.midapps@gmail.com"; tapping writes an email), above "Made by Nisab Mohd & Contributors". It has a Sponsor link (not in the `play` build, where Google Play's payments policy rules it out; the support prompt drops its Sponsor button there too) and, in the `play` build once it is listed (`PLAY_LISTED`), a Rate on Play Store link; the support prompt offers the same button. The `foss` and `github` builds never link to Google Play. After a week of use and 30 check-ins, Sprout asks once whether you'd like to support it; it asks again after 60 days at most, and stops after two "Maybe later"s.
+About ends with the developer, mid apps (its mark, and "Contact: hello.midapps@gmail.com"; tapping writes an email), above "Made by Nisab Mohd & Contributors". It has a Sponsor link (not in the `play` build, where Google Play's payments policy rules it out; the support prompt drops its Sponsor button there too) and, in the `play` build once it is listed (`PLAY_LISTED`), a Rate on Play Store link; the support prompt offers the same button, which shows Google Play's in-app rating card (1.5.0) and falls back to the store page. The `foss` and `github` builds never link to Google Play. After a week of use and 30 check-ins, Weft asks once whether you'd like to support it; it asks again after 60 days at most, and stops after two "Maybe later"s.
 
 Code: `support/`, `ui/about/`.

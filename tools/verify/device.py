@@ -1,4 +1,4 @@
-"""Small helpers for driving the Sprout app on an emulator or phone over adb.
+"""Small helpers for driving the Weft app on an emulator or phone over adb.
 
 Only the Python standard library; finds elements by their visible text or TalkBack label
 (content description), so checks don't depend on screen coordinates.
@@ -201,3 +201,111 @@ def small_targets(min_dp=48):
         if w < min_dp - 1.5 or h < min_dp - 1.5:
             out.append(f"{n.label or n.cls} {w:.0f}x{h:.0f}dp")
     return out
+
+
+# --- home screen and widgets -----------------------------------------------------------------
+
+def launcher():
+    """The home app's package (Launcher3 on AOSP images, the Pixel launcher on Play images)."""
+    out = shell("cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME")
+    return out.strip().splitlines()[-1].split("/")[0]
+
+
+def home():
+    shell("input keyevent KEYCODE_HOME")
+    time.sleep(1.5)
+
+
+def open_app():
+    shell(f"am start -W -n {PACKAGE}/.MainActivity")
+    time.sleep(1.5)
+
+
+def pin_widget(kind):
+    """
+    Empties the home screen and pins one Weft widget there ([kind]: week, today, strip, streak),
+    through the debug build's PinWidgetActivity. Clearing the launcher resets its layout, so only
+    run this on a test emulator.
+    """
+    shell(f"pm clear {launcher()}")
+    home()
+    time.sleep(2)
+    shell(f"am start -n {PACKAGE}/.PinWidgetActivity --es widget {kind}")
+    end = time.time() + 8
+    while time.time() < end:
+        add = next((n for n in dump() if n.label.lower() in ("add to home screen", "add automatically")), None)
+        if add:
+            shell(f"input tap {add.center[0]} {add.center[1]}")
+            break
+        time.sleep(0.5)
+    else:
+        raise AssertionError(f"launcher didn't offer to add the {kind} widget")
+    time.sleep(1.5)
+    home()
+
+
+def widget_nodes():
+    """Weft's widget views on the home screen (the launcher hosts them under Weft's package)."""
+    return [n for n in dump() if n.package == PACKAGE]
+
+
+def widget_wait(predicate, timeout=4.0):
+    """Waits until [predicate] holds for the widget labels; returns them, or None on timeout."""
+    end = time.time() + timeout
+    while True:
+        labels = [n.label for n in widget_nodes() if n.label]
+        if predicate(labels):
+            return labels
+        if time.time() > end:
+            return None
+        time.sleep(0.4)
+
+
+def widget_tap(label, contains=False):
+    n = next((n for n in widget_nodes() if n.label == label or (contains and label in n.label)), None)
+    if n is None:
+        raise AssertionError(f"not on the widget: {label!r}")
+    shell(f"input tap {n.center[0]} {n.center[1]}")
+    time.sleep(1.0)
+
+
+def brightness(bounds):
+    """Average brightness (0–255) of a screen rectangle, from a screenshot (standard library PNG decode)."""
+    import struct
+    import zlib
+    png = subprocess.run([ADB, "exec-out", "screencap", "-p"], capture_output=True).stdout
+    pos, chunks, width, height, ctype = 8, [], 0, 0, 0
+    while pos < len(png):
+        length, kind = struct.unpack(">I4s", png[pos:pos + 8])
+        data = png[pos + 8:pos + 8 + length]
+        if kind == b"IHDR":
+            width, height, _, ctype = struct.unpack(">IIBB", data[:10])
+        elif kind == b"IDAT":
+            chunks.append(data)
+        pos += 12 + length
+    bpp = 4 if ctype == 6 else 3
+    raw = zlib.decompress(b"".join(chunks))
+    stride = width * bpp
+    rows, prev = [], bytearray(stride)
+    for y in range(height):
+        f, line = raw[y * (stride + 1)], bytearray(raw[y * (stride + 1) + 1:(y + 1) * (stride + 1)])
+        for i in range(stride):
+            a = line[i - bpp] if i >= bpp else 0
+            b, c = prev[i], (prev[i - bpp] if i >= bpp else 0)
+            if f == 1: line[i] = (line[i] + a) & 255
+            elif f == 2: line[i] = (line[i] + b) & 255
+            elif f == 3: line[i] = (line[i] + (a + b) // 2) & 255
+            elif f == 4:
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                line[i] = (line[i] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 255
+        rows.append(line)
+        prev = line
+    x1, y1, x2, y2 = bounds
+    total = count = 0
+    for y in range(y1, y2, 4):
+        for x in range(x1, x2, 4):
+            r, g, b = rows[y][x * bpp:x * bpp + 3]
+            total += (r + g + b) / 3
+            count += 1
+    return total / max(count, 1)

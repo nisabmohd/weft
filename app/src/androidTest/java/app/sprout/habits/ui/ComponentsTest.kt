@@ -13,7 +13,7 @@ import app.sprout.habits.R
 import app.sprout.habits.ui.components.ComponentTags
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.ProgressRing
-import app.sprout.habits.ui.theme.SproutTheme
+import app.sprout.habits.ui.theme.WeftTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,18 +24,18 @@ class ComponentsTest {
     @get:Rule val rule = createComposeRule()
 
     @Test fun habitTileIs44dp() {
-        rule.setContent { SproutTheme { HabitTile(R.drawable.ic_sym_menu_book, 215f) } }
+        rule.setContent { WeftTheme { HabitTile(R.drawable.ic_sym_menu_book, 215f) } }
         rule.onNodeWithTag(ComponentTags.HABIT_TILE).assertWidthIsEqualTo(44.dp).assertHeightIsEqualTo(44.dp)
     }
 
     @Test fun progressRingIs44dpWithItsLabel() {
-        rule.setContent { SproutTheme { ProgressRing(0.75f, 215f, "75%") } }
+        rule.setContent { WeftTheme { ProgressRing(0.75f, 215f, "75%") } }
         rule.onNodeWithTag(ComponentTags.PROGRESS_RING).assertWidthIsEqualTo(44.dp).assertHeightIsEqualTo(44.dp)
         rule.onNodeWithText("75%", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test fun progressRingReadsItsDescription() {
-        rule.setContent { SproutTheme { ProgressRing(5 / 7f, 150f, "5d", description = "5-day streak") } }
+        rule.setContent { WeftTheme { ProgressRing(5 / 7f, 150f, "5d", description = "5-day streak") } }
         rule.onNodeWithContentDescription("5-day streak").assertIsDisplayed()
     }
 }

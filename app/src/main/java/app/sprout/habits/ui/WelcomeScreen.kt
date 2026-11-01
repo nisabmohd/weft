@@ -94,11 +94,11 @@ import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.SectionGapBelow
 import app.sprout.habits.ui.components.SectionHeader
 import app.sprout.habits.ui.components.HeaderIconButton
-import app.sprout.habits.ui.components.SproutSheet
+import app.sprout.habits.ui.components.WeftSheet
 import app.sprout.habits.ui.components.drawRing
 import app.sprout.habits.ui.components.groupedShape
 import app.sprout.habits.ui.components.toggle
-import app.sprout.habits.ui.theme.SproutType
+import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.theme.habitColors
 import app.sprout.habits.ui.today.HabitRowUi
 import app.sprout.habits.ui.today.LogSheet
@@ -155,7 +155,7 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
                 0 -> BottomButton(stringResource(R.string.welcome_start), Modifier.fillMaxWidth()) { page = 1 }
                 1 -> {
                     FilledTonalButton(onClick = { picked.clear(); ownOff.clear(); ownOff.addAll(own); page = 2 }, modifier = Modifier.weight(1f).height(56.dp)) {
-                        Text(stringResource(R.string.welcome_skip), style = SproutType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(stringResource(R.string.welcome_skip), style = WeftType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     BottomButton(stringResource(R.string.welcome_continue), Modifier.weight(1f), enabled = chosen().isNotEmpty()) { page = 2 }
                 }
@@ -176,7 +176,7 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
         if (page == 0) {
             Text(
                 stringResource(R.string.welcome_footer),
-                style = SproutType.supporting,
+                style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -188,7 +188,7 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
 @Composable
 private fun BottomButton(text: String, modifier: Modifier, enabled: Boolean = true, onClick: () -> Unit) {
     Button(onClick = onClick, enabled = enabled, modifier = modifier.height(56.dp)) {
-        Text(text, style = SproutType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text, style = WeftType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -204,7 +204,7 @@ internal fun practiceHabit(chosen: List<Habit>, suggestions: List<Habit>): Habit
 
 // ---- The pitch ----
 
-/** The logo, a panel of what Sprout looks like in use, the promise. */
+/** The logo, a panel of what Weft looks like in use, the promise. */
 @Composable
 internal fun Pitch() {
     val colors = MaterialTheme.colorScheme
@@ -214,8 +214,8 @@ internal fun Pitch() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(Modifier.padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            HabitTile(R.drawable.ic_seedling, colors.primaryContainer, colors.onPrimaryContainer)
-            Text(stringResource(R.string.app_name), style = SproutType.title, color = colors.onBackground)
+            HabitTile(R.drawable.ic_weft, colors.primaryContainer, colors.onPrimaryContainer)
+            Text(stringResource(R.string.app_name), style = WeftType.title, color = colors.onBackground)
         }
         val read = SampleData.habits(strings)[1]
         Column(
@@ -226,8 +226,8 @@ internal fun Pitch() {
             PreviewCard(Modifier.fillMaxWidth().rotate(-1.5f), fill = 0.75f, hue = read.colorHue.toFloat()) {
                 HabitTile(HabitIcon.fromKey(read.icon).drawable, read.colorHue.toFloat())
                 Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                    Text(read.name, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(TodayViewModel.amountOf(read, 15.0, strings), style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(read.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(TodayViewModel.amountOf(read, 15.0, strings), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 ProgressRing(0.75f, read.colorHue.toFloat(), stringResource(R.string.percent, 75))
             }
@@ -236,22 +236,22 @@ internal fun Pitch() {
                 PreviewCard(Modifier.weight(1f).rotate(1f), column = true) {
                     habitColors(wake.colorHue.toFloat()).let { HabitTile(R.drawable.ic_check, it.solid, it.on) }
                     Spacer(Modifier.height(12.dp))
-                    Text(wake.name, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(stringResource(R.string.done_at, TodayViewModel.formatTime(6 * 60 + 52)), style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(wake.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(stringResource(R.string.done_at, TodayViewModel.formatTime(6 * 60 + 52)), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 val calm = SampleData.habits(strings)[3]
                 PreviewCard(Modifier.weight(1f).rotate(2f), column = true) {
                     HabitTile(HabitIcon.fromKey(calm.icon).drawable, calm.colorHue.toFloat())
                     Spacer(Modifier.height(12.dp))
-                    Text(pluralStringResource(R.plurals.streak_days, 11, 11), style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(calm.name, style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(pluralStringResource(R.plurals.streak_days, 11, 11), style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(calm.name, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
         Spacer(Modifier.height(32.dp))
-        Text(stringResource(R.string.welcome_title), style = SproutType.display, color = colors.onBackground, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.welcome_title), style = WeftType.display, color = colors.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(12.dp))
-        Text(stringResource(R.string.welcome_body), style = SproutType.body, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
+        Text(stringResource(R.string.welcome_body), style = WeftType.body, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
         Spacer(Modifier.height(16.dp))
     }
 }
@@ -284,11 +284,11 @@ private fun StepDots(current: Int, modifier: Modifier) {
 @Composable
 private fun ColumnScope.StepHeading(step: Int, title: Int, line: Int) {
     val colors = MaterialTheme.colorScheme
-    Text(stringResource(R.string.welcome_step_of, step, STEPS), style = SproutType.label, color = colors.primary)
+    Text(stringResource(R.string.welcome_step_of, step, STEPS), style = WeftType.label, color = colors.primary)
     Spacer(Modifier.height(4.dp))
-    Text(stringResource(title), style = SproutType.screenTitle, color = colors.onBackground)
+    Text(stringResource(title), style = WeftType.screenTitle, color = colors.onBackground)
     Spacer(Modifier.height(8.dp))
-    Text(stringResource(line), style = SproutType.supporting, color = colors.onSurfaceVariant)
+    Text(stringResource(line), style = WeftType.supporting, color = colors.onSurfaceVariant)
     Spacer(Modifier.height(16.dp))
 }
 
@@ -336,8 +336,8 @@ private fun AddOwnRow(shape: RoundedCornerShape, onClick: () -> Unit) {
     ) {
         HabitTile(R.drawable.ic_plus, colors.surfaceContainerHigh, colors.onSurface)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(stringResource(R.string.welcome_own_row), style = SproutType.cardTitle, color = colors.onSurface)
-            Text(stringResource(R.string.welcome_own_row_desc), style = SproutType.supporting, color = colors.onSurfaceVariant)
+            Text(stringResource(R.string.welcome_own_row), style = WeftType.cardTitle, color = colors.onSurface)
+            Text(stringResource(R.string.welcome_own_row_desc), style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
     }
@@ -354,9 +354,9 @@ private fun OwnHabitSheet(preview: Habit, onAdd: (String) -> Unit, onDismiss: ()
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { delay(300); focus.requestFocus() }
     fun add() { name.trim().takeIf { it.isNotEmpty() }?.let(onAdd) }
-    SproutSheet(onDismissRequest = onDismiss) {
+    WeftSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding().imePadding()) {
-            Text(stringResource(R.string.welcome_own_hint), style = SproutType.title, color = colors.onSurface)
+            Text(stringResource(R.string.welcome_own_hint), style = WeftType.title, color = colors.onSurface)
             Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 HabitTile(HabitIcon.fromKey(preview.icon).drawable, preview.colorHue.toFloat())
                 OutlinedTextField(
@@ -364,7 +364,7 @@ private fun OwnHabitSheet(preview: Habit, onAdd: (String) -> Unit, onDismiss: ()
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
-                    textStyle = SproutType.cardTitle,
+                    textStyle = WeftType.cardTitle,
                     shape = RoundedCornerShape(14.dp),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { add() }),
@@ -376,7 +376,7 @@ private fun OwnHabitSheet(preview: Habit, onAdd: (String) -> Unit, onDismiss: ()
                 enabled = name.isNotBlank(),
                 modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 16.dp).height(48.dp),
             ) {
-                Text(stringResource(R.string.welcome_own_add), style = SproutType.label)
+                Text(stringResource(R.string.welcome_own_add), style = WeftType.label)
             }
         }
     }
@@ -404,8 +404,8 @@ private fun PickRow(habit: Habit, line: String, on: Boolean, shape: RoundedCorne
     ) {
         HabitTile(HabitIcon.fromKey(habit.icon).drawable, habit.colorHue.toFloat())
         Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(habit.name, style = SproutType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(line, style = SproutType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(habit.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Checkbox(checked = on, onCheckedChange = null)
     }
@@ -570,8 +570,8 @@ private fun GestureRow(gesture: Gesture, title: String, line: String, tried: Boo
             }
         }
         Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = SproutType.cardTitle, color = colors.onSurface)
-            Text(line, style = SproutType.supporting, color = colors.onSurfaceVariant)
+            Text(title, style = WeftType.cardTitle, color = colors.onSurface)
+            Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         TriedMark(tried)
     }
