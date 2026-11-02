@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols Rounded "elderly" (Apache License 2.0). -->
+<!-- Solar walking-round (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <group android:translateY="960">
-        <path
-            android:fillColor="#FF000000"
-            android:pathData="M540-740q-33 0-56.5-23.5T460-820q0-33 23.5-56.5T540-900q33 0 56.5 23.5T620-820q0 33-23.5 56.5T540-740Zm146 344q-6-6-6-14v-19q-54-23-84-51.5T543-557q-11 28-17.5 68.5T521-412l72 102q4 5 5.5 11t1.5 12v207q0 17-11.5 28.5T560-40q-17 0-28.5-11.5T520-80v-160l-71-102-8 130q0 4-8 22L344-72q-10 14-26 16t-30-8q-14-10-16-26t8-30l80-107v-213q0-31 5-67.5t15-67.5l-60 33v102q0 17-11.5 28.5T280-400q-17 0-28.5-11.5T240-440v-125q0-11 5-20.5t15-14.5l156-88q25-14 43.5-21.5T494-717q25 0 45.5 21.5T587-628q32 54 58 81t56 41q11-8 19-11t19-3q25 0 43 18t18 42v400q0 8-6 14t-14 6q-8 0-14-6t-6-14v-400q0-8-6-14t-14-6q-8 0-14 6t-6 14v50q0 8-6 14t-14 6q-8 0-14-6Z" />
-    </group>
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M10,4.5a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M7 22L7.50917 21.5927C8.79506 20.564 9.67705 19.1148 10 17.5" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M11.5 10L11.1582 13.4177C11.0801 14.1992 11.041 14.5899 11.1464 14.9581C11.2517 15.3263 11.4916 15.6372 11.9713 16.259L16.4004 22M11.5 10C11.3387 10 11.1601 10.0058 10.9698 10.0161C8.66494 10.141 7 12.1918 7 14.5M11.5 10C12.0042 10 12.5649 10.0565 13.0872 10.1315C14.2886 10.3041 15.2324 11.1973 15.6163 12.3488C15.8373 13.0118 16.5077 13.4154 17.1969 13.3005L19 13" />
 </vector>

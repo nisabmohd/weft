@@ -169,7 +169,7 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
                 cardModifier
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp)
                     .clip(RoundedCornerShape(28.dp))
-                    .background(colors.surfaceContainerLowest)
+                    .background(colors.surfaceContainerLow)
                     .padding(8.dp),
             ) {
                 if (habit == null) {
@@ -282,7 +282,7 @@ private fun HabitPickerSheet(
                         .fillMaxWidth()
                         .heightIn(min = 60.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(if (selected) c.soft else colors.surfaceContainerLowest)
+                        .background(if (selected) c.soft else colors.surfaceContainerLow)
                         .selectable(selected, role = Role.RadioButton) { onPick(h.id) }
                         .padding(horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,

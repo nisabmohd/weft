@@ -231,7 +231,7 @@ private fun NoteRows(rows: List<PastRow>, onUse: (String) -> Unit) {
                 Modifier
                     .fillMaxWidth()
                     .clip(groupedShape(i, rows.size))
-                    .background(colors.surfaceContainerLowest)
+                    .background(colors.surfaceContainerLow)
                     .clickable(onClickLabel = useLabel, role = Role.Button) { onUse(row.plain) }
                     .clearAndSetSemantics { contentDescription = description }
                     .padding(16.dp),

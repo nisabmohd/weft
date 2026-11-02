@@ -260,7 +260,7 @@ internal fun Pitch() {
 @Composable
 private fun PreviewCard(modifier: Modifier, fill: Float = 0f, hue: Float = 0f, column: Boolean = false, content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    Box(modifier.clip(RoundedCornerShape(22.dp)).background(colors.surfaceContainerLowest)) {
+    Box(modifier.clip(RoundedCornerShape(22.dp)).background(colors.surfaceContainerLow)) {
         if (fill > 0f) Box(Modifier.matchParentSize()) { Box(Modifier.fillMaxHeight().fillMaxWidth(fill).background(habitColors(hue).soft)) }
         if (column) Column(Modifier.padding(16.dp)) { content() }
         else Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) { content() }
@@ -330,11 +330,11 @@ internal fun PickStep(suggestions: List<Habit>, picked: MutableList<Int>, own: M
 private fun AddOwnRow(shape: RoundedCornerShape, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
-        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest).clickable(role = Role.Button, onClick = onClick)
+        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLow).clickable(role = Role.Button, onClick = onClick)
             .heightIn(min = 68.dp).padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        HabitTile(R.drawable.ic_plus, colors.surfaceContainerHigh, colors.onSurface)
+        HabitTile(R.drawable.ic_plus, colors.surfaceContainer, colors.onSurface)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(stringResource(R.string.welcome_own_row), style = WeftType.cardTitle, color = colors.onSurface)
             Text(stringResource(R.string.welcome_own_row_desc), style = WeftType.supporting, color = colors.onSurfaceVariant)
@@ -397,7 +397,7 @@ private fun PickRow(habit: Habit, line: String, on: Boolean, shape: RoundedCorne
     val colors = MaterialTheme.colorScheme
     val haptics = LocalHapticFeedback.current
     Row(
-        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest)
+        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLow)
             .toggleable(on, role = Role.Checkbox) { haptics.toggle(it); onChange(it) }
             .heightIn(min = 68.dp).padding(start = 12.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -554,7 +554,7 @@ private fun GestureRow(gesture: Gesture, title: String, line: String, tried: Boo
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(hue)
     Row(
-        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest).heightIn(min = 68.dp).padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLow).heightIn(min = 68.dp).padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(hc.soft) {
@@ -582,7 +582,7 @@ private fun RowScope.TriedMark(tried: Boolean) {
     val colors = MaterialTheme.colorScheme
     val label = stringResource(R.string.welcome_tried)
     Box(
-        Modifier.size(24.dp).clip(CircleShape).background(if (tried) colors.primary else colors.surfaceContainerHigh),
+        Modifier.size(24.dp).clip(CircleShape).background(if (tried) colors.primary else colors.surfaceContainer),
         contentAlignment = Alignment.Center,
     ) {
         if (tried) Icon(painterResource(R.drawable.ic_check), contentDescription = label, tint = colors.onPrimary, modifier = Modifier.size(16.dp))

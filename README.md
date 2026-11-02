@@ -81,4 +81,4 @@ Weft is made by **mid apps** (Nisab Mohd & contributors). Questions, ideas or pr
 
 ## License
 
-Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the sock in the app icon) is from [Tabler Icons](https://tabler.io/icons), MIT License; see [`licenses/icons`](licenses/icons).
+Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the sock in the app icon) is from [Tabler Icons](https://tabler.io/icons), MIT License, and the app's icons are [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, CC BY 4.0; see [`licenses/icons`](licenses/icons).

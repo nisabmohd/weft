@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols Rounded "smartphone" (Apache License 2.0). -->
+<!-- Solar smartphone (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="M280,920Q247,920 223.5,896.5Q200,873 200,840L200,120Q200,87 223.5,63.5Q247,40 280,40L680,40Q713,40 736.5,63.5Q760,87 760,120L760,840Q760,873 736.5,896.5Q713,920 680,920L280,920ZM280,800L280,840Q280,840 280,840Q280,840 280,840L680,840Q680,840 680,840Q680,840 680,840L680,800L280,800ZM280,720L680,720L680,240L280,240L280,720ZM280,160L680,160L680,120Q680,120 680,120Q680,120 680,120L280,120Q280,120 280,120Q280,120 280,120L280,160ZM280,160L280,120Q280,120 280,120Q280,120 280,120L280,120Q280,120 280,120Q280,120 280,120L280,160L280,160ZM280,800L280,800L280,840Q280,840 280,840Q280,840 280,840L280,840Q280,840 280,840Q280,840 280,840L280,800Z" />
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M4 10C4 6.22876 4 4.34315 5.17157 3.17157C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.17157C20 4.34315 20 6.22876 20 10V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V10Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M15 19H9" />
 </vector>

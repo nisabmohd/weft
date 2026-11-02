@@ -1,7 +1,6 @@
 package app.sprout.habits.ui.update
 
 import app.sprout.habits.ui.theme.WeftType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -82,7 +81,13 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(shape = RoundedCornerShape(28.dp), color = colors.surfaceContainerLowest) {
-            Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            // The top part scrolls on its own, so long release notes can be read in full while
+            // Update / Later stay pinned at the bottom.
+            Column(
+                Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Box(Modifier.size(64.dp).background(colors.primaryContainer, RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
                     Icon(painterResource(R.drawable.ic_weft), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
                 }
@@ -97,19 +102,20 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                 )
                 if (update.notes.isNotEmpty()) {
                     Column(
-                        Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainerHigh, RoundedCornerShape(16.dp)).padding(16.dp),
+                        Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainer, RoundedCornerShape(16.dp)).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(stringResource(R.string.whats_new), style = WeftType.label, color = colors.onSurface)
                         update.notes.forEach { line ->
                             Row(verticalAlignment = Alignment.Top) {
                                 Box(Modifier.padding(top = 8.dp).size(6.dp).background(colors.primary, CircleShape))
-                                Text(line, style = WeftType.supporting, color = colors.onSurface, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp))
+                                Text(line, style = WeftType.supporting, color = colors.onSurface, modifier = Modifier.padding(start = 10.dp))
                             }
                         }
                     }
                 }
-                Spacer(Modifier.height(20.dp))
+            }
+            Column(Modifier.padding(horizontal = 24.dp).padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 when (val s = state) {
                     is DownloadState.Progress -> {
                         Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -149,6 +155,7 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                 TextButton(onClick = onLater, modifier = Modifier.padding(top = 4.dp).heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.later), style = WeftType.label)
                 }
+            }
             }
         }
     }
@@ -231,13 +238,13 @@ private fun UpdatesPill(state: CheckState, onClick: () -> Unit) {
         modifier = Modifier.heightIn(min = 40.dp).semantics { liveRegion = LiveRegionMode.Polite },
         contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, end = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (latest) colors.primaryContainer else colors.surfaceContainerHigh,
+            containerColor = if (latest) colors.primaryContainer else colors.surfaceContainer,
             contentColor = when {
                 latest -> colors.onPrimaryContainer
                 state == CheckState.ERROR -> colors.error
                 else -> colors.onSurface
             },
-            disabledContainerColor = colors.surfaceContainerHigh,
+            disabledContainerColor = colors.surfaceContainer,
             disabledContentColor = colors.onSurface,
         ),
     ) {

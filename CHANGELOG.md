@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.1
+
+Changed:
+
+- New icons everywhere (Solar, outline style, the same set as Burrow): the tab bar, buttons, habit icons and widgets. Open-source licences lists Solar icons by 480 Design (CC BY 4.0).
+- New colours, the same as Burrow: Rose is the default accent for new installs (installs from before keep their colour), cards and rows take a soft tint of the accent, and with Dynamic color on every surface follows your wallpaper like other Material You apps. The accents are Rose, Rust, Amber, Green, Teal, Blue and Purple; Plum is gone (a Plum install keeps its colour until another is picked).
+
+Fixed:
+
+- Update available (GitHub version): long What's new lines were cut off with "…" and the dialog didn't scroll. The notes now show in full and scroll, and Update / Later stay at the bottom.
+
 ## 1.5.0
 
 Added:

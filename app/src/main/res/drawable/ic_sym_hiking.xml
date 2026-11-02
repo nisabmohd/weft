@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols Rounded "hiking" (Apache License 2.0). -->
+<!-- Solar hiking (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <group android:translateY="960">
-        <path
-            android:fillColor="#FF000000"
-            android:pathData="M436-360 371-72q-3 14-14.5 23T330-40q-20 0-32-15t-8-34l113-573q6-29 27-43.5t44-14.5q23 0 42.5 10t31.5 30l40 64q18 29 46.5 52.5T700-529v-41q0-13 8.5-21.5T730-600q13 0 21.5 8.5T760-570v500q0 13-8.5 21.5T730-40q-13 0-21.5-8.5T700-70v-376q-48-11-89-35t-71-59l-24 120 72 68q6 6 9 13.5t3 15.5v243q0 17-11.5 28.5T560-40q-17 0-28.5-11.5T520-80v-200l-84-80Zm-178-82-46-9q-16-3-25-16.5t-6-30.5l30-157q6-34 36-51.5t65-10.5q17 3 25.5 16.5T343-670l-38 196q-3 17-16.5 26t-30.5 6Zm225.5-321.5Q460-787 460-820t23.5-56.5Q507-900 540-900t56.5 23.5Q620-853 620-820t-23.5 56.5Q573-740 540-740t-56.5-23.5Z" />
-    </group>
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M9,4.5a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M9 17.5L6 22" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M18.9998 10.4997L17.9154 11.4033C17.3136 11.9049 17.0127 12.1556 16.6856 12.275C16.2427 12.4367 15.7569 12.4367 15.3139 12.275C14.9869 12.1556 14.686 11.9049 14.0841 11.4033L14.0028 11.3355C13.7738 11.1447 13.6593 11.0493 13.481 10.9253C13.1663 10.7063 12.6049 10.4221 12.2421 10.2981C12.0366 10.2279 12.1313 10.2513 12.0934 10.2419C11.6804 10.1397 11.4738 10.0886 11.3085 10.103C11.0022 10.1295 10.613 10.404 10.4853 10.6836C10.4163 10.8346 10.4026 10.9717 10.3752 11.2459L10.213 12.8676C10.1262 13.7355 10.0828 14.1695 10.2046 14.5592C10.2657 14.7545 10.3564 14.9393 10.4736 15.1071C10.7073 15.4419 11.0771 15.673 11.8168 16.1354C12.7145 16.6964 13.1634 16.9769 13.4809 17.3715C13.6407 17.57 13.7745 17.788 13.8792 18.0204C14.0872 18.4822 14.1341 19.0094 14.2279 20.0638L14.4002 21.9997" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M19 22V8" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M8 10L6.328 10.5573C5.53493 10.8217 5 11.5639 5 12.3998C5 12.7677 5.20781 13.1039 5.5368 13.2684L8 14.5" />
 </vector>

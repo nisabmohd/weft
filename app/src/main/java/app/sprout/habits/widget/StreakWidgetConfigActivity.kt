@@ -101,7 +101,7 @@ private fun HabitRow(habit: Habit, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(64.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -167,7 +167,7 @@ private fun SummaryCard(ui: InsightsUi) {
         add(pluralStringResource(R.plurals.count_partial, ui.partialCount, ui.partialCount))
     }.joinToString(" · ")
     Column(
-        Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp)).padding(16.dp),
+        Modifier.fillMaxWidth().background(colors.surfaceContainerLow, RoundedCornerShape(24.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
@@ -206,7 +206,7 @@ private fun Section(
         )
         if (card) {
             Column(
-                Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp)).padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
+                Modifier.fillMaxWidth().background(colors.surfaceContainerLow, RoundedCornerShape(24.dp)).padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) { content() }
         } else {
@@ -242,7 +242,7 @@ private fun Patterns(ui: InsightsUi) {
                 PatternTile(
                     shape = if (both) RoundedCornerShape(topStart = 6.dp, topEnd = 24.dp, bottomEnd = 24.dp, bottomStart = 6.dp) else RoundedCornerShape(24.dp),
                     icon = R.drawable.ic_trending_down,
-                    pill = colors.surfaceContainerHigh,
+                    pill = colors.surfaceContainer,
                     pillContent = colors.onSurface,
                     label = stringResource(R.string.insights_needs_focus),
                     value = ui.focusName,
@@ -257,7 +257,7 @@ private fun Patterns(ui: InsightsUi) {
 private fun RowScope.PatternTile(shape: RoundedCornerShape, icon: Int, pill: Color, pillContent: Color, label: String, value: String, detail: String) {
     val colors = MaterialTheme.colorScheme
     Column(
-        Modifier.weight(1f).fillMaxHeight().background(colors.surfaceContainerLowest, shape).padding(16.dp).semantics(mergeDescendants = true) {},
+        Modifier.weight(1f).fillMaxHeight().background(colors.surfaceContainerLow, shape).padding(16.dp).semantics(mergeDescendants = true) {},
     ) {
         // The label as a pill: icon + "Prime time".
         Row(
@@ -418,7 +418,7 @@ private fun HabitBreakdown(rates: List<HabitRateUi>, byStreak: Boolean, onSort: 
                     Modifier
                         .fillMaxWidth()
                         .clip(groupedShape(index, sorted.size))
-                        .background(colors.surfaceContainerLowest)
+                        .background(colors.surfaceContainerLow)
                         .clickable(onClickLabel = stringResource(R.string.open_habit, r.name)) { onOpenHabit(r.id) }
                         .padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
                         .semantics(mergeDescendants = true) {},
@@ -468,7 +468,7 @@ private fun SortToggle(byStreak: Boolean, onChange: (Boolean) -> Unit) {
             Modifier
                 .height(36.dp)
                 .width(IntrinsicSize.Max)
-                .background(colors.surfaceContainerHigh, CircleShape)
+                .background(colors.surfaceContainer, CircleShape)
                 .padding(3.dp)
                 .selectableGroup(),
         ) {
@@ -484,7 +484,7 @@ private fun SortToggle(byStreak: Boolean, onChange: (Boolean) -> Unit) {
                         .weight(1f)
                         .fillMaxHeight()
                         .clip(CircleShape)
-                        .background(if (selected) colors.surfaceContainerLowest else Color.Transparent)
+                        .background(if (selected) colors.surfaceContainerLow else Color.Transparent)
                         .selectable(selected = selected, role = Role.RadioButton) { if (!selected) haptics.tick(); onChange(value) }
                         .semantics { contentDescription = description }
                         .padding(horizontal = 14.dp),

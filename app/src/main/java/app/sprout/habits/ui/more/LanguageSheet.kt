@@ -61,7 +61,7 @@ private fun HelpTranslateCard(onClick: () -> Unit) {
             .navigationBarsPadding()
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(colors.surfaceContainerHigh)
+            .background(colors.surfaceContainer)
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,

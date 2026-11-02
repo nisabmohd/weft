@@ -133,7 +133,7 @@ private fun SwipeBackground(habit: HabitRowUi, direction: SwipeToDismissBoxValue
     if (undo) {
         val start = direction == SwipeToDismissBoxValue.StartToEnd
         Row(
-            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(horizontal = 24.dp),
+            Modifier.fillMaxSize().background(colors.surfaceContainer, HabitCardShape).padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp, if (start) Alignment.Start else Alignment.End),
         ) {
@@ -153,7 +153,7 @@ private fun SwipeBackground(habit: HabitRowUi, direction: SwipeToDismissBoxValue
         }
 
         SwipeToDismissBoxValue.EndToStart -> Row(
-            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(end = 24.dp),
+            Modifier.fillMaxSize().background(colors.surfaceContainer, HabitCardShape).padding(end = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
         ) {

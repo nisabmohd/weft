@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols Rounded "pool" (Apache License 2.0). -->
+<!-- Solar swimming (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <group android:translateY="960">
-        <path
-            android:fillColor="#FF000000"
-            android:pathData="M480-160q-36 0-57 20t-77 20q-56 0-77-20t-57-20q-29 0-44 13.5T121-125q-16 4-28.5-7T80-160q0-17 12-29.5t27-20.5q17-9 36-19.5t57-10.5q56 0 77 20t57 20q36 0 57-20t77-20q56 0 77 20t57 20q36 0 57-20t77-20q38 0 57 10.5t36 19.5q15 8 27 20.5t12 29.5q0 17-12.5 28t-28.5 7q-32-8-47-21.5T748-160q-36 0-57 20t-77 20q-56 0-77-20t-57-20Zm0-180q-38 0-56.5 20T346-300q-59 0-78.5-20T212-340q-29 0-44 13.5T121-305q-16 4-28.5-7T80-340q0-17 12-29.5t27-20.5q17-9 36-19.5t57-10.5q56 0 77.5 20t56.5 20q36 0 57-20t77-20q56 0 77 20t57 20q36 0 57-20t77-20q38 0 57 10.5t36 19.5q15 8 27 20.5t12 29.5q0 17-12.5 28t-28.5 7q-32-8-47-21.5T748-340q-36 0-55.5 20T614-300q-57 0-77.5-20T480-340ZM276-504l133-133-40-40q-25-25-51.5-39.5T257-736q-20-4-34.5-19T208-790q0-21 15-35.5t35-12.5q54 5 93 22.5t77 55.5l256 256q-17 11-33 17.5t-37 6.5q-36 0-57-20t-77-20q-56 0-77 20t-57 20q-21 0-37-6.5T276-504Zm463-306.5q29 29.5 29 70.5 0 42-29 71t-71 29q-42 0-71-29t-29-71q0-41 29-70.5t71-29.5q42 0 71 29.5Z" />
-    </group>
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M22 15.7728C20.4123 15.3987 19.5955 14.4796 18.9199 13.4574C18.4965 12.8168 17.5655 12.8558 17.1055 13.4706C16.0541 14.8762 14.4844 16.0004 12 16.0004C9.49345 16.0004 7.91806 14.57 6.86651 13.2239C6.42721 12.6616 5.58617 12.6691 5.20168 13.2702C4.50078 14.366 3.68402 15.376 2 15.7728" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M22 20.7728C20.4123 20.3987 19.5955 19.4796 18.9199 18.4574C18.4965 17.8168 17.5655 17.8558 17.1055 18.4706C16.0541 19.8762 14.4844 21.0004 12 21.0004C9.49345 21.0004 7.91806 19.57 6.86651 18.2239C6.42721 17.6616 5.58617 17.6691 5.20168 18.2702C4.50078 19.366 3.68402 20.376 2 20.7728" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M4 11.5L7.47693 9.41382C8.27334 8.93597 8.4485 7.85657 7.84407 7.15139L6.85636 5.99906C6.37314 5.4353 6.40542 4.59455 6.93046 4.06952C7.51004 3.48994 8.45844 3.51955 9.00074 4.13415L15.5 11.5" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M17 8C18.3807 8 19.5 6.88071 19.5 5.5C19.5 4.11929 18.3807 3 17 3C15.6193 3 14.5 4.11929 14.5 5.5C14.5 6.88071 15.6193 8 17 8Z" />
 </vector>

@@ -131,7 +131,7 @@ fun LogSheet(
                         onClick = onUndo,
                         contentPadding = PaddingValues(horizontal = 12.dp),
                         modifier = Modifier.height(40.dp).semantics { contentDescription = clearLabel },
-                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = colors.surfaceContainerHigh, contentColor = colors.onSurface),
+                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = colors.surfaceContainer, contentColor = colors.onSurface),
                     ) {
                         Icon(painterResource(R.drawable.ic_undo), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
@@ -162,7 +162,7 @@ fun LogSheet(
                         colors = SegmentedButtonDefaults.colors(
                             activeContainerColor = hc.mid,
                             activeContentColor = hc.ink,
-                            inactiveContainerColor = colors.surfaceContainerLowest,
+                            inactiveContainerColor = colors.surfaceContainerLow,
                         ),
                     ) { Text(label, style = WeftType.label) }
                 }
@@ -247,7 +247,7 @@ private fun StepButton(icon: Int, label: String, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier.size(52.dp),
         colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     ) {

@@ -23,7 +23,7 @@ data class BarSegment(val hue: Float, val fill: Float, val skipped: Boolean = fa
 fun SegmentBar(segments: List<BarSegment>, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val line = colors.outlineVariant
-    val skip = colors.surfaceContainerHigh
+    val skip = colors.surfaceContainer
     val solids = segments.map { habitColors(it.hue).solid }
     Canvas(modifier.fillMaxWidth().height(8.dp)) {
         if (segments.isEmpty()) {

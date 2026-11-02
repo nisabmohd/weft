@@ -5,11 +5,11 @@ These rules apply to every change, whether a person or an AI agent makes it. The
 ## Hard rules
 
 - Ask before adding any dependency. Most of the app's size comes from libraries, so the default answer is to use the platform or write the few lines yourself. The libraries already in use are listed in `gradle/libs.versions.toml`.
-- Never add `material-icons-extended`. Icons are vector drawables in `app/src/main/res/drawable`, drawn with the same 24 × 24 grid and 1.9 stroke as the rest.
+- Never add `material-icons-extended`. Icons are Solar (Linear) vector drawables in `app/src/main/res/drawable`, made by `tools/solar_icon.py` (see CLAUDE.md); never mix in another set.
 - No dependency injection framework (use `AppContainer`), no chart library (use Compose `Canvas`), no image library, no networking library.
 - The `foss` flavor must never contain Google or Play Services code. Put Play-only code in `src/play` (stand-ins in `src/noPlay`) and Google Drive code in `src/drive` (play and github; stand-ins in `src/noDrive`).
 - Release builds stay minified: R8 full mode, `isMinifyEnabled = true`, `isShrinkResources = true`. Check the APK size after changes that could grow it (target: under 5 MB; today it is about 2.8 MB).
-- Build, test and run the app after every change, and commit each working step on its own.
+- Build, test and run the app after every change. Don't commit until the maintainer has checked it and asks for a commit.
 
 ## Names
 
@@ -62,4 +62,4 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 2. Make the change, then run the unit tests and the smoke suite (`python3 tools/verify/smoke.py`, see `CONTRIBUTING.md`).
 3. For UI changes, also check dark mode and the largest font size.
 4. Add a check to `tools/verify/smoke.py` for new behaviour, update or add the feature's skill, and add anything left undone to `TODO.md`.
-5. Commit with a message that says what changed and why.
+5. When the maintainer asks for a commit, write a message that says what changed and why.

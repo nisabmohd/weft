@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material Symbols Rounded "notifications", filled (Apache License 2.0). -->
+<!-- Solar bell (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="960"
-    android:viewportHeight="960">
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="M200,760Q183,760 171.5,748.5Q160,737 160,720Q160,703 171.5,691.5Q183,680 200,680L240,680L240,400Q240,317 290,252.5Q340,188 420,168L420,140Q420,115 437.5,97.5Q455,80 480,80Q505,80 522.5,97.5Q540,115 540,140L540,168Q620,188 670,252.5Q720,317 720,400L720,680L760,680Q777,680 788.5,691.5Q800,703 800,720Q800,737 788.5,748.5Q777,760 760,760L200,760ZM480,880Q447,880 423.5,856.5Q400,833 400,800L560,800Q560,833 536.5,856.5Q513,880 480,880Z" />
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M18.7491 9.70957V9.00496C18.7491 5.13623 15.7274 2 12 2C8.27256 2 5.25087 5.13623 5.25087 9.00496V9.70957C5.25087 10.5552 5.00972 11.3818 4.5578 12.0854L3.45036 13.8095C2.43882 15.3843 3.21105 17.5249 4.97036 18.0229C9.57274 19.3257 14.4273 19.3257 19.0296 18.0229C20.789 17.5249 21.5612 15.3843 20.5496 13.8095L19.4422 12.0854C18.9903 11.3818 18.7491 10.5552 18.7491 9.70957Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19" />
 </vector>

@@ -67,11 +67,11 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import app.sprout.habits.ui.components.TimePickerSheet
 
-/** Accent choices when dynamic color is off: the app's green first, then the habit hues. */
-private val ACCENT_HUES = listOf(150f, 192f, 215f, 275f, 330f, 12f, 38f)
+/** Accent choices when dynamic color is off: the same swatches as Burrow, Rose (the default) first. */
+private val ACCENT_HUES = listOf(345f, 12f, 38f, 150f, 192f, 215f, 275f)
 private val ACCENT_NAMES = mapOf(
-    150f to R.string.color_green, 192f to R.string.color_teal, 215f to R.string.color_blue, 275f to R.string.color_purple,
-    330f to R.string.color_pink, 12f to R.string.color_rust, 38f to R.string.color_gold,
+    345f to R.string.color_rose, 12f to R.string.color_rust, 38f to R.string.color_gold, 150f to R.string.color_green,
+    192f to R.string.color_teal, 215f to R.string.color_blue, 275f to R.string.color_purple,
 )
 
 private val TEXT_SCALES = listOf(0.85f to R.string.text_small, 1f to R.string.text_default, 1.15f to R.string.text_large, 1.3f to R.string.text_largest)

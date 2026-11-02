@@ -73,7 +73,7 @@ fun HabitCard(
             .heightIn(min = 68.dp)
             .height(IntrinsicSize.Min)
             .clip(HabitCardShape)
-            .background(if (skipped) colors.surfaceContainerHigh else colors.surfaceContainerLowest)
+            .background(if (skipped) colors.surfaceContainer else colors.surfaceContainerLow)
             .combinedClickable(
                 onLongClickLabel = stringResource(R.string.log_amount),
                 onLongClick = {
@@ -129,7 +129,7 @@ private fun IconTile(habit: HabitRowUi, hc: HabitColors) {
     val (tile, tint) = when (habit.outcome) {
         DayOutcome.DONE -> hc.solid to hc.on
         DayOutcome.PARTIAL -> hc.mid to hc.ink
-        DayOutcome.SKIP -> colors.surfaceContainerLowest to colors.onSurfaceVariant
+        DayOutcome.SKIP -> colors.surfaceContainerLow to colors.onSurfaceVariant
         DayOutcome.OPEN -> hc.soft to hc.ink
     }
     HabitTile(habit.icon, tile, tint)
@@ -143,7 +143,7 @@ private fun TrailingControl(habit: HabitRowUi, hc: HabitColors, onToggle: () -> 
         DayOutcome.SKIP -> Box(
             Modifier
                 .height(32.dp)
-                .background(colors.surfaceContainerLowest, CircleShape)
+                .background(colors.surfaceContainerLow, CircleShape)
                 .padding(horizontal = 12.dp),
             contentAlignment = Alignment.Center,
         ) {
