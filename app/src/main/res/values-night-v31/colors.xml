@@ -1,0 +1,5 @@
+<resources>
+    <!-- Android 12+, dark: system_neutral1_900 (dynamic dark background) and Glance's dark widgetBackground. -->
+    <color name="weft_bg">@android:color/system_neutral1_900</color>
+    <color name="widget_bg">@android:color/system_accent2_800</color>
+</resources>

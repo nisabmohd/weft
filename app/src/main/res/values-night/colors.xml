@@ -1,6 +1,6 @@
 <resources>
-    <!-- hsl(150 14% 7%), the dark background from design/TOKENS.md -->
-    <color name="weft_bg">#FF0F140F</color>
+    <!-- Below Android 12, dark: the logo's blue (hue 215), page hsl(215 12% 6.5%), widget background hsl(215 14% 25%). -->
+    <color name="weft_bg">#FF0F1013</color>
     <color name="weft_primary">#FF2E4A7A</color>
-    <color name="widget_bg">#FF1A201C</color>
+    <color name="widget_bg">#FF373E49</color>
 </resources>

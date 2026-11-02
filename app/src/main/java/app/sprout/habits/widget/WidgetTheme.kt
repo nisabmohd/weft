@@ -16,12 +16,12 @@ import androidx.glance.material3.ColorProviders
 import app.sprout.habits.MainActivity
 import app.sprout.habits.WeftApp
 import app.sprout.habits.ui.nav.AppLink
-import app.sprout.habits.ui.theme.DEFAULT_ACCENT_HUE
+import app.sprout.habits.ui.theme.LOGO_HUE
 import app.sprout.habits.ui.theme.seedColorScheme
 
 /**
  * Widgets live on the home screen, so they follow the system: wallpaper colors on Android 12+
- * and Weft's default palette below that. The in-app theme and accent only change the app.
+ * and the logo's blue below that. The in-app theme and accent only change the app.
  */
 @Composable
 fun WeftGlanceTheme(content: @Composable () -> Unit) {
@@ -40,7 +40,7 @@ private fun WeftGlanceColors(content: @Composable () -> Unit) {
         colors = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             GlanceTheme.colors
         } else {
-            ColorProviders(light = seedColorScheme(DEFAULT_ACCENT_HUE, false), dark = seedColorScheme(DEFAULT_ACCENT_HUE, true))
+            ColorProviders(light = seedColorScheme(LOGO_HUE, false), dark = seedColorScheme(LOGO_HUE, true))
         },
         content = content,
     )

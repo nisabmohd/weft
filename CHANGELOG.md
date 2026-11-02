@@ -6,10 +6,15 @@ Changed:
 
 - New icons everywhere (Solar, outline style, the same set as Burrow): the tab bar, buttons, habit icons and widgets. Open-source licences lists Solar icons by 480 Design (CC BY 4.0).
 - New colours, the same as Burrow: Rose is the default accent for new installs (installs from before keep their colour), cards and rows take a soft tint of the accent, and with Dynamic color on every surface follows your wallpaper like other Material You apps. The accents are Rose, Rust, Amber, Green, Teal, Blue and Purple; Plum is gone (a Plum install keeps its colour until another is picked).
+- The launch screen and the widgets' loading screen follow the phone's colours (Android 12 and later) instead of a fixed green tint, so they no longer flash a different colour before Weft opens. Below Android 12 they, the widgets and the Add note / New habit shortcuts use the blue of Weft's icon.
 
 Fixed:
 
 - Update available (GitHub version): long What's new lines were cut off with "…" and the dialog didn't scroll. The notes now show in full and scroll, and Update / Later stay at the bottom.
+
+Internal:
+
+- New store graphics and design captures: the 8 phone screenshots, the feature graphic, the README screenshots and every screen capture in `design/` were retaken from 1.5.1 with the Blue accent (the logo's colour), showing the new icons and colours.
 
 ## 1.5.0
 

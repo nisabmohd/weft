@@ -1,0 +1,7 @@
+<resources>
+    <!-- Android 12+: the system's colours, the same ones dynamic color and Glance use. weft_bg is the page
+         (system_neutral1_10, what dynamicLightColorScheme uses for background); widget_bg is Glance's
+         widgetBackground (system_accent2_50), so the loading screen matches the widget that replaces it. -->
+    <color name="weft_bg">@android:color/system_neutral1_10</color>
+    <color name="widget_bg">@android:color/system_accent2_50</color>
+</resources>

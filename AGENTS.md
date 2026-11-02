@@ -30,11 +30,11 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 - A note is one habit, one date and free text.
 - Writing suggestions in New note (starter phrases, past notes, sentence completion) come only from a fixed phrase list in `strings.xml` and the user's own notes, worked out on the phone (`domain/NoteSuggestions.kt`). No model, no network. More → Journal turns them off or clears what they learned.
 - Notifications are a title and one line, with no action buttons. Tapping one opens the habit.
-- Each habit keeps its own fixed hue. App chrome follows the chosen accent (Amber by default), or dynamic color when the user turns it on (Android 12 and later).
+- Each habit keeps its own fixed hue. App chrome follows the chosen accent (Rose by default since 1.5.1), or dynamic color when the user turns it on (Android 12 and later). Never hardcode an accent: what can't follow it (launch screen, widget loading screen) follows the system, and falls back to the logo's blue (hue 215) below Android 12; see `design/TOKENS.md`.
 
 ## Design and text
 
-- Screens follow the designs in `design/` (one PNG per screen, e.g. `today.png`, `journal.png`, `icon-picker.png`). Exact colors and icon paths are in `design/TOKENS.md`. Since 2026-10-19 they are captures of the app with the sample data (27 Sep); when a screen changes, recapture its PNG too. `habit-card-states`, `notifications`, `update-dialog` and `support-prompt` are still mockups.
+- Screens follow the designs in `design/` (one PNG per screen, e.g. `today.png`, `journal.png`, `icon-picker.png`). Exact colors and icon paths are in `design/TOKENS.md`. Since 2026-10-19 they are captures of the app with the sample data (27 Sep); when a screen changes, recapture its PNG too. All captures use the **Blue** accent (the logo's colour). `habit-card-states`, `notifications`, `update-dialog`, `support-prompt` and `drive-restore-sheet` are still mockups.
 - Play Store shots in `release/phone-screenshots/` are framed by `tools/store_shots.py`, which keeps the status bar clear of the frame's corners.
 - Gaps and sizes follow [`docs/SPACING.md`](docs/SPACING.md): 16 dp side padding, cards 8 dp apart, sections 16 dp apart, 16 dp inside a card, section labels with 16 dp above and 8 dp below, a 44 dp habit tile wherever a habit is listed.
 - Charts (Insights) are drawn with Compose `Canvas` and use only the app colors: primary for done, the light primary tone for partial, outline grey for the rest. Every chart mark that can be tapped shows its numbers and has a content description.
@@ -44,7 +44,7 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 - Text must grow with the user's font size. Only text inside a fixed-size shape (rings, segmented buttons, the navigation bar, the week columns) may cap its scaling, using `CappedFontScale`.
 - Filters, pickers and choices (dates, times, habits, amounts, week start) open in a bottom sheet, never a dialog, inline chips or menus. Use `DateRangeSheet`, `DatePickerSheet`, `TimePickerSheet` and `HabitFilterSheet` in `ui/components`. `TimePickerSheet` (the wheel) is the only time picker: every time setting uses it. Dialogs are only for confirming something (delete, import). Every sheet is a `WeftSheet` (ui/components): it opens fully and stops at 90% of the screen, so put long content in a scrolling list with `Modifier.weight(1f, fill = false)` and keep the main button below it. Full screens are only for creating or editing (New habit, New note).
 - Tab headers (`TabHeader`, plus the filter chips on Journal and Insights) sit above the list, not inside it, so they stay in place while the list scrolls.
-- Widgets follow the system: wallpaper colors on Android 12+ and the system light or dark mode. Never apply the in-app theme, accent or dynamic-color setting to them.
+- Widgets follow the system: wallpaper colors on Android 12+ (the logo's blue below that) and the system light or dark mode. Never apply the in-app theme, accent or dynamic-color setting to them.
 - Every clickable element is at least 48 dp and has a label TalkBack can read. Gestures such as swipe and press and hold also get an accessibility action.
 - Write UI text the way a person would say it: short, specific and plain. No marketing words, no exclamation marks.
 
