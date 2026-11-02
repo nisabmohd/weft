@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Solar smile-circle (Linear) by 480 Design, CC BY 4.0. Tinted where it is drawn. -->
+<!-- Drawn for Weft in Solar Linear style (custom:tooth). Tinted where it is drawn. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M2,12a10,10 0 1,0 20,0a10,10 0 1,0 -20,0Z" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="1" android:strokeLineCap="round" android:pathData="M15.5 10.5C15.5 11.0523 15.2761 11.5 15 11.5C14.7239 11.5 14.5 11.0523 14.5 10.5C14.5 9.94772 14.7239 9.5 15 9.5C15.2761 9.5 15.5 9.94772 15.5 10.5Z" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="1" android:strokeLineCap="round" android:pathData="M8.5,10.5a0.5,1 0 1,0 1,0a0.5,1 0 1,0 -1,0Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M7.5 3.5C5 3.5 3.75 5.5 3.75 8c0 2 .75 3.5 1.25 5 .6 1.8.75 4 1.25 5.75.35 1.2 1 2 1.75 2 1 0 1.25-1 1.5-2.5.3-1.8.75-3.5 2.5-3.5s2.2 1.7 2.5 3.5c.25 1.5.5 2.5 1.5 2.5.75 0 1.4-.8 1.75-2 .5-1.75.65-3.95 1.25-5.75.5-1.5 1.25-3 1.25-5 0-2.5-1.25-4.5-3.75-4.5-1.75 0-2.75 1-4.5 1s-2.75-1-4.5-1Z" />
 </vector>

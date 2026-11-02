@@ -2,9 +2,9 @@
     <!-- The launch screen and the widgets' loading screen can't know the user's accent, so they follow the
          system (user, 2026-11-02): Android 12+ takes the system colours (values-v31). Below 12 there are none,
          so they use the logo's blue (hue 215, the Blue accent), like the widgets there (LOGO_HUE):
-         weft_bg the page hsl(215 45% 98.4%), widget_bg the widget background (secondaryContainer) hsl(215 34% 87%).
+         weft_bg the page hsl(215 30% 96%), widget_bg the widget background (secondaryContainer) hsl(215 34% 87%).
          weft_primary: the icon's navy (weft-icon.zip). -->
-    <color name="weft_bg">#FFF9FBFD</color>
+    <color name="weft_bg">#FFF2F4F8</color>
     <color name="weft_primary">#FF2E4A7A</color>
     <color name="widget_bg">#FFD3DCE9</color>
     <!-- Launcher shortcuts (fixed, any accent): the logo's blue, primaryContainer hsl(215 88% 91%) and onPrimaryContainer hsl(215 62% 19%). -->

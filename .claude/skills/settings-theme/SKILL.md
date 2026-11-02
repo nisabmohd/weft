@@ -5,7 +5,7 @@ description: The More tab settings (language, theme, dynamic color, accent, font
 
 # Settings and theme
 
-**Code:** `data/SettingsRepository.kt` (DataStore; every preference persists), `ui/theme/` (`ThemeSettings` defaults: System theme, dynamic color off, Rose accent (345), Lexend body font, text scale 1.0; `Color.kt` seed palette (Burrow's, 1.5.1) from `design/TOKENS.md`; accents Rose, Rust, Amber, Green, Teal, Blue, Purple in `MoreScreen.kt` `ACCENT_HUES`; `Type.kt` type scale), `ui/more/MoreScreen.kt`, `ui/components/CappedFontScale.kt`.
+**Code:** `data/SettingsRepository.kt` (DataStore; every preference persists), `ui/theme/` (`ThemeSettings` defaults: System theme, dynamic color off, Amber accent (38), Lexend body font, text scale 1.0; `Color.kt` seed palette (Weft's surfaces, 1.5.1 accent tones) from `design/TOKENS.md`; accents Rose, Teal, Blue, Purple, Plum, Rust, Amber in `MoreScreen.kt` `ACCENT_HUES`; `Type.kt` type scale), `ui/more/MoreScreen.kt`, `ui/components/CappedFontScale.kt`.
 
 **Verify:** `python3 tools/verify/smoke.py more`. Change settings, `adb shell am force-stop app.sprout.habits`, relaunch and confirm they stuck (`adb shell "run-as app.sprout.habits cat files/datastore/settings.preferences_pb" | strings`).
 

@@ -206,7 +206,7 @@ private fun ScoreCard(state: TodayUiState) {
         Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
-            .background(colors.surfaceContainerLow, RoundedCornerShape(24.dp))
+            .background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

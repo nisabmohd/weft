@@ -4,8 +4,9 @@
 
 Changed:
 
-- New icons everywhere (Solar, outline style, the same set as Burrow): the tab bar, buttons, habit icons and widgets. Open-source licences lists Solar icons by 480 Design (CC BY 4.0).
-- New colours, the same as Burrow: Rose is the default accent for new installs (installs from before keep their colour), cards and rows take a soft tint of the accent, and with Dynamic color on every surface follows your wallpaper like other Material You apps. The accents are Rose, Rust, Amber, Green, Teal, Blue and Purple; Plum is gone (a Plum install keeps its colour until another is picked).
+- New icons everywhere (Solar, outline style, the same set as Burrow): the tab bar, buttons, habit icons and widgets. Every habit icon now shows what it says: Teeth is a tooth, Cricket a bat and ball, Stairs a staircase, Stretch a stretching figure, No alcohol a crossed-out glass, No smoking a crossed-out cigarette, Less phone and Less TV are crossed out, Fasting an hourglass, Self care, Outdoors, Morning, Art, Puzzles, Language, Clean, Cook, Plants, Garden and Elders have their own icons, and no two icons in the picker are the same. Open-source licences lists Solar icons by 480 Design (CC BY 4.0).
+- Richer accent colours (buttons, highlights and the welcome panel are brighter in dark mode and deeper in light mode). Screens look as they did in 1.5.0: same cards, page and tiles.
+- Accent colours: Rose, Teal, Blue, Purple, Plum, Rust and Amber. Rose takes Green's place (a Green install switches to Rose); Amber stays the default.
 - The launch screen and the widgets' loading screen follow the phone's colours (Android 12 and later) instead of a fixed green tint, so they no longer flash a different colour before Weft opens. Below Android 12 they, the widgets and the Add note / New habit shortcuts use the blue of Weft's icon.
 
 Fixed:
@@ -14,7 +15,7 @@ Fixed:
 
 Internal:
 
-- New store graphics and design captures: the 8 phone screenshots, the feature graphic, the README screenshots and every screen capture in `design/` were retaken from 1.5.1 with the Blue accent (the logo's colour), showing the new icons and colours.
+- `tools/solar_icon.py` can draw an icon Solar doesn't have in its style (`custom:`) and cross one out (`slash:`).
 
 ## 1.5.0
 

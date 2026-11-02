@@ -11,14 +11,14 @@ private fun tone(hue: Float, saturation: Int, lightness: Number): Color =
     Color.hsl(hue, saturation / 100f, lightness.toFloat() / 100f)
 
 /**
- * App chrome when dynamic color is off: the same palette as Burrow (user, 2026-11-02).
- * Roles: background the page (and sheets / dialogs, surfaceContainerLowest); surfaceContainerLow cards and
- * rows; surfaceContainer icon buttons, tiles, tracks, the nav bar; surfaceContainerHigh pressed / today's
- * column; primaryContainer hero and welcome panel; secondaryContainer selected chips and pills.
+ * App chrome when dynamic color is off (see `pal()` in design/TOKENS.md).
+ * Surfaces, background and outlines are the original Weft ones, so screens look as before 1.5.1
+ * (cards on surfaceContainerLowest, tiles on surfaceContainerHigh). Primary, containers, error and
+ * scrim are the richer 1.5.1 Material tones (user, 2026-11-02).
  */
 fun seedColorScheme(hue: Float, dark: Boolean): ColorScheme = if (dark) {
-    val bg = tone(hue, 12, 6.5f)
-    val text = tone(hue, 15, 91f)
+    val bg = tone(hue, 14, 7)
+    val text = tone(hue, 10, 93)
     darkColorScheme(
         primary = tone(hue, 86, 82f),
         onPrimary = tone(hue, 60, 17f),
@@ -32,23 +32,23 @@ fun seedColorScheme(hue: Float, dark: Boolean): ColorScheme = if (dark) {
         onBackground = text,
         surface = bg,
         onSurface = text,
-        surfaceVariant = tone(hue, 9, 15f),
-        onSurfaceVariant = tone(hue, 9, 71f),
-        surfaceContainerLowest = bg,
-        surfaceContainerLow = tone(hue, 10, 11f),
-        surfaceContainer = tone(hue, 9, 15f),
-        surfaceContainerHigh = tone(hue, 8, 20f),
-        surfaceContainerHighest = tone(hue, 8, 24f),
-        outline = tone(hue, 6, 34f),
-        outlineVariant = tone(hue, 8, 20f),
+        surfaceVariant = tone(hue, 12, 18),
+        onSurfaceVariant = tone(hue, 8, 68),
+        surfaceContainerLowest = tone(hue, 14, 5),
+        surfaceContainerLow = tone(hue, 12, 12),
+        surfaceContainer = tone(hue, 14, 15),
+        surfaceContainerHigh = tone(hue, 12, 18),
+        surfaceContainerHighest = tone(hue, 12, 22),
+        outline = tone(hue, 8, 45),
+        outlineVariant = tone(hue, 8, 28),
         error = tone(356f, 90, 78f),
         errorContainer = tone(356f, 42, 27f),
         onErrorContainer = tone(356f, 90, 92f),
         scrim = Color(0x99000000),
     )
 } else {
-    val bg = tone(hue, 45, 98.4f)
-    val text = tone(hue, 14, 11f)
+    val bg = tone(hue, 30, 96)
+    val text = tone(hue, 15, 11)
     lightColorScheme(
         primary = tone(hue, 55, 40f),
         onPrimary = Color.White,
@@ -62,15 +62,15 @@ fun seedColorScheme(hue: Float, dark: Boolean): ColorScheme = if (dark) {
         onBackground = text,
         surface = bg,
         onSurface = text,
-        surfaceVariant = tone(hue, 24, 91.5f),
-        onSurfaceVariant = tone(hue, 7, 35f),
-        surfaceContainerLowest = bg,
-        surfaceContainerLow = tone(hue, 32, 95f),
-        surfaceContainer = tone(hue, 24, 91.5f),
-        surfaceContainerHigh = tone(hue, 18, 88f),
-        surfaceContainerHighest = tone(hue, 16, 84f),
-        outline = tone(hue, 9, 72f),
-        outlineVariant = tone(hue, 18, 88f),
+        surfaceVariant = tone(hue, 28, 91),
+        onSurfaceVariant = tone(hue, 8, 36),
+        surfaceContainerLowest = tone(hue, 40, 99),
+        surfaceContainerLow = tone(hue, 40, 99),
+        surfaceContainer = tone(hue, 32, 93),
+        surfaceContainerHigh = tone(hue, 28, 91),
+        surfaceContainerHighest = tone(hue, 24, 88),
+        outline = tone(hue, 8, 60),
+        outlineVariant = tone(hue, 14, 84),
         error = tone(356f, 64, 44f),
         errorContainer = tone(356f, 86, 92f),
         onErrorContainer = tone(356f, 60, 22f),

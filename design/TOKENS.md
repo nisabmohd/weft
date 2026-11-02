@@ -3,32 +3,34 @@
 The designs are in `Habit Tracker UI.html` in this folder: open it in a browser to see every screen as a 390 dp wide artboard.
 
 ## Colors
-`tone(h, s, l)` = `hsl(h s% l%)`. Default accent hue = **345** (Rose) since 1.5.1; it was 38 (Amber) from 1.2 and 150 (green) before. Installs keep the hue they saved.
+`tone(h, s, l)` = `hsl(h s% l%)`. Default accent hue = **38** (Amber) (user, 2026-11-02; 1.5.1 briefly made it Rose 345; 150 green before 1.2). Installs keep the hue they saved, except Green (150), which is read as Rose.
 
-Accents (More → Appearance, shown when Dynamic color is off): Rose 345, Rust 12, Amber 38, Green 150, Teal 192, Blue 215, Purple 275. Blue is the logo's colour; the design and store captures use it.
+Accents (More → Appearance, shown when Dynamic color is off): Rose 345, Teal 192, Blue 215, Purple 275, Plum 330, Rust 12, Amber 38 (Rose in Green's place, user 2026-11-02). Blue is the logo's colour; the design and store captures use it.
 
-App palette `seedColorScheme(h, dark)` in `ui/theme/Color.kt` (1.5.1, Burrow's palette and roles). With Dynamic color on (Android 12+), the system's wallpaper scheme replaces all of it; habit colours never change.
+App palette `seedColorScheme(h, dark)` in `ui/theme/Color.kt`. Surfaces and roles are Weft's original ones (the user rejected Burrow's in 1.5.1: "I want old UI"); primary, the containers, error and scrim are the richer 1.5.1 tones. With Dynamic color on (Android 12+), the system's wallpaper scheme replaces all of it; habit colours never change.
 
 | Role | Used for | Light | Dark |
 | --- | --- | --- | --- |
-| background / surface / surfaceContainerLowest | the page, sheets, dialogs | tone(h,45,98.4) | tone(h,12,6.5) |
-| surfaceContainerLow | cards and rows | tone(h,32,95) | tone(h,10,11) |
-| surfaceContainer / surfaceVariant | icon buttons, tiles, tracks, the nav bar | tone(h,24,91.5) | tone(h,9,15) |
-| surfaceContainerHigh / outlineVariant | pressed, today's column | tone(h,18,88) | tone(h,8,20) |
-| surfaceContainerHighest | | tone(h,16,84) | tone(h,8,24) |
+| background / surface | the page | tone(h,30,96) | tone(h,14,7) |
+| surfaceContainerLowest | cards, rows, note cards | tone(h,40,99) | tone(h,14,5) |
+| surfaceContainerLow | | tone(h,40,99) | tone(h,12,12) |
+| surfaceContainer | the nav bar | tone(h,32,93) | tone(h,14,15) |
+| surfaceContainerHigh | icon buttons, tiles, tracks, the skipped card, today's column | tone(h,28,91) | tone(h,12,18) |
+| surfaceContainerHighest | | tone(h,24,88) | tone(h,12,22) |
+| surfaceVariant | | tone(h,28,91) | tone(h,12,18) |
 | primary / secondary | | tone(h,55,40) | tone(h,86,82) |
 | onPrimary / onSecondary | | #ffffff | tone(h,60,17) |
 | primaryContainer | hero, Welcome panel | tone(h,88,91) | tone(h,40,27) |
 | onPrimaryContainer | | tone(h,62,19) | tone(h,90,92) |
 | secondaryContainer | selected chips and pills | tone(h,34,87) | tone(h,14,25) |
 | onSecondaryContainer | | tone(h,30,17) | tone(h,40,90) |
-| onBackground / onSurface | text | tone(h,14,11) | tone(h,15,91) |
-| onSurfaceVariant | muted text | tone(h,7,35) | tone(h,9,71) |
-| outline | | tone(h,9,72) | tone(h,6,34) |
+| onBackground / onSurface | text | tone(h,15,11) | tone(h,10,93) |
+| onSurfaceVariant | muted text | tone(h,8,36) | tone(h,8,68) |
+| outline / outlineVariant | | tone(h,8,60) / tone(h,14,84) | tone(h,8,45) / tone(h,8,28) |
 | error / errorContainer / onErrorContainer | | tone(356,64,44) / tone(356,86,92) / tone(356,60,22) | tone(356,90,78) / tone(356,42,27) / tone(356,90,92) |
 
 Colours that can't follow the accent (`res/values*/colors.xml`):
-- Launch screen (`weft_bg`) and the widgets' loading screen (`widget_bg`) follow the system. On Android 12+ they are `system_neutral1_10` / `system_neutral1_900` and Glance's `widgetBackground` (`system_accent2_50` / `system_accent2_800`). Below 12 there are no system colours, so they use the logo's blue (hue 215): page tone(215,45,98.4) / tone(215,12,6.5), widget tone(215,34,87) / tone(215,14,25).
+- Launch screen (`weft_bg`) and the widgets' loading screen (`widget_bg`) follow the system. On Android 12+ they are `system_neutral1_10` / `system_neutral1_900` and Glance's `widgetBackground` (`system_accent2_50` / `system_accent2_800`). Below 12 there are no system colours, so they use the logo's blue (hue 215): page tone(215,30,96) / tone(215,14,7), widget tone(215,34,87) / tone(215,14,25).
 - Widgets below Android 12 use `seedColorScheme(LOGO_HUE = 215)`. On 12+ they use the wallpaper colours.
 - Launcher shortcuts use the logo's blue: primaryContainer tone(215,88,91) with onPrimaryContainer tone(215,62,19).
 - The launcher icon background is the logo's navy `#2E4A7A` (`weft_primary`).

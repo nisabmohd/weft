@@ -80,8 +80,8 @@ fun IconPickerSheet(
                 textStyle = WeftType.body,
                 shape = CircleShape,
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = scheme.surfaceContainer,
-                    unfocusedContainerColor = scheme.surfaceContainer,
+                    focusedContainerColor = scheme.surfaceContainerHigh,
+                    unfocusedContainerColor = scheme.surfaceContainerHigh,
                     focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                     unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                 ),
@@ -144,7 +144,7 @@ fun IconTile(icon: HabitIcon, selected: Boolean, colors: HabitColors, modifier: 
     Box(
         modifier
             .clip(shape)
-            .background(if (selected) colors.soft else scheme.surfaceContainerLow)
+            .background(if (selected) colors.soft else scheme.surfaceContainerLowest)
             .then(if (selected) Modifier.border(2.dp, colors.solid, shape) else Modifier)
             .clickable(role = Role.RadioButton, onClick = onClick)
             .semantics { contentDescription = label; this.selected = selected },

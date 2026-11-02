@@ -191,7 +191,7 @@ private fun StatTile(value: String, label: String, hc: HabitColors, modifier: Mo
     Column(
         modifier
             .fillMaxHeight()
-            .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(18.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest, RoundedCornerShape(18.dp))
             .padding(12.dp),
         // The labels sit on the bottom edge, so they stay level when one value has shrunk.
         verticalArrangement = Arrangement.SpaceBetween,
@@ -214,7 +214,7 @@ private fun MonthCalendar(ui: HabitDetailUi, hc: HabitColors, onPrevious: () -> 
     Column(
         Modifier
             .fillMaxWidth()
-            .background(colors.surfaceContainerLow, RoundedCornerShape(24.dp))
+            .background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp))
             .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -269,9 +269,9 @@ private fun CalendarDay(day: CalendarDayUi, hc: HabitColors, editable: Boolean, 
         MarkKind.DONE -> hc.solid to hc.on
         MarkKind.PARTIAL -> hc.mid to hc.ink
         MarkKind.SKIP -> colors.outlineVariant to colors.onSurfaceVariant
-        MarkKind.OPEN_TODAY -> colors.surfaceContainerLow to colors.onSurface
-        MarkKind.FUTURE -> colors.surfaceContainerLow to colors.onSurfaceVariant
-        MarkKind.NOT_SCHEDULED -> colors.surfaceContainerLow to colors.outline
+        MarkKind.OPEN_TODAY -> colors.surfaceContainerLowest to colors.onSurface
+        MarkKind.FUTURE -> colors.surfaceContainerLowest to colors.onSurfaceVariant
+        MarkKind.NOT_SCHEDULED -> colors.surfaceContainerLowest to colors.outline
     }
     val description = when (day.mark.kind) {
         MarkKind.DONE -> stringResource(R.string.mark_done_lower)

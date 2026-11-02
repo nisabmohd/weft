@@ -30,7 +30,7 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 - A note is one habit, one date and free text.
 - Writing suggestions in New note (starter phrases, past notes, sentence completion) come only from a fixed phrase list in `strings.xml` and the user's own notes, worked out on the phone (`domain/NoteSuggestions.kt`). No model, no network. More → Journal turns them off or clears what they learned.
 - Notifications are a title and one line, with no action buttons. Tapping one opens the habit.
-- Each habit keeps its own fixed hue. App chrome follows the chosen accent (Rose by default since 1.5.1), or dynamic color when the user turns it on (Android 12 and later). Never hardcode an accent: what can't follow it (launch screen, widget loading screen) follows the system, and falls back to the logo's blue (hue 215) below Android 12; see `design/TOKENS.md`.
+- Each habit keeps its own fixed hue. App chrome follows the chosen accent (Amber by default), or dynamic color when the user turns it on (Android 12 and later). Never hardcode an accent: what can't follow it (launch screen, widget loading screen) follows the system, and falls back to the logo's blue (hue 215) below Android 12; see `design/TOKENS.md`.
 
 ## Design and text
 

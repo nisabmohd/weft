@@ -201,7 +201,7 @@ private fun HabitRow(
             .fillMaxWidth()
             .height(68.dp)
             .then(if (elevated) Modifier.shadow(8.dp, shape) else Modifier)
-            .background(colors.surfaceContainerLow, shape)
+            .background(colors.surfaceContainerLowest, shape)
             .padding(start = 12.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

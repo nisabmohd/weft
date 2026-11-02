@@ -175,7 +175,8 @@ class SettingsRepository(context: Context) {
             theme = ThemeSettings(
                 mode = enumOrDefault(this[THEME], theme.mode),
                 dynamicColor = this[DYNAMIC_COLOR] ?: theme.dynamicColor,
-                accentHue = this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE,
+                // Green (150) is no longer a swatch; Rose took its place (user, 2026-11-02).
+                accentHue = (this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE).let { if (it == 150f) 345f else it },
                 font = enumOrDefault(this[FONT], theme.font),
                 textScale = this[TEXT_SCALE] ?: theme.textScale,
             ),

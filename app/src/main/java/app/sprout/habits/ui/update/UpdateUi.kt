@@ -102,7 +102,7 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
                 )
                 if (update.notes.isNotEmpty()) {
                     Column(
-                        Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainer, RoundedCornerShape(16.dp)).padding(16.dp),
+                        Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainerHigh, RoundedCornerShape(16.dp)).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(stringResource(R.string.whats_new), style = WeftType.label, color = colors.onSurface)
@@ -238,13 +238,13 @@ private fun UpdatesPill(state: CheckState, onClick: () -> Unit) {
         modifier = Modifier.heightIn(min = 40.dp).semantics { liveRegion = LiveRegionMode.Polite },
         contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, end = 16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (latest) colors.primaryContainer else colors.surfaceContainer,
+            containerColor = if (latest) colors.primaryContainer else colors.surfaceContainerHigh,
             contentColor = when {
                 latest -> colors.onPrimaryContainer
                 state == CheckState.ERROR -> colors.error
                 else -> colors.onSurface
             },
-            disabledContainerColor = colors.surfaceContainer,
+            disabledContainerColor = colors.surfaceContainerHigh,
             disabledContentColor = colors.onSurface,
         ),
     ) {

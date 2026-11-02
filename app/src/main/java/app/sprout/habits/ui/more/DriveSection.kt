@@ -181,7 +181,7 @@ fun DriveBackupContent(
     if (!connected) {
         StatusCard(
             icon = R.drawable.ic_cloud,
-            tile = colors.surfaceContainer,
+            tile = colors.surfaceContainerHigh,
             ink = colors.onSurface,
             title = stringResource(R.string.drive_connect_title),
             subtitle = stringResource(R.string.drive_connect_text),
@@ -210,7 +210,7 @@ fun DriveBackupContent(
                 val at = settings.lastBackupAt
                 StatusCard(
                     icon = if (at != null) R.drawable.ic_check else R.drawable.ic_cloud,
-                    tile = if (at != null) colors.secondaryContainer else colors.surfaceContainer,
+                    tile = if (at != null) colors.secondaryContainer else colors.surfaceContainerHigh,
                     ink = if (at != null) colors.onSecondaryContainer else colors.onSurface,
                     title = at?.let { dayLine(it, R.string.backed_up_today, R.string.backed_up_yesterday, R.string.backed_up_date) }
                         ?: stringResource(R.string.drive_no_backups_yet),

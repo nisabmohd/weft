@@ -206,7 +206,7 @@ private fun EditHabitContent(
                             .weight(1f)
                             .aspectRatio(1f)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(colors.surfaceContainer)
+                            .background(colors.surfaceContainerHigh)
                             .clickable(onClickLabel = moreIcons) { endTyping(); pickingIcon = true }
                             .semantics { contentDescription = moreIcons },
                         contentAlignment = Alignment.Center,
@@ -293,7 +293,7 @@ private fun EditHabitContent(
                                     .padding(2.dp)
                                     .aspectRatio(1f)
                                     .clip(CircleShape)
-                                    .background(if (on) hc.solid else colors.surfaceContainerLow)
+                                    .background(if (on) hc.solid else colors.surfaceContainerLowest)
                                     .border(1.dp, if (on) hc.solid else colors.outlineVariant, CircleShape),
                                 contentAlignment = Alignment.Center,
                             ) {
@@ -402,7 +402,7 @@ private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) 
 @Composable
 private fun Card(shape: Shape = RoundedCornerShape(22.dp), content: @Composable ColumnScope.() -> Unit) {
     Column(
-        Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLow),
+        Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLowest),
         content = content,
     )
 }

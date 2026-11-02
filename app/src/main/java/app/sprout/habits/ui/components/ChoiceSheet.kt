@@ -66,7 +66,7 @@ fun ChoiceRow(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .background(if (selected) colors.surfaceContainer else Color.Transparent)
+            .background(if (selected) colors.surfaceContainerHigh else Color.Transparent)
             .selectable(selected, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,

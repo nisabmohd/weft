@@ -18,8 +18,8 @@ data class ThemeSettings(
     val textScale: Float = 1f,
 )
 
-/** Rose, like Burrow (user, 2026-11-02). Installs from before 1.5.1 keep the hue they saved. */
-const val DEFAULT_ACCENT_HUE = 345f
+/** Amber, the last swatch (user, 2026-11-02). Installs keep the hue they saved. */
+const val DEFAULT_ACCENT_HUE = 38f
 
 /**
  * The logo's blue (the Blue accent). Used where the user's accent can't apply: the widgets below

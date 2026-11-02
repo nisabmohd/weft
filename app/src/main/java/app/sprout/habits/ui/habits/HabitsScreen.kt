@@ -172,7 +172,7 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(colors.surfaceContainerLow)
+            .background(colors.surfaceContainerLowest)
             .clickable(onClickLabel = stringResource(R.string.open_habit, habit.name)) { onOpen(habit.id) }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -194,7 +194,7 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
                     Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(if (isToday) colors.surfaceContainer else colors.surfaceContainerLow)
+                        .background(if (isToday) colors.surfaceContainerHigh else colors.surfaceContainerLowest)
                         .then(if (editable) Modifier.clickable(onClickLabel = editLabel) { onEditDay(i) } else Modifier)
                         .padding(vertical = 6.dp)
                         .clearAndSetSemantics {
@@ -263,7 +263,7 @@ private fun OverallCard(habit: HabitOverallUi, overall: OverallUi, onOpen: (Long
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(colors.surfaceContainerLow)
+            .background(colors.surfaceContainerLowest)
             .clickable(onClickLabel = stringResource(R.string.open_habit, habit.name)) { onOpen(habit.id) }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

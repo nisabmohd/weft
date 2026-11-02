@@ -111,7 +111,7 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
                 contentAlignment = Alignment.Center,
             ) {
                 // The band behind the middle row.
-                Box(Modifier.fillMaxWidth().height(WheelRow).clip(CircleShape).background(colors.surfaceContainer))
+                Box(Modifier.fillMaxWidth().height(WheelRow).clip(CircleShape).background(colors.surfaceContainerHigh))
                 Row(
                     Modifier.height(WheelRow * VISIBLE_ROWS).fadeEdges(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

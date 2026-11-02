@@ -121,7 +121,7 @@ fun HeaderIconButton(
             containerColor = when {
                 primary -> colors.primary
                 active -> colors.primaryContainer
-                else -> colors.surfaceContainer
+                else -> colors.surfaceContainerHigh
             },
             contentColor = when {
                 primary -> colors.onPrimary
@@ -129,7 +129,7 @@ fun HeaderIconButton(
                 danger -> colors.error
                 else -> colors.onSurface
             },
-            disabledContainerColor = colors.surfaceContainer,
+            disabledContainerColor = colors.surfaceContainerHigh,
             disabledContentColor = colors.onSurface.copy(alpha = 0.38f),
         ),
     ) {

@@ -49,7 +49,7 @@ fun SectionLabel(text: String, first: Boolean = false) {
 @Composable
 fun SettingsCard(shape: Shape = RoundedCornerShape(24.dp), content: @Composable ColumnScope.() -> Unit) {
     Column(
-        Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLow),
+        Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLowest),
         content = content,
     )
 }

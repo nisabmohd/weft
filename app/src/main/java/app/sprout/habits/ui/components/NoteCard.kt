@@ -124,7 +124,7 @@ fun NoteCard(
         Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(colors.surfaceContainerLow)
+            .background(colors.surfaceContainerLowest)
             .then(
                 if (onOpen != null || onLongPress != null) {
                     Modifier.combinedClickable(
