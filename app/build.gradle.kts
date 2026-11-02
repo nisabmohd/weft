@@ -17,7 +17,7 @@ android {
         applicationId = "app.sprout.habits"
         minSdk = 26
         targetSdk = 36
-        versionCode = 22
+        versionCode = 23
         versionName = "1.5.0"
         // Component tests (app/src/androidTest): ./gradlew :app:connectedFossDebugAndroidTest
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -27,7 +27,7 @@ android {
         // The developer, mid apps: About's contact row and the store listings use this address.
         buildConfigField("String", "CONTACT_EMAIL", "\"hello.midapps@gmail.com\"")
         // Weft's privacy policy on the developer's site (also the OAuth consent screen's and Play's link).
-        buildConfigField("String", "PRIVACY_URL", "\"https://nisabmohd.vercel.app/weft/privacy\"")
+        buildConfigField("String", "PRIVACY_URL", "\"https://nisabmohd.com/weft/privacy\"")
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=app.sprout.habits\"")
     }
 

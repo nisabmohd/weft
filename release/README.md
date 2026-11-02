@@ -34,7 +34,7 @@ The feature graphic is made by `python3 tools/feature_graphic.py <folder of raw 
 
 ## What's new (Play Console, 500 characters max)
 
-1.5.0 (versionCode 22), 457 characters:
+1.5.0 (versionCode 23), 457 characters:
 
 ```
 Sprout is now Weft, with a new icon. Same app: your habits, notes and settings stay.

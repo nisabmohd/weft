@@ -16,7 +16,7 @@ Changed:
 
 - The new Weft mark (a sock, from Tabler Icons) is on the launcher icon, reminder and note notifications, the widgets' loading screen, Welcome, About, More, the update dialog and the "Enjoying Weft?" prompt, and the app name is Weft in all 7 languages. Open-source licences lists Tabler Icons (MIT).
 - Exports are named `weft-backup-<date>.json` and `weft-<date>.csv`.
-- About has a Privacy policy link (https://nisabmohd.vercel.app/weft/privacy).
+- About has a Privacy policy link (https://nisabmohd.com/weft/privacy).
 
 Fixed:
 
