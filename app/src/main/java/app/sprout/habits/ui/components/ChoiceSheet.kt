@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -33,18 +34,14 @@ import androidx.compose.ui.unit.dp
 fun ChoiceSheet(
     title: String,
     onDismiss: () -> Unit,
+    subtitle: String? = null,
     footer: (@Composable () -> Unit)? = null,
     rows: @Composable ColumnScope.() -> Unit,
 ) {
     WeftSheet(onDismissRequest = onDismiss) {
-        Text(
-            title,
-            style = WeftType.title,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp),
-        )
+        SheetHeader(title, subtitle)
         Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).selectableGroup(), content = rows)
-        if (footer != null) footer() else Column(Modifier.padding(bottom = 20.dp).navigationBarsPadding()) {}
+        if (footer != null) footer() else Spacer(Modifier.sheetBottomPadding())
     }
 }
 
@@ -68,7 +65,8 @@ fun ChoiceRow(
             .heightIn(min = 56.dp)
             .background(if (selected) colors.surfaceContainerHigh else Color.Transparent)
             .selectable(selected, role = Role.RadioButton, onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 6.dp),
+            // Edge to edge, the text at the sheet's title inset (docs/DESIGN-RULES.md → 4).
+            .padding(horizontal = SheetTitleInset, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {

@@ -3,7 +3,6 @@ package app.sprout.habits.ui.more
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -16,6 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.data.ExportFormat
 import app.sprout.habits.data.SettingsRepository
 import app.sprout.habits.data.backup.BackupException
@@ -81,35 +82,30 @@ fun rememberFileBackup(backup: BackupManager, repository: SettingsRepository, on
     }
 
     pending?.let { file ->
-        AlertDialog(
-            onDismissRequest = { pending = null },
-            title = { Text(stringResource(R.string.replace_data_title)) },
-            text = {
-                Text(
-                    stringResource(
-                        R.string.replace_data_text,
-                        pluralStringResource(R.plurals.habit_count, file.habits.size, file.habits.size),
-                        pluralStringResource(R.plurals.logged_day_count, file.entries.size, file.entries.size),
-                        pluralStringResource(R.plurals.note_count, file.notes.size, file.notes.size),
-                    ),
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    pending = null
-                    scope.launch {
-                        try {
-                            backup.restore(file)
-                            onMessage(context.getString(R.string.backup_restored))
-                        } catch (e: BackupException) {
-                            onMessage(context.backupError(e))
-                        } catch (_: android.database.sqlite.SQLiteException) {
-                            onMessage(context.getString(R.string.restore_failed))
-                        }
+        PromptSheet(
+            title = stringResource(R.string.replace_data_title),
+            text = stringResource(
+                R.string.replace_data_text,
+                pluralStringResource(R.plurals.habit_count, file.habits.size, file.habits.size),
+                pluralStringResource(R.plurals.logged_day_count, file.entries.size, file.entries.size),
+                pluralStringResource(R.plurals.note_count, file.notes.size, file.notes.size),
+            ),
+            action = stringResource(R.string.replace),
+            onAction = {
+                pending = null
+                scope.launch {
+                    try {
+                        backup.restore(file)
+                        onMessage(context.getString(R.string.backup_restored))
+                    } catch (e: BackupException) {
+                        onMessage(context.backupError(e))
+                    } catch (_: android.database.sqlite.SQLiteException) {
+                        onMessage(context.getString(R.string.restore_failed))
                     }
-                }) { Text(stringResource(R.string.replace)) }
+                }
             },
-            dismissButton = { TextButton(onClick = { pending = null }) { Text(stringResource(R.string.action_cancel)) } },
+            onDismiss = { pending = null },
+            actionRole = ButtonRole.Destructive,
         )
     }
 

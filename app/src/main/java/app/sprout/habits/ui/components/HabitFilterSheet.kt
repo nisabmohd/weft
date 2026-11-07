@@ -67,7 +67,7 @@ fun HabitFilterSheet(
     var picked by remember { mutableStateOf(selected) }
     val haptics = LocalHapticFeedback.current
     WeftSheet(onDismissRequest = onDismiss) {
-        Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(start = SheetTitleInset, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.filter_by_habit), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
             TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = WeftType.label) }
         }
@@ -89,10 +89,12 @@ fun HabitFilterSheet(
                 }
             }
         }
-        Button(
+        WeftButton(
+            applyLabel(picked.size),
+            ButtonRole.Primary,
             onClick = { onApply(picked) },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).navigationBarsPadding().height(48.dp),
-        ) { Text(applyLabel(picked.size), style = WeftType.label) }
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+        )
     }
 }
 

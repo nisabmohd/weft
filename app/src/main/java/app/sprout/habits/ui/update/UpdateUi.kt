@@ -43,9 +43,15 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import app.sprout.habits.BuildConfig
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.sheetBottomPadding
+import app.sprout.habits.ui.components.ButtonPair
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.WeftButton
+import app.sprout.habits.ui.components.SheetHeader
+import app.sprout.habits.ui.components.SheetSidePadding
+import app.sprout.habits.ui.components.WeftSheet
 import app.sprout.habits.data.update.AppUpdate
 import app.sprout.habits.data.update.DownloadState
 import app.sprout.habits.data.update.UpdateCheck
@@ -67,7 +73,14 @@ private val currentVersion get() = BuildConfig.VERSION_NAME.substringBefore('-')
  * progress, then Android's installer) or Later.
  */
 @Composable
-fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit, onDismiss: () -> Unit) {
+fun UpdateSheet(
+    update: AppUpdate,
+    updates: UpdateManager,
+    onLater: () -> Unit,
+    onDismiss: () -> Unit,
+    /** The installed version as shown; only the debug sheet preview sets it. */
+    currentVersionOverride: String? = null,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val colors = MaterialTheme.colorScheme
@@ -79,92 +92,74 @@ fun UpdateDialog(update: AppUpdate, updates: UpdateManager, onLater: () -> Unit,
         onPauseOrDispose {}
     }
 
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(28.dp), color = colors.surfaceContainerLowest) {
-            Column(Modifier.padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            // The top part scrolls on its own, so long release notes can be read in full while
-            // Update / Later stay pinned at the bottom.
+    // A sheet like every prompt (`update-sheet.png`): the header, What's new in a card, then
+    // Later | Update. The notes scroll on their own so the buttons stay at the bottom.
+    WeftSheet(onDismissRequest = onDismiss) {
+        SheetHeader(stringResource(R.string.update_available), stringResource(R.string.update_version_line, update.version, currentVersionOverride ?: currentVersion))
+        if (update.notes.isNotEmpty()) {
             Column(
-                Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                Modifier
+                    .weight(1f, fill = false)
+                    .padding(horizontal = SheetSidePadding)
+                    .fillMaxWidth()
+                    .background(colors.surfaceContainerHigh, RoundedCornerShape(24.dp))
+                    .verticalScroll(rememberScrollState())
+                    // 16 dp inside, like every card.
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Box(Modifier.size(64.dp).background(colors.primaryContainer, RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(R.drawable.ic_weft), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(32.dp))
-                }
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.update_available), style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center)
-                Text(
-                    stringResource(R.string.update_version_line, update.version, currentVersion),
-                    style = WeftType.supporting,
-                    color = colors.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-                if (update.notes.isNotEmpty()) {
-                    Column(
-                        Modifier.padding(top = 20.dp).fillMaxWidth().background(colors.surfaceContainerHigh, RoundedCornerShape(16.dp)).padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(stringResource(R.string.whats_new), style = WeftType.label, color = colors.onSurface)
-                        update.notes.forEach { line ->
-                            Row(verticalAlignment = Alignment.Top) {
-                                Box(Modifier.padding(top = 8.dp).size(6.dp).background(colors.primary, CircleShape))
-                                Text(line, style = WeftType.supporting, color = colors.onSurface, modifier = Modifier.padding(start = 10.dp))
-                            }
-                        }
+                Text(stringResource(R.string.whats_new), style = WeftType.cardTitle, color = colors.onSurface)
+                update.notes.forEach { line ->
+                    Row(verticalAlignment = Alignment.Top) {
+                        Box(Modifier.padding(top = 9.dp).size(6.dp).background(colors.primary, CircleShape))
+                        Text(line, style = WeftType.body, color = colors.onSurface, modifier = Modifier.padding(start = 14.dp))
                     }
                 }
-            }
-            Column(Modifier.padding(horizontal = 24.dp).padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                when (val s = state) {
-                    is DownloadState.Progress -> {
-                        Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            val fraction = s.fraction
-                            if (fraction == null) LinearProgressIndicator(Modifier.fillMaxWidth())
-                            else LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
-                            Text(
-                                if (fraction == null) stringResource(R.string.downloading) else stringResource(R.string.downloading_percent, (fraction * 100).toInt()),
-                                style = WeftType.supporting,
-                                color = colors.onSurfaceVariant,
-                            )
-                        }
-                    }
-                    is DownloadState.Ready -> {
-                        if (!canInstall) {
-                            Text(stringResource(R.string.allow_installs_hint), style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
-                            Spacer(Modifier.height(12.dp))
-                        }
-                        PrimaryButton(stringResource(R.string.install)) {
-                            if (updates.canInstall()) updates.install(s.apk) else updates.openInstallPermission()
-                        }
-                    }
-                    DownloadState.Failed -> {
-                        Text(stringResource(R.string.update_failed), style = WeftType.supporting, color = colors.error, textAlign = TextAlign.Center)
-                        Spacer(Modifier.height(12.dp))
-                        PrimaryButton(stringResource(R.string.open_release_page)) { openUrl(context, update.pageUrl); onDismiss() }
-                    }
-                    null -> PrimaryButton(stringResource(R.string.update)) {
-                        if (update.apkUrl == null) {
-                            openUrl(context, update.pageUrl)
-                            onDismiss()
-                        } else {
-                            scope.launch { updates.download(update).collect { state = it } }
-                        }
-                    }
-                }
-                TextButton(onClick = onLater, modifier = Modifier.padding(top = 4.dp).heightIn(min = 48.dp)) {
-                    Text(stringResource(R.string.later), style = WeftType.label)
-                }
-            }
             }
         }
-    }
-}
-
-@Composable
-private fun PrimaryButton(label: String, onClick: () -> Unit) {
-    Button(onClick = onClick, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-        Text(label, style = WeftType.label)
+        Column(
+            Modifier.padding(horizontal = SheetSidePadding).padding(top = 20.dp).sheetBottomPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            when (val s = state) {
+                is DownloadState.Progress -> {
+                    Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val fraction = s.fraction
+                        if (fraction == null) LinearProgressIndicator(Modifier.fillMaxWidth())
+                        else LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
+                        Text(
+                            if (fraction == null) stringResource(R.string.downloading) else stringResource(R.string.downloading_percent, (fraction * 100).toInt()),
+                            style = WeftType.supporting,
+                            color = colors.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    WeftButton(stringResource(R.string.later), ButtonRole.Secondary, onClick = onLater, modifier = Modifier.fillMaxWidth())
+                }
+                is DownloadState.Ready -> {
+                    if (!canInstall) {
+                        Text(stringResource(R.string.allow_installs_hint), style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
+                        Spacer(Modifier.height(12.dp))
+                    }
+                    ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.install), {
+                        if (updates.canInstall()) updates.install(s.apk) else updates.openInstallPermission()
+                    })
+                }
+                DownloadState.Failed -> {
+                    Text(stringResource(R.string.update_failed), style = WeftType.supporting, color = colors.error, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(12.dp))
+                    ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.open_release_page), { openUrl(context, update.pageUrl); onDismiss() })
+                }
+                null -> ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.update), {
+                    if (update.apkUrl == null) {
+                        openUrl(context, update.pageUrl)
+                        onDismiss()
+                    } else {
+                        scope.launch { updates.download(update).collect { state = it } }
+                    }
+                })
+            }
+        }
     }
 }
 
@@ -199,7 +194,7 @@ fun CheckForUpdates(updates: UpdateManager, play: PlayUpdates) {
         }
     }
     found?.let { update ->
-        UpdateDialog(
+        UpdateSheet(
             update = update,
             updates = updates,
             onLater = { found = null; scope.launch { updates.later(update) } },
@@ -283,7 +278,7 @@ fun UpdatePrompt(updates: UpdateManager, play: PlayUpdates) {
         if (LaunchPrompts.claim()) found = update
     }
     found?.let { update ->
-        UpdateDialog(
+        UpdateSheet(
             update = update,
             updates = updates,
             onLater = { found = null; scope.launch { updates.later(update) } },

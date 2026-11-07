@@ -62,6 +62,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.sheetBottomPadding
+import app.sprout.habits.ui.components.SheetSidePadding
+import app.sprout.habits.ui.components.ButtonPair
+import app.sprout.habits.ui.components.NoteField
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.data.EntryStatus
 import app.sprout.habits.data.TrackType
@@ -110,9 +114,8 @@ fun LogSheet(
             Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp)
-                .navigationBarsPadding()
+                .padding(horizontal = SheetSidePadding)
+                .sheetBottomPadding()
                 .imePadding(),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
@@ -206,37 +209,29 @@ fun LogSheet(
                 }
             }
 
-            OutlinedTextField(
+            // Filled like New note's writing area, asking the question for the chosen outcome.
+            NoteField(
                 value = note,
                 onValueChange = { note = it },
-                placeholder = { Text(stringResource(R.string.add_a_note), style = WeftType.body) },
-                textStyle = WeftType.body,
-                minLines = 2,
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = colors.background,
-                    focusedContainerColor = colors.background,
-                    unfocusedBorderColor = colors.outlineVariant,
+                placeholder = stringResource(
+                    when (status) {
+                        EntryStatus.DONE -> R.string.note_placeholder_done
+                        EntryStatus.PARTIAL -> R.string.note_placeholder_partial
+                        EntryStatus.SKIP -> R.string.note_placeholder_skipped
+                    },
                 ),
-                modifier = Modifier.fillMaxWidth().focusRequester(noteFocus),
+                modifier = Modifier.focusRequester(noteFocus),
             )
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss, modifier = Modifier.height(44.dp)) {
-                    Text(stringResource(R.string.action_cancel), style = WeftType.label)
-                }
-                Spacer(Modifier.width(12.dp))
-                Button(
-                    onClick = {
-                        haptics.confirm()
-                        onSave(status, amount, note)
-                    },
-                    modifier = Modifier.height(44.dp),
-                    contentPadding = ButtonDefaults.ContentPadding,
-                ) {
-                    Text(stringResource(R.string.action_save), style = WeftType.label)
-                }
-            }
+            ButtonPair(
+                secondaryLabel = stringResource(R.string.action_cancel),
+                onSecondary = onDismiss,
+                primaryLabel = stringResource(R.string.action_save),
+                onPrimary = {
+                    haptics.confirm()
+                    onSave(status, amount, note)
+                },
+            )
         }
     }
 }

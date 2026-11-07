@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +36,15 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.SheetTitleInset
+import app.sprout.habits.ui.components.SheetSidePadding
+import app.sprout.habits.ui.components.WeftButton
+import app.sprout.habits.ui.components.sheetBottomPadding
+import app.sprout.habits.ui.components.ActionGroup
+import app.sprout.habits.ui.components.ActionRow
+import app.sprout.habits.ui.components.SheetHeader
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.data.DriveFrequency
 import app.sprout.habits.data.Settings
 import app.sprout.habits.data.SettingsRepository
@@ -47,7 +55,6 @@ import app.sprout.habits.data.backup.DriveAuth
 import app.sprout.habits.data.backup.DriveBackup
 import app.sprout.habits.data.backup.DriveBackupInfo
 import app.sprout.habits.data.backup.DriveResult
-import app.sprout.habits.ui.components.ActionRow
 import app.sprout.habits.ui.components.ChoiceRow
 import app.sprout.habits.ui.components.ChoiceSheet
 import app.sprout.habits.ui.components.WeftSheet
@@ -269,38 +276,33 @@ fun DriveBackupContent(
     }
 
     if (accountSheet) {
-        // Built like the Journal's note actions sheet: the title and a line, then plain action rows.
+        // Grouped action rows like the note actions sheet (`drive-account-sheet.png`).
         WeftSheet(onDismissRequest = { accountSheet = false }) {
-            Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.google_account), style = WeftType.title, color = colors.onSurface, modifier = Modifier.semantics { heading() })
-                Text(settings.driveAccount.orEmpty(), style = WeftType.supporting, color = colors.onSurfaceVariant)
+            SheetHeader(stringResource(R.string.google_account), settings.driveAccount.orEmpty())
+            ActionGroup(Modifier.sheetBottomPadding()) {
+                ActionRow(R.drawable.ic_switch, stringResource(R.string.drive_switch_account), 0, 3, {
+                    accountSheet = false
+                    start(DriveStep.CONNECT)
+                })
+                ActionRow(R.drawable.ic_link, stringResource(R.string.drive_disconnect), 1, 3, {
+                    accountSheet = false
+                    // Says so straight away; Google removes the access in the background.
+                    scope.launch { drive.disconnect() }
+                    onMessage(context.getString(R.string.drive_disconnected))
+                })
+                ActionRow(R.drawable.ic_delete, stringResource(R.string.drive_delete_backups), 2, 3, { accountSheet = false; confirmDelete = true }, destructive = true)
             }
-            ActionRow(R.drawable.ic_cloud, stringResource(R.string.drive_switch_account), colors.onSurface) {
-                accountSheet = false
-                start(DriveStep.CONNECT)
-            }
-            ActionRow(R.drawable.ic_close, stringResource(R.string.drive_disconnect), colors.onSurface) {
-                accountSheet = false
-                // Says so straight away; Google removes the access in the background.
-                scope.launch { drive.disconnect() }
-                onMessage(context.getString(R.string.drive_disconnected))
-            }
-            ActionRow(R.drawable.ic_delete, stringResource(R.string.drive_delete_backups), colors.error) { accountSheet = false; confirmDelete = true }
-            Spacer(Modifier.padding(bottom = 12.dp).navigationBarsPadding())
         }
     }
 
     if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text(stringResource(R.string.drive_delete_title)) },
-            text = { Text(stringResource(R.string.drive_delete_text, settings.driveAccount.orEmpty())) },
-            confirmButton = {
-                TextButton(onClick = { confirmDelete = false; start(DriveStep.DELETE_ALL) }) {
-                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.action_cancel)) } },
+        PromptSheet(
+            title = stringResource(R.string.drive_delete_title),
+            text = stringResource(R.string.drive_delete_text, settings.driveAccount.orEmpty()),
+            action = stringResource(R.string.action_delete),
+            onAction = { confirmDelete = false; start(DriveStep.DELETE_ALL) },
+            onDismiss = { confirmDelete = false },
+            actionRole = ButtonRole.Destructive,
         )
     }
 
@@ -383,33 +385,25 @@ private fun RestoreSheet(
     ChoiceSheet(
         title = stringResource(R.string.drive_restore_title),
         onDismiss = onDismiss,
+        subtitle = stringResource(R.string.drive_restore_text),
         footer = {
-            // As the filter sheet's Show button: 48 dp, 24 dp from the sides.
-            Box(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).navigationBarsPadding()) {
-                Button(
-                    onClick = {
-                        val info = chosen ?: return@Button
-                        loading = true
-                        scope.launch {
-                            download(info)?.let { confirming = info to it }
-                            loading = false
-                        }
-                    },
-                    enabled = chosen != null && !loading,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                ) {
-                    if (loading) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.5.dp, color = MaterialTheme.colorScheme.onPrimary)
-                    else Text(stringResource(R.string.drive_restore), style = WeftType.label)
-                }
-            }
+            WeftButton(
+                stringResource(R.string.drive_restore),
+                ButtonRole.Primary,
+                onClick = {
+                    val info = chosen ?: return@WeftButton
+                    loading = true
+                    scope.launch {
+                        download(info)?.let { confirming = info to it }
+                        loading = false
+                    }
+                },
+                enabled = chosen != null,
+                loading = loading,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+            )
         },
     ) {
-        Text(
-            stringResource(R.string.drive_restore_text),
-            style = WeftType.supporting,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
-        )
         when {
             backups == null -> Box(Modifier.fillMaxWidth().heightIn(min = 120.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(Modifier.size(32.dp))
@@ -418,7 +412,7 @@ private fun RestoreSheet(
                 stringResource(R.string.drive_no_backup),
                 style = WeftType.body,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
+                modifier = Modifier.padding(horizontal = SheetTitleInset, vertical = 24.dp),
             )
             else -> backups.forEach { info ->
                 val habits = pluralStringResource(R.plurals.habit_count, info.habits, info.habits)
@@ -429,12 +423,13 @@ private fun RestoreSheet(
     }
 
     confirming?.let { (info, file) ->
-        AlertDialog(
-            onDismissRequest = { confirming = null },
-            title = { Text(stringResource(R.string.drive_replace_title)) },
-            text = { Text(stringResource(R.string.drive_replace_text)) },
-            confirmButton = { TextButton(onClick = { confirming = null; onRestore(info, file) }) { Text(stringResource(R.string.replace)) } },
-            dismissButton = { TextButton(onClick = { confirming = null }) { Text(stringResource(R.string.action_cancel)) } },
+        PromptSheet(
+            title = stringResource(R.string.drive_replace_title),
+            text = stringResource(R.string.drive_replace_text),
+            action = stringResource(R.string.replace),
+            onAction = { confirming = null; onRestore(info, file) },
+            onDismiss = { confirming = null },
+            actionRole = ButtonRole.Destructive,
         )
     }
 }

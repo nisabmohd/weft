@@ -23,6 +23,8 @@ Weights are only **Regular (400)** and **SemiBold (600)**. Line height: about 1.
 
 **Exceptions (only these):**
 - The New note editor uses 18sp Regular with 1.55 line height, for comfortable writing.
+- The time on the alarm ringing screen is 88sp (`WeftType.alarmTime`, design 2026-11-08).
+- The value in Insights' Patterns cards ("Tuesday", "Stay calm") is 18sp SemiBold (`WeftType.patternValue`, design 2026-11-08).
 - Font previews in More → Font show each name in its own font at 16sp, with "Aa" at 22sp.
 
 ## Rules that keep screens consistent

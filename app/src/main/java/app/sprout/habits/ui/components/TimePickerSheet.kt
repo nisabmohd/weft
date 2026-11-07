@@ -83,9 +83,20 @@ fun wheelMinutes(hourIndex: Int, minuteIndex: Int, pm: Boolean, h24: Boolean): I
     return hour * 60 + minuteIndex * MINUTE_STEP
 }
 
-/** Pick a time of day (minutes after midnight): [title], an optional [line], the wheel, Set time. */
+/**
+ * Pick a time of day (minutes after midnight): [title], an optional [line], the wheel, optional
+ * rows [below] it (the Reminder sheet's Notification / Alarm), then [applyLabel] (Set time).
+ */
 @Composable
-fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, onDismiss: () -> Unit, line: String? = null) {
+fun TimePickerSheet(
+    title: String,
+    initialMinutes: Int,
+    onApply: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    line: String? = null,
+    applyLabel: String? = null,
+    below: (@Composable () -> Unit)? = null,
+) {
     val h24 = DateFormat.is24HourFormat(LocalContext.current)
     val locale = LocalConfiguration.current.locales[0]
     val (h0, m0, pm0) = remember(initialMinutes, h24) { wheelStart(initialMinutes, h24) }
@@ -99,13 +110,12 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
     val colors = MaterialTheme.colorScheme
 
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding()) {
-            Text(title, style = WeftType.title, color = colors.onSurface)
-            if (line != null) Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+        SheetHeader(title, line)
+        Column(Modifier.padding(horizontal = SheetSidePadding)) {
             // Drags in the wheel area belong to the wheels: the sheet must not move or close when a
             // wheel runs past its first or last row, or when the drag starts between the columns.
             Box(
-                Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                Modifier.fillMaxWidth().padding(bottom = 16.dp)
                     .nestedScroll(KeepInWheels)
                     .pointerInput(Unit) { detectVerticalDragGestures { change, _ -> change.consume() } },
                 contentAlignment = Alignment.Center,
@@ -123,16 +133,18 @@ fun TimePickerSheet(title: String, initialMinutes: Int, onApply: (Int) -> Unit, 
                     if (!h24) WheelColumn(halves, halfState, stringResource(R.string.time_am_pm)) { haptics.stepTick() }
                 }
             }
-            Button(
-                onClick = {
-                    haptics.confirm()
-                    onApply(wheelMinutes(hourState.centred(), minuteState.centred(), halfState.centred() == 1, h24))
-                },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp).height(48.dp),
-            ) {
-                Text(stringResource(R.string.set_time), style = WeftType.label)
-            }
         }
+        // Rows under the wheel run edge to edge, like every ChoiceRow.
+        below?.invoke()
+        WeftButton(
+            applyLabel ?: stringResource(R.string.set_time),
+            ButtonRole.Primary,
+            onClick = {
+                haptics.confirm()
+                onApply(wheelMinutes(hourState.centred(), minuteState.centred(), halfState.centred() == 1, h24))
+            },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = if (below != null) 16.dp else 8.dp).sheetBottomPadding(),
+        )
     }
 }
 

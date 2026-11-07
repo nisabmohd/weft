@@ -46,6 +46,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.sheetBottomPadding
+import app.sprout.habits.ui.components.ActionGroup
+import app.sprout.habits.ui.components.ActionRow
+import app.sprout.habits.ui.components.SheetHeader
 import app.sprout.habits.ui.components.TabHeader
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.graphics.Color
@@ -60,7 +64,6 @@ import androidx.compose.runtime.LaunchedEffect
 import android.content.Intent
 import app.sprout.habits.ui.components.DateRangeSheet
 import app.sprout.habits.ui.components.HabitFilterChip
-import app.sprout.habits.ui.components.ActionRow
 import app.sprout.habits.ui.components.FilterChipRow
 import app.sprout.habits.ui.components.groupedShape
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -260,18 +263,19 @@ private fun NoteActionsSheet(note: NoteCardUi, onEdit: (() -> Unit)?, onDelete: 
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
     val shareTitle = stringResource(R.string.action_share)
+    // Grouped action rows (`note-actions-sheet.png`): the habit and the note on top, Delete last in red.
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(note.habitName, style = WeftType.title, color = colors.onSurface)
-            Text(note.text, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        SheetHeader(note.habitName, note.text)
+        val count = if (onEdit != null) 3 else 2
+        var i = 0
+        ActionGroup(Modifier.sheetBottomPadding()) {
+            if (onEdit != null) ActionRow(R.drawable.ic_pen, stringResource(R.string.edit_note), i++, count, onEdit)
+            ActionRow(R.drawable.ic_share, shareTitle, i++, count, {
+                onDismiss()
+                val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "${note.habitName}\n${note.text}")
+                context.startActivity(Intent.createChooser(send, shareTitle))
+            })
+            ActionRow(R.drawable.ic_delete, stringResource(R.string.delete_note), i++, count, onDelete, destructive = true)
         }
-        if (onEdit != null) ActionRow(R.drawable.ic_habit_pen, stringResource(R.string.edit_note), colors.onSurface, onEdit)
-        ActionRow(R.drawable.ic_share, shareTitle, colors.onSurface) {
-            onDismiss()
-            val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "${note.habitName}\n${note.text}")
-            context.startActivity(Intent.createChooser(send, shareTitle))
-        }
-        ActionRow(R.drawable.ic_delete, stringResource(R.string.delete_note), colors.error, onDelete)
-        Spacer(Modifier.padding(bottom = 12.dp).navigationBarsPadding())
     }
 }
