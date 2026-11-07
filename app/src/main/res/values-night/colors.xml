@@ -1,6 +1,6 @@
 <resources>
-    <!-- Below Android 12, dark: the logo's blue (hue 215), page hsl(215 14% 7%), widget background hsl(215 14% 25%). -->
-    <color name="weft_bg">#FF0F1114</color>
-    <color name="weft_primary">#FF2E4A7A</color>
-    <color name="widget_bg">#FF373E49</color>
+    <!-- Below Android 12, dark: the logo's hue (155), page hsl(155 14% 7%), widget background hsl(155 14% 25%). -->
+    <color name="weft_bg">#FF0F1412</color>
+    <color name="weft_primary">#FF2A6F52</color>
+    <color name="widget_bg">#FF374941</color>
 </resources>
