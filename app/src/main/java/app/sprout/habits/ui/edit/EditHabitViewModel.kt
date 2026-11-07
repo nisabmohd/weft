@@ -7,6 +7,7 @@ import app.sprout.habits.data.Habit
 import app.sprout.habits.data.HabitIcon
 import app.sprout.habits.data.HabitRepository
 import app.sprout.habits.data.SettingsRepository
+import app.sprout.habits.data.ReminderType
 import app.sprout.habits.data.TrackType
 import java.time.DayOfWeek
 import kotlinx.coroutines.channels.Channel
@@ -36,6 +37,7 @@ data class HabitForm(
     val daysMask: Int = Habit.EVERY_DAY,
     val reminderOn: Boolean = false,
     val reminderMinutes: Int = 9 * 60,
+    val reminderType: ReminderType = ReminderType.NOTIFICATION,
     val askForNote: Boolean = false,
     val showOnWidget: Boolean = true,
     val weekStart: DayOfWeek = DayOfWeek.MONDAY,
@@ -92,6 +94,7 @@ class EditHabitViewModel(
                     daysMask = habit.daysMask,
                     reminderOn = habit.reminderMinutes != null,
                     reminderMinutes = habit.reminderMinutes ?: s.defaultReminderMinutes,
+                    reminderType = habit.reminderType,
                     askForNote = habit.askForNote,
                     showOnWidget = habit.showOnWidget,
                     weekStart = s.weekStart,
@@ -118,6 +121,7 @@ class EditHabitViewModel(
             step = if (f.trackType == TrackType.AMOUNT) f.stepValue!! else 1.0,
             daysMask = f.daysMask,
             reminderMinutes = if (f.reminderOn) f.reminderMinutes else null,
+            reminderType = f.reminderType,
             askForNote = f.askForNote,
             showOnWidget = f.showOnWidget,
         )

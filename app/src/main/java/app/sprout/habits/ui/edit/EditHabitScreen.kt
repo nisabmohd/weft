@@ -36,7 +36,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -73,6 +72,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sprout.habits.R
+import androidx.compose.foundation.selection.selectableGroup
+import app.sprout.habits.ui.components.ChoiceRow
+import app.sprout.habits.data.ReminderType
+import app.sprout.habits.ui.components.ButtonPair
+import app.sprout.habits.ui.components.ButtonRole
 import app.sprout.habits.ui.components.groupedShape
 import app.sprout.habits.ui.components.HeaderIconButton
 import app.sprout.habits.ui.components.CappedFontScale
@@ -82,7 +86,7 @@ import app.sprout.habits.data.HabitIcon
 import app.sprout.habits.data.TrackType
 import app.sprout.habits.notify.Notifications
 import app.sprout.habits.notify.rememberNotificationPermission
-import app.sprout.habits.ui.manage.DeleteHabitDialog
+import app.sprout.habits.ui.manage.DeleteHabitSheet
 import app.sprout.habits.ui.theme.habitColors
 import app.sprout.habits.ui.today.TodayViewModel
 import java.time.DayOfWeek
@@ -107,7 +111,7 @@ fun EditHabitScreen(viewModel: EditHabitViewModel, onClose: () -> Unit, onDelete
         onDelete = { deleting = true },
     )
     if (deleting) {
-        DeleteHabitDialog(form.name, onConfirm = { deleting = false; viewModel.delete() }, onDismiss = { deleting = false })
+        DeleteHabitSheet(form.name, onDelete = { deleting = false; viewModel.delete() }, onDismiss = { deleting = false })
     }
 }
 
@@ -318,16 +322,33 @@ private fun EditHabitContent(
                         Modifier.fillMaxWidth().clickable { endTyping(); pickingTime = true }.padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        // A round tile in the habit's color, like the icon tiles elsewhere.
-                        HabitTile(R.drawable.ic_bell_filled, hc.soft, hc.ink, shape = CircleShape)
-                        Column(Modifier.weight(1f).padding(start = 14.dp, end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        // The habit's own tile with an alarm (alarm-1-new-habit-reminder.png).
+                        HabitTile(R.drawable.ic_sym_alarm, hc.soft, hc.ink)
+                        Column(Modifier.weight(1f).padding(start = 12.dp, end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             // 16sp like the titles in the card below; 22sp looked too big next to them.
                             Text(TodayViewModel.formatTime(form.reminderMinutes), style = WeftType.cardTitle, color = colors.onSurface)
-                            Text(stringResource(R.string.reminder_hint), style = WeftType.supporting, color = colors.onSurfaceVariant)
+                            Text(
+                                if (form.reminderOn) {
+                                    stringResource(
+                                        R.string.reminder_card_line,
+                                        stringResource(if (form.reminderType == ReminderType.ALARM) R.string.reminder_type_alarm else R.string.reminder_type_notification),
+                                    )
+                                } else {
+                                    stringResource(R.string.reminder_card_off)
+                                },
+                                style = WeftType.supporting,
+                                color = colors.onSurfaceVariant,
+                            )
                         }
                         Switch(checked = form.reminderOn, onCheckedChange = { v -> haptics.toggle(v); needsNotifications(v); edit { it.copy(reminderOn = v) } })
                     }
                 }
+                Text(
+                    stringResource(R.string.reminder_card_hint),
+                    style = WeftType.supporting,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                )
             }
 
             if (form.reminderOn && notifications.granted && !exactAlarms) {
@@ -364,29 +385,63 @@ private fun EditHabitContent(
             }
 
             if (!form.isNew) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedButton(onClick = onArchive, modifier = Modifier.weight(1f).height(48.dp)) {
-                        Text(archiveLabel, style = WeftType.label)
-                    }
-                    OutlinedButton(onClick = onDelete, modifier = Modifier.weight(1f).height(48.dp)) {
-                        Text(stringResource(R.string.action_delete), style = WeftType.label, color = colors.error)
-                    }
-                }
+                // The one button pair (never outlined): Archive, then Delete in the error colours.
+                ButtonPair(
+                    secondaryLabel = archiveLabel,
+                    onSecondary = onArchive,
+                    primaryLabel = stringResource(R.string.action_delete),
+                    onPrimary = onDelete,
+                    primaryRole = ButtonRole.Destructive,
+                )
             }
         }
     }
 
     if (pickingTime) {
+        // The Reminder sheet (alarm-2-reminder-sheet.png): the time wheel, then Notification / Alarm.
+        var type by rememberSaveable { mutableStateOf(form.reminderType) }
+        val canExact = exactAlarms
+        val canFullScreen = remember { Notifications.canUseFullScreen(context) }
         TimePickerSheet(
-            title = stringResource(R.string.reminder_time),
+            title = stringResource(R.string.reminder),
             initialMinutes = form.reminderMinutes,
             onApply = { minutes ->
                 needsNotifications(true)
-                edit { it.copy(reminderMinutes = minutes, reminderOn = true) }
+                edit { it.copy(reminderMinutes = minutes, reminderOn = true, reminderType = type) }
                 pickingTime = false
             },
             onDismiss = { pickingTime = false },
             line = form.name.trim().ifEmpty { null },
+            applyLabel = stringResource(R.string.set_reminder),
+            below = {
+                Column(Modifier.selectableGroup()) {
+                    ChoiceRow(
+                        stringResource(R.string.reminder_type_notification),
+                        stringResource(R.string.reminder_type_notification_desc),
+                        selected = type == ReminderType.NOTIFICATION,
+                    ) { haptics.tick(); type = ReminderType.NOTIFICATION }
+                    ChoiceRow(
+                        stringResource(R.string.reminder_type_alarm),
+                        // An alarm needs exact alarms (Android 12+) and, to ring full screen,
+                        // full-screen notifications (Android 14+): say which one to allow.
+                        stringResource(
+                            when {
+                                !canExact -> R.string.reminder_alarm_allow
+                                !canFullScreen -> R.string.reminder_fullscreen_allow
+                                else -> R.string.reminder_type_alarm_desc
+                            },
+                        ),
+                        selected = type == ReminderType.ALARM,
+                    ) {
+                        haptics.tick()
+                        type = ReminderType.ALARM
+                        when {
+                            !canExact -> Notifications.openExactAlarmSettings(context)
+                            !canFullScreen -> Notifications.openFullScreenSettings(context)
+                        }
+                    }
+                }
+            },
         )
     }
 }
