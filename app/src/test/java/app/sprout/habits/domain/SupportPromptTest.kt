@@ -21,11 +21,20 @@ class SupportPromptTest {
 
     @Test fun notOnFirstOpen() = assertFalse(SupportPrompt.shouldShow(eligible.copy(firstOpenAt = null), now))
 
-    @Test fun atMostEverySixtyDays() {
-        assertFalse(SupportPrompt.shouldShow(eligible.copy(supportPromptShownAt = now - 59 * day), now))
-        assertTrue(SupportPrompt.shouldShow(eligible.copy(supportPromptShownAt = now - 60 * day), now))
+    @Test fun atMostOnceAWeek() {
+        assertFalse(SupportPrompt.shouldShow(eligible.copy(supportPromptShownAt = now - 6 * day), now))
+        assertTrue(SupportPrompt.shouldShow(eligible.copy(supportPromptShownAt = now - 7 * day), now))
     }
 
-    @Test fun neverAfterTwoMaybeLaters() =
-        assertFalse(SupportPrompt.shouldShow(eligible.copy(supportPromptDismissCount = 2), now))
+    @Test fun stillAfterThreeMaybeLaters() =
+        assertTrue(SupportPrompt.shouldShow(eligible.copy(supportPromptDismissCount = 3, supportPromptShownAt = now - 7 * day), now))
+
+    @Test fun neverAfterFourMaybeLaters() =
+        assertFalse(SupportPrompt.shouldShow(eligible.copy(supportPromptDismissCount = 4), now))
+
+    @Test fun notForSixMonthsAfterSupporting() {
+        val supported = eligible.copy(supportPromptShownAt = now - 30 * day, supportPromptSupportedAt = now - 30 * day)
+        assertFalse(SupportPrompt.shouldShow(supported, now))
+        assertTrue(SupportPrompt.shouldShow(supported.copy(supportPromptSupportedAt = now - 180 * day), now))
+    }
 }

@@ -59,6 +59,8 @@ data class Settings(
     val checkInCount: Int = 0,
     val supportPromptShownAt: Long? = null,
     val supportPromptDismissCount: Int = 0,
+    /** When the user last tapped Rate, Star or Sponsor in the support prompt. */
+    val supportPromptSupportedAt: Long? = null,
     /** A newer release found on GitHub (github build), for the "Update available" pill. */
     val availableUpdate: String? = null,
     /** Epoch millis of the last automatic update check. */
@@ -154,7 +156,7 @@ class SettingsRepository(context: Context) {
     suspend fun addCheckIn() = store.edit { it[CHECK_INS] = (it[CHECK_INS] ?: 0) + 1 }
     suspend fun supportPromptShown(dismissed: Boolean, now: Long = System.currentTimeMillis()) = store.edit {
         it[PROMPT_SHOWN_AT] = now
-        if (dismissed) it[PROMPT_DISMISSED] = (it[PROMPT_DISMISSED] ?: 0) + 1
+        if (dismissed) it[PROMPT_DISMISSED] = (it[PROMPT_DISMISSED] ?: 0) + 1 else it[PROMPT_SUPPORTED_AT] = now
     }
 
     /** Replaces the user's preferences in one write, e.g. when restoring a backup. */
@@ -195,6 +197,7 @@ class SettingsRepository(context: Context) {
             checkInCount = this[CHECK_INS] ?: 0,
             supportPromptShownAt = this[PROMPT_SHOWN_AT],
             supportPromptDismissCount = this[PROMPT_DISMISSED] ?: 0,
+            supportPromptSupportedAt = this[PROMPT_SUPPORTED_AT],
             availableUpdate = this[AVAILABLE_UPDATE],
             lastUpdateCheckAt = this[LAST_UPDATE_CHECK],
             dismissedUpdate = this[DISMISSED_UPDATE],
@@ -226,6 +229,7 @@ class SettingsRepository(context: Context) {
         val CHECK_INS = intPreferencesKey("checkInCount")
         val PROMPT_SHOWN_AT = longPreferencesKey("supportPromptShownAt")
         val PROMPT_DISMISSED = intPreferencesKey("supportPromptDismissCount")
+        val PROMPT_SUPPORTED_AT = longPreferencesKey("supportPromptSupportedAt")
         val AVAILABLE_UPDATE = stringPreferencesKey("availableUpdateVersion")
         val LAST_UPDATE_CHECK = longPreferencesKey("lastUpdateCheckAt")
         val DISMISSED_UPDATE = stringPreferencesKey("dismissedUpdateVersion")
