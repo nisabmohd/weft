@@ -1,4 +1,4 @@
-"""Builds the Play Store feature graphic (1024 x 500) in the style of the store shots: the logo's navy
+"""Builds the Play Store feature graphic (1024 x 500) in the style of the store shots: the logo's rose-brown
 as a flat page, the Weft mark and name with one line under it, and one plain phone (Today) running off
 the bottom.
 
@@ -8,7 +8,7 @@ usage: python3 tools/feature_graphic.py <folder with the raw shots> [out file]
          as made by tools/store_shots.py; no raw shots needed)
 Raw shot: today.png, 1080 x 2400 (the same ones as tools/store_shots.py).
 Writes release/feature-graphic-1024x500.png and the fastlane copy. Needs Pillow; the
-sock mark (Tabler Icons, MIT) is taken from release/icon-512.png."""
+Weft mark is taken from release/icon-512.png (tools/weft_mark.py)."""
 import os
 import sys
 
@@ -23,9 +23,11 @@ OUTS = [sys.argv[2]] if len(sys.argv) > 2 else [
 ]
 FONT = os.path.join(ROOT, "app", "src", "main", "res", "font", "lexend.ttf")
 W, H = 1024, 500
-NAVY = (46, 74, 122)        # the icon's background, #2E4A7A
-WHITE = (255, 255, 255)
-SUB = (184, 202, 232)
+PAGE = (0x77, 0x45, 0x3F)   # the icon's tile, #77453F (2026-11-08; it was navy)
+INK = (0xFF, 0xDA, 0xD4)    # pale pink for text on the rose-brown page
+SUB = (0xE2, 0xBC, 0xB6)    # the line under the name: the ink, quieter
+SHADOW = (0x3A, 0x1C, 0x19, 255)
+LOGO = (0x2A, 0x6F, 0x52)   # the logo's green tile (weft-icon.zip)
 
 # the phone screen in the store shots (tools/store_shots.py): 622 x 1416 at (229, 466)
 SHOT_SX, SHOT_SY, SHOT_SW, SHOT_SH = 229, 466, 622, 1416
@@ -46,19 +48,20 @@ def tracked(draw, xy, text, f, fill, tracking):
 
 
 def page():
-    return Image.new("RGBA", (W * SS, H * SS), NAVY + (255,))
+    return Image.new("RGBA", (W * SS, H * SS), PAGE + (255,))
 
 
 def screen_from_raw(raw):
-    """The phone screen from a raw 1080 x 2400 shot, as tools/store_shots.py draws it."""
+    """The phone screen from a raw 1080 x 2400 shot, as tools/store_shots.py draws it (same BAR band)."""
+    BAR = 110
     s = Image.open(raw).convert("RGB")
     K = SHOT_SW / 1080
-    body = s.crop((0, 80, 1080, 2400)).resize((SHOT_SW, round(2320 * K)), Image.LANCZOS)
+    body = s.crop((0, BAR, 1080, 2400)).resize((SHOT_SW, round((2400 - BAR) * K)), Image.LANCZOS)
     out = Image.new("RGB", (SHOT_SW, SHOT_SH), s.getpixel((540, 4)))
     out.paste(body, (0, SHOT_SH - body.height))
-    clock = s.crop((20, 0, 300, 70)).resize((round(280 * K), round(70 * K)), Image.LANCZOS)
-    icons = s.crop((820, 0, 1060, 70)).resize((round(240 * K), round(70 * K)), Image.LANCZOS)
-    top = SHOT_SH - body.height - round(70 * K) - 4
+    clock = s.crop((20, 0, 300, BAR)).resize((round(280 * K), round(BAR * K)), Image.LANCZOS)
+    icons = s.crop((820, 0, 1060, BAR)).resize((round(240 * K), round(BAR * K)), Image.LANCZOS)
+    top = SHOT_SH - body.height - round(BAR * K) + 6
     out.paste(clock, (30, top))
     out.paste(icons, (SHOT_SW - icons.width - 30, top))
     return out
@@ -97,18 +100,19 @@ def place(img, ph, x, y, angle):
     a = rot.getchannel("A")
     sh = Image.new("L", img.size, 0)
     sh.paste(a.point(lambda v: v * 0.75), (x + 10 * SS, y + 26 * SS))
-    img.paste((16, 28, 50, 255), (0, 0), sh.filter(ImageFilter.GaussianBlur(26 * SS)))
+    img.paste(SHADOW, (0, 0), sh.filter(ImageFilter.GaussianBlur(26 * SS)))
     sh = Image.new("L", img.size, 0)
     sh.paste(a.point(lambda v: v * 0.45), (x + 2 * SS, y + 6 * SS))
-    img.paste((16, 28, 50, 255), (0, 0), sh.filter(ImageFilter.GaussianBlur(6 * SS)))
+    img.paste(SHADOW, (0, 0), sh.filter(ImageFilter.GaussianBlur(6 * SS)))
     img.alpha_composite(rot, (x, y)) if x >= 0 and y >= 0 else img.paste(rot, (x, y), rot)
 
 
-def sock(px, color):
-    """The sock mark, `px` wide, from release/icon-512.png (white on navy) so it is the store icon's drawing."""
+def mark(px, color):
+    """The Weft mark, `px` wide, from release/icon-512.png (white on the green tile) so it is the store icon's drawing."""
     icon = Image.open(os.path.join(ROOT, "release", "icon-512.png")).convert("L")
     lo = icon.getpixel((4, 4))
-    mask = icon.point(lambda v: max(0, min(255, round((v - lo) * 255 / (255 - lo)))))
+    hi = icon.getextrema()[1]  # the mark's own lightness: full opacity there, whatever its colour
+    mask = icon.point(lambda v: max(0, min(255, round((v - lo) * 255 / (hi - lo)))))
     out = Image.new("RGBA", (px, px), color + (0,))
     out.putalpha(mask.resize((px, px), Image.LANCZOS))
     return out
@@ -126,13 +130,13 @@ img = page()
 place(img, phone(screens[0], 330 * SS), 618 * SS, 64 * SS, 0)
 
 d = ImageDraw.Draw(img)
-# the mark (a white rounded tile with the navy sock, like the launcher icon) and the name, then one line
+# the logo as on the launcher (the green tile with the white mark), the name, then one line
 tx, ty, ts = 96, 188, 64
-img.paste((255, 255, 255, 255), (tx * SS, ty * SS), rounded_mask(ts * SS, ts * SS, round(ts * 0.3 * SS)))
-m = sock(round(ts * SS * 1.25), NAVY)
+img.paste(LOGO + (255,), (tx * SS, ty * SS), rounded_mask(ts * SS, ts * SS, round(ts * 0.3 * SS)))
+m = mark(ts * SS, (255, 255, 255))
 img.alpha_composite(m, ((tx * SS + ts * SS // 2 - m.width // 2), (ty * SS + ts * SS // 2 - m.height // 2)))
 d = ImageDraw.Draw(img)
-tracked(d, (tx + ts + 18, ty + 49), "Weft", font(54, 600), WHITE, -1)
+tracked(d, (tx + ts + 18, ty + 49), "Weft", font(54, 600), INK, -1)
 tracked(d, (tx, ty + 112), "Habit tracker and journal", font(26, 400), SUB, 0)
 
 final = img.convert("RGB").resize((W, H), Image.LANCZOS)

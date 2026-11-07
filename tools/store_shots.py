@@ -1,5 +1,6 @@
 """Builds the Play Store shots in release/phone-screenshots/ (1080 x 1920). Plain style (2026-11-01):
-the logo's navy (#2E4A7A) as a flat page, a two-line white caption, and a plain phone.
+the logo's rose-brown (#77453F) as a flat page, a two-line caption in the logo's pale pink (#FFDAD4),
+and a plain phone (2026-11-08; it was navy and white).
 The status bar is redrawn lower and pulled in from the edges so the frame's rounded corners never cut
 the clock or the battery.
 
@@ -40,8 +41,8 @@ SX, SY, SW, SH = FX + BEZEL, FY + BEZEL, FW - 2 * BEZEL, FH - 2 * BEZEL
 OUTER_R, INNER_R = 64, 50
 K = SW / 1080                                       # raw -> screen scale
 
-NAVY = (46, 74, 122)                                # the logo's navy, #2E4A7A, flat
-WHITE = (255, 255, 255)
+PAGE = (0x77, 0x45, 0x3F)                           # the logo's tile, #77453F, flat
+INK = (0xFF, 0xDA, 0xD4)                            # pale pink captions on the rose-brown page
 
 # Where the screen sat in the first 1.5.0 shots (phone lower, flat page), for --reframe of those.
 OLD_SX, OLD_SY = 229, 484
@@ -61,15 +62,20 @@ def tracked(draw, xy, text, f, fill, tracking):
         draw.text((x0 + widths[i], xy[1]), ch, font=f, fill=fill, anchor="ls")
 
 
+# The raw shot's status bar band (clock and icons); its text sits at about y 47-80 on the
+# 1080 x 2400 emulator used since 2026-11-08 (Sprout_API_35), so 110 px holds all of it.
+BAR = 110
+
+
 def screen(raw):
     s = Image.open(raw).convert("RGB")
     bar_bg = s.getpixel((540, 4))
-    body = s.crop((0, 80, 1080, 2400)).resize((SW, round(2320 * K)), Image.LANCZOS)
+    body = s.crop((0, BAR, 1080, 2400)).resize((SW, round((2400 - BAR) * K)), Image.LANCZOS)
     out = Image.new("RGB", (SW, SH), bar_bg)
     out.paste(body, (0, SH - body.height))
-    clock = s.crop((20, 0, 300, 70)).resize((round(280 * K), round(70 * K)), Image.LANCZOS)
-    icons = s.crop((820, 0, 1060, 70)).resize((round(240 * K), round(70 * K)), Image.LANCZOS)
-    top = SH - body.height - round(70 * K) - 4
+    clock = s.crop((20, 0, 300, BAR)).resize((round(280 * K), round(BAR * K)), Image.LANCZOS)
+    icons = s.crop((820, 0, 1060, BAR)).resize((round(240 * K), round(BAR * K)), Image.LANCZOS)
+    top = SH - body.height - round(BAR * K) + 6
     out.paste(clock, (30, top))
     out.paste(icons, (SW - icons.width - 30, top))
     return out
@@ -105,11 +111,11 @@ for raw, out, (line1, line2) in shots:
     else:
         scr = screen(f"{RAW}/{raw}.png")
 
-    img = Image.new("RGB", (W, H), NAVY)
+    img = Image.new("RGB", (W, H), PAGE)
     d = ImageDraw.Draw(img)
     f = font(66, 600)
-    tracked(d, (W / 2, 232), line1, f, WHITE, -1)
-    tracked(d, (W / 2, 316), line2, f, WHITE, -1)
+    tracked(d, (W / 2, 232), line1, f, INK, -1)
+    tracked(d, (W / 2, 316), line2, f, INK, -1)
     phone(img, scr)
     img.save(f"{OUT}/{out}", optimize=True)
     print(out)
