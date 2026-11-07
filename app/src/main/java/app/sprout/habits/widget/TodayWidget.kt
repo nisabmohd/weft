@@ -74,7 +74,9 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         when {
             // A day with nothing scheduled (or every habit hidden from widgets) isn't "all done".
             data.total == 0 -> R.string.widget_nothing_today
-            data.upNext.isEmpty() -> R.string.widget_all_done_today
+            // Nothing left: "All done" only when every habit is Done; a Skip makes it "All logged".
+            data.upNext.isEmpty() && data.done == data.total -> R.string.widget_all_done_today
+            data.upNext.isEmpty() -> R.string.widget_all_logged_today
             else -> R.string.widget_up_next
         },
     )

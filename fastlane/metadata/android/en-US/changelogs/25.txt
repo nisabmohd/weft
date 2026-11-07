@@ -1,0 +1,5 @@
+• New outline icons everywhere, and every habit icon now shows what it says (tooth, cricket bat, stairs, crossed-out glass…).
+• Richer accent colours; screens look as before.
+• Accents: Rose, Teal, Blue, Purple, Plum, Rust and Amber (Rose replaces Green).
+• The launch screen follows your phone's colours.
+• Fixed: long What's new notes in the update dialog are shown in full and scroll.

@@ -1,0 +1,3 @@
+• Fixed: the progress strip widget no longer runs off the edge on smaller screens. A long habit name in "Next" now ends in "…".
+• Fixed: the widgets say "All logged" instead of "All done" when you skipped something today.
+• Faster and lighter: built with the latest Android tools for better code optimisation.
