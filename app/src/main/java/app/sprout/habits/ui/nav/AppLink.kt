@@ -15,6 +15,8 @@ import android.net.Uri
 sealed interface AppLink {
     data class Habit(val id: Long) : AppLink
     data object NewNote : AppLink
+    /** New note for one habit and day: a reminder's "Add note" button. */
+    data class NoteFor(val habitId: Long, val day: Long) : AppLink
     data object NewHabit : AppLink
     data class OpenTab(val tab: String) : AppLink
 
@@ -23,6 +25,8 @@ sealed interface AppLink {
         private val SCHEMES = setOf(SCHEME, "sprout")
         const val ACTION_OPEN_HABIT = "app.sprout.habits.action.OPEN_HABIT"
         const val EXTRA_HABIT_ID = "habitId"
+        const val ACTION_ADD_NOTE = "app.sprout.habits.action.ADD_NOTE"
+        const val EXTRA_DAY = "day"
         private val TABS = setOf("today", "habits", "journal", "insights", "more")
 
         /** The link in [intent], or null for a plain launch (or anything unknown). */
@@ -30,6 +34,10 @@ sealed interface AppLink {
             intent ?: return null
             if (intent.action == ACTION_OPEN_HABIT) {
                 return intent.getLongExtra(EXTRA_HABIT_ID, 0L).takeIf { it > 0L }?.let { Habit(it) }
+            }
+            if (intent.action == ACTION_ADD_NOTE) {
+                val habitId = intent.getLongExtra(EXTRA_HABIT_ID, 0L).takeIf { it > 0L } ?: return null
+                return NoteFor(habitId, intent.getLongExtra(EXTRA_DAY, java.time.LocalDate.now().toEpochDay()))
             }
             if (intent.action != Intent.ACTION_VIEW) return null
             return parse(intent.data)

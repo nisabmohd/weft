@@ -85,6 +85,7 @@ class TodayViewModel(
     private val repository: HabitRepository,
     private val settings: SettingsRepository,
     private val strings: Strings,
+    private val notificationUndo: app.sprout.habits.notify.NotificationUndo? = null,
 ) : ViewModel() {
     private val today = MutableStateFlow(LocalDate.now())
     private val selected = MutableStateFlow(today.value)
@@ -113,6 +114,15 @@ class TodayViewModel(
     /** Quick actions, the log sheet and Undo; shared with Habits and the habit detail. */
     val logger = DayLogger(repository, settings, viewModelScope, strings)
     private var promptCheckedThisSession = false
+
+    init {
+        // A habit logged from a notification button gets Today's Undo bar when Today next shows.
+        notificationUndo?.let { undo ->
+            viewModelScope.launch {
+                undo.pending.collect { waiting -> if (waiting) undo.take()?.let(logger::offer) }
+            }
+        }
+    }
 
     /** Called when Today resumes; shows the support prompt at most once per app session. */
     fun maybeShowSupportPrompt() {

@@ -115,6 +115,9 @@ fun WeftNavHost(
                 navController.navigate(HabitDetailRoute(link.id)) { launchSingleTop = true }
             }
             AppLink.NewNote -> navController.navigate(WriteNoteRoute(epochDay = LocalDate.now().toEpochDay())) { launchSingleTop = true }
+            is AppLink.NoteFor -> if (container.repository.getHabit(link.habitId) != null) {
+                navController.navigate(WriteNoteRoute(habitId = link.habitId, epochDay = link.day)) { launchSingleTop = true }
+            }
             AppLink.NewHabit -> navController.navigate(EditHabitRoute()) { launchSingleTop = true }
             is AppLink.OpenTab -> Tab.entries.firstOrNull { it.name.equals(link.tab, ignoreCase = true) }?.let { openTab(it) }
         }
@@ -139,7 +142,7 @@ fun WeftNavHost(
         ) {
             composable<TodayRoute> {
                 TabFrame {
-                val vm = viewModel { TodayViewModel(container.repository, container.settings, container.strings) }
+                val vm = viewModel { TodayViewModel(container.repository, container.settings, container.strings, container.notificationUndo) }
                 TodayScreen(
                     vm,
                     onAddHabit = { navController.navigate(EditHabitRoute()) },
