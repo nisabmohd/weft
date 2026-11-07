@@ -405,6 +405,8 @@
     <string name="widget_of_today">%1$d von %2$d heute</string>
     <string name="widget_next">Als Nächstes: %1$s</string>
     <string name="widget_all_done">Alles erledigt</string>
+    <string name="widget_all_logged_today">Alles eingetragen für heute</string>
+    <string name="widget_all_logged">Alles eingetragen</string>
     <string name="widget_habits_done_today">%1$d von %2$d Gewohnheiten heute erledigt</string>
     <string name="streak_empty">Füge eine Gewohnheit hinzu, um ihre Serie zu sehen.</string>
     <string name="day_streak">Tage Serie</string>
@@ -632,4 +634,25 @@
         <item quantity="one">%d Sicherung</item>
         <item quantity="other">%d Sicherungen</item>
     </plurals>
+    <string name="support_rate_line">Dauert nur ein paar Sekunden</string>
+    <string name="support_star_line">Hilft anderen, Weft zu finden</string>
+    <string name="support_sponsor_line">Hält es am Wachsen</string>
+    <string name="notify_snooze">Schlummern</string>
+    <string name="notify_snooze_minutes">%1$d Min. schlummern</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">Benachrichtigung</string>
+    <string name="reminder_type_notification_desc">Ein leiser Hinweis in deinen Benachrichtigungen</string>
+    <string name="reminder_type_alarm">Wecker</string>
+    <string name="reminder_type_alarm_desc">Klingelt im Vollbild, bis du reagierst</string>
+    <string name="reminder_alarm_allow">Wecker in den Einstellungen erlauben</string>
+    <string name="reminder_fullscreen_allow">Vollbild-Wecker in den Einstellungen erlauben</string>
+    <string name="set_reminder">Erinnerung festlegen</string>
+    <string name="reminder_card_line">%1$s · an den Tagen oben · zum Ändern tippen</string>
+    <string name="reminder_card_off">Aus · zum Festlegen einer Uhrzeit tippen</string>
+    <string name="reminder_card_hint">Tippe auf die Erinnerung, um Uhrzeit und Art zu ändern.</string>
+    <string name="alarm_slide">Zum Erledigen schieben</string>
+    <string name="alarm_dismiss">Beenden</string>
+    <string name="alarm_missed">%1$s · verpasst um %2$s</string>
+    <string name="channel_alarms">Wecker</string>
+    <string name="channel_alarms_desc">Gewohnheits-Erinnerungen, die im Vollbild klingeln</string>
 </resources>

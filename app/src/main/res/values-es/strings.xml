@@ -405,6 +405,8 @@
     <string name="widget_of_today">%1$d de %2$d hoy</string>
     <string name="widget_next">Siguiente: %1$s</string>
     <string name="widget_all_done">Todo hecho</string>
+    <string name="widget_all_logged_today">Todo registrado por hoy</string>
+    <string name="widget_all_logged">Todo registrado</string>
     <string name="widget_habits_done_today">%1$d de %2$d hábitos hechos hoy</string>
     <string name="streak_empty">Añade un hábito para ver su racha.</string>
     <string name="day_streak">días de racha</string>
@@ -648,4 +650,25 @@
         <item quantity="one">%d copia</item>
         <item quantity="other">%d copias</item>
     </plurals>
+    <string name="support_rate_line">Solo unos segundos</string>
+    <string name="support_star_line">Ayuda a otros a encontrar Weft</string>
+    <string name="support_sponsor_line">Ayuda a que siga creciendo</string>
+    <string name="notify_snooze">Posponer</string>
+    <string name="notify_snooze_minutes">Posponer %1$d min</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">Notificación</string>
+    <string name="reminder_type_notification_desc">Un aviso discreto en tus notificaciones</string>
+    <string name="reminder_type_alarm">Alarma</string>
+    <string name="reminder_type_alarm_desc">Suena a pantalla completa hasta que respondas</string>
+    <string name="reminder_alarm_allow">Permite las alarmas en Ajustes</string>
+    <string name="reminder_fullscreen_allow">Permite las alarmas a pantalla completa en Ajustes</string>
+    <string name="set_reminder">Guardar recordatorio</string>
+    <string name="reminder_card_line">%1$s · los días de arriba · toca para cambiar</string>
+    <string name="reminder_card_off">Desactivado · toca para elegir la hora</string>
+    <string name="reminder_card_hint">Toca el recordatorio para cambiar la hora y el tipo.</string>
+    <string name="alarm_slide">Desliza para marcar como hecho</string>
+    <string name="alarm_dismiss">Descartar</string>
+    <string name="alarm_missed">%1$s · perdida a las %2$s</string>
+    <string name="channel_alarms">Alarmas</string>
+    <string name="channel_alarms_desc">Recordatorios de hábitos que suenan a pantalla completa</string>
 </resources>

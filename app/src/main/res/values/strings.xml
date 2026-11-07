@@ -409,6 +409,9 @@
     <string name="widget_of_today">%1$d of %2$d today</string>
     <string name="widget_next">Next: %1$s</string>
     <string name="widget_all_done">All done</string>
+    <!-- Nothing left to do, but at least one habit was skipped, so not "All done". -->
+    <string name="widget_all_logged_today">All logged for today</string>
+    <string name="widget_all_logged">All logged</string>
     <string name="widget_habits_done_today">%1$d of %2$d habits done today</string>
     <string name="streak_empty">Add a habit to see its streak.</string>
     <string name="day_streak">day streak</string>
@@ -640,4 +643,25 @@
         <item quantity="one">%d backup</item>
         <item quantity="other">%d backups</item>
     </plurals>
+    <string name="support_rate_line">Takes a few seconds</string>
+    <string name="support_star_line">Helps others find Weft</string>
+    <string name="support_sponsor_line">Keeps it growing</string>
+    <string name="notify_snooze">Snooze</string>
+    <string name="notify_snooze_minutes">Snooze %1$d min</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">Notification</string>
+    <string name="reminder_type_notification_desc">A quiet nudge in your notifications</string>
+    <string name="reminder_type_alarm">Alarm</string>
+    <string name="reminder_type_alarm_desc">Rings full screen until you act</string>
+    <string name="reminder_alarm_allow">Allow alarms in settings</string>
+    <string name="reminder_fullscreen_allow">Allow full-screen alarms in settings</string>
+    <string name="set_reminder">Set reminder</string>
+    <string name="reminder_card_line">%1$s · on the days above · tap to change</string>
+    <string name="reminder_card_off">Off · tap to set a time</string>
+    <string name="reminder_card_hint">Tap the reminder to change its time and type.</string>
+    <string name="alarm_slide">Slide to mark done</string>
+    <string name="alarm_dismiss">Dismiss</string>
+    <string name="alarm_missed">%1$s · missed at %2$s</string>
+    <string name="channel_alarms">Alarms</string>
+    <string name="channel_alarms_desc">Habit reminders that ring full screen</string>
 </resources>

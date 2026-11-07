@@ -405,6 +405,8 @@
     <string name="widget_of_today">आज %2$d में से %1$d</string>
     <string name="widget_next">अगला: %1$s</string>
     <string name="widget_all_done">सब हो गया</string>
+    <string name="widget_all_logged_today">आज के सब दर्ज हो गए</string>
+    <string name="widget_all_logged">सब दर्ज हो गया</string>
     <string name="widget_habits_done_today">आज %2$d में से %1$d आदतें पूरी</string>
     <string name="streak_empty">सिलसिला देखने के लिए एक आदत जोड़ें।</string>
     <string name="day_streak">दिन का सिलसिला</string>
@@ -633,4 +635,25 @@
         <item quantity="one">%d बैकअप</item>
         <item quantity="other">%d बैकअप</item>
     </plurals>
+    <string name="support_rate_line">बस कुछ सेकंड लगते हैं</string>
+    <string name="support_star_line">दूसरों को Weft ढूँढने में मदद करता है</string>
+    <string name="support_sponsor_line">इसे आगे बढ़ाता है</string>
+    <string name="notify_snooze">बाद में याद दिलाएँ</string>
+    <string name="notify_snooze_minutes">%1$d मिनट बाद</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">सूचना</string>
+    <string name="reminder_type_notification_desc">सूचनाओं में एक हल्की याद</string>
+    <string name="reminder_type_alarm">अलार्म</string>
+    <string name="reminder_type_alarm_desc">जब तक आप कुछ न करें, पूरी स्क्रीन पर बजता है</string>
+    <string name="reminder_alarm_allow">सेटिंग में अलार्म की अनुमति दें</string>
+    <string name="reminder_fullscreen_allow">सेटिंग में पूरी स्क्रीन वाले अलार्म की अनुमति दें</string>
+    <string name="set_reminder">रिमाइंडर सेट करें</string>
+    <string name="reminder_card_line">%1$s · ऊपर वाले दिनों पर · बदलने के लिए टैप करें</string>
+    <string name="reminder_card_off">बंद · समय चुनने के लिए टैप करें</string>
+    <string name="reminder_card_hint">समय और प्रकार बदलने के लिए रिमाइंडर पर टैप करें।</string>
+    <string name="alarm_slide">हो गया मार्क करने के लिए स्लाइड करें</string>
+    <string name="alarm_dismiss">बंद करें</string>
+    <string name="alarm_missed">%1$s · %2$s पर छूट गया</string>
+    <string name="channel_alarms">अलार्म</string>
+    <string name="channel_alarms_desc">आदतों के रिमाइंडर जो पूरी स्क्रीन पर बजते हैं</string>
 </resources>
