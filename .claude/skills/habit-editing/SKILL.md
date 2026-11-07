@@ -7,7 +7,7 @@ description: Creating, editing, reordering, archiving and deleting habits, and h
 
 **Code**
 - `ui/edit/EditHabitScreen.kt`, `EditHabitViewModel.kt` (route `EditHabitRoute(habitId)`, 0 = new). Saves keep fields the form doesn't show.
-- `ui/manage/ManageHabitsScreen.kt`: drag to reorder (with Move up/down accessibility actions), archive/restore, delete with confirmation (`DeleteHabitDialog`).
+- `ui/manage/ManageHabitsScreen.kt`: drag to reorder (with Move up/down accessibility actions), archive/restore, delete with confirmation (`DeleteHabitSheet`, a `PromptSheet`). Edit habit ends with the Archive | Delete `ButtonPair`; its Reminder card opens the Reminder sheet (see the reminders skill).
 - Data: `data/Entities.kt` (`Habit`, `daysMask` Monday = bit 0), `HabitRepository.saveHabit/reorderHabits/setArchived/deleteHabit` (delete cascades to entries and notes).
 
 **Verify:** `python3 tools/verify/smoke.py new_habit`. Manually: edit a habit, change nothing, save, and confirm its days are unchanged (pull the DB: `adb exec-out run-as app.sprout.habits cat databases/sprout.db > /tmp/s.db` plus the `-wal`/`-shm` files, then `sqlite3`).

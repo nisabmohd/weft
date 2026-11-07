@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""Recaptures the design PNGs in design/ from the app, the way they have been taken since 2026-10-19.
+
+Sample data on Sunday 27 Sep, the status bar at 9:30 (demo mode), the default Amber accent and Lexend,
+1080 x 2400 at 420 dpi. Needs a rootable emulator (a "default" system image, e.g. Sprout_API_35) to set
+the date, and the play debug build (it has the debug-only SheetPreviewActivity and DriveStateActivity).
+
+    ./gradlew :app:assemblePlayDebug
+    python3 tools/verify/capture.py              # every screen this script knows
+    python3 tools/verify/capture.py insights     # only the names that contain these words
+"""
+import os
+import sys
+import time
+
+sys.path.insert(0, os.path.dirname(__file__))
+import device as d  # noqa: E402
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+APK = os.path.join(ROOT, "app/build/outputs/apk/play/debug/app-play-debug.apk")
+# CAPTURE_DIR=<dir> saves elsewhere, e.g. to compare with a mockup before replacing it.
+DESIGN = os.environ.get("CAPTURE_DIR") or os.path.join(ROOT, "design")
+# The Google account shown on the Backup & restore captures.
+ACCOUNT = "alex.rivera@gmail.com"
+
+SCREENS = []
+
+
+def screen(fn):
+    SCREENS.append(fn)
+    return fn
+
+
+def save(name):
+    """Saves the screen as design/<name>.png once the UI has settled."""
+    time.sleep(1.2)
+    with open(os.path.join(DESIGN, name + ".png"), "wb") as f:
+        f.write(d.subprocess.run([d.ADB, "exec-out", "screencap", "-p"], capture_output=True).stdout)
+    print("saved", name)
+
+
+def save_full_length(name, height):
+    """A long screen in one capture: the display is made [height] px tall for the shot."""
+    d.shell(f"wm size 1080x{height}")
+    time.sleep(2.5)
+    save(name)
+    d.shell("wm size reset")
+    time.sleep(2)
+
+
+def demo_status_bar():
+    # Gesture navigation (the thin handle), as on every earlier capture.
+    d.shell("cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural")
+    time.sleep(2)
+    d.shell("settings put global sysui_demo_allowed 1")
+    for cmd in (
+        "-e command enter",
+        "-e command clock -e hhmm 0930",
+        "-e command battery -e level 100 -e plugged false",
+        "-e command network -e wifi show -e level 4 -e fully true -e mobile hide",
+        "-e command notifications -e visible false",
+    ):
+        d.shell(f"am broadcast -a com.android.systemui.demo {cmd}")
+
+
+def setup():
+    root = d.adb("root")
+    assert "cannot run as root" not in root, "needs a rootable emulator image to set the date"
+    time.sleep(2)
+    d.adb("wait-for-device")
+    d.shell("settings put global auto_time 0")
+    d.shell("date 092709302026.00")  # Sunday 27 Sep 2026, 9:30
+    demo_status_bar()
+    d.adb("uninstall", d.PACKAGE)
+    out = d.adb("install", APK)
+    assert "Success" in out, f"install failed: {out}"
+    d.shell(f"pm grant {d.PACKAGE} android.permission.POST_NOTIFICATIONS")
+    d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+    # Get started → Skip for now keeps the sample habits.
+    d.tap("Get started", timeout=20)
+    d.tap("Skip for now", timeout=10)
+    if d.exists("Go to Today", timeout=4):
+        d.tap("Go to Today")
+    assert d.exists("Today", timeout=10)
+    time.sleep(1.5)
+
+
+def teardown():
+    d.shell("am broadcast -a com.android.systemui.demo -e command exit")
+    d.shell("settings put global auto_time 1")
+
+
+# --- screens ----------------------------------------------------------------------------------
+
+
+@screen
+def amount_sheet_duration():
+    d.nav("Today")
+    d.long_press("Workout")
+    save("amount-sheet-duration")
+    d.back()
+
+
+@screen
+def support_prompt_sheet():
+    d.nav("Today")
+    d.shell(f"am start -n {d.PACKAGE}/.SheetPreviewActivity --es sheet support")
+    save("support-prompt-sheet")
+    d.back()
+
+
+@screen
+def update_sheet():
+    d.nav("Today")
+    d.shell(f"am start -n {d.PACKAGE}/.SheetPreviewActivity --es sheet update")
+    save("update-sheet")
+    d.back()
+
+
+@screen
+def edit_day_sheet():
+    d.nav("Habits")
+    d.tap("Week")
+    # Read's mark for Saturday 26 Sep (a partial day with a note in the sample data).
+    marks = [n for n in d.dump() if n.label.startswith("Read") and "Saturday" in n.label]
+    if not marks:
+        marks = [n for n in d.dump() if "Saturday, 26 Sep" in n.label]
+    assert marks, "no Saturday mark for Read"
+    d.tap_xy(*marks[0].center)
+    save("edit-day-sheet")
+    d.back()
+
+
+@screen
+def note_actions_sheet():
+    d.nav("Journal")
+    d.long_press("Only 8 pages", contains=True)
+    save("note-actions-sheet")
+    d.back()
+
+
+@screen
+def drive_account_sheet():
+    # The device's clock (27 Sep), not this computer's: "Backed up today, 9:12 AM".
+    now = int(d.shell("date +%s").strip())
+    hour_ago = (now - 18 * 60) * 1000
+    d.shell(f"am start -n {d.PACKAGE}/.DriveStateActivity --es account {ACCOUNT} --el lastBackupAt {hour_ago} --ei count 7")
+    time.sleep(1)
+    d.nav("More")
+    d.tap("Backups", contains=True)
+    d.scroll_to("Google account")
+    d.tap("Google account")
+    save("drive-account-sheet")
+    d.back()
+    d.back()
+
+
+@screen
+def filter_sheet():
+    d.nav("Journal")
+    d.tap("Filter by habit")
+    save("filter-sheet")
+    d.back()
+
+
+@screen
+def date_range_sheet():
+    d.nav("Journal")
+    d.tap("Filter by date")
+    save("date-range-sheet")
+    d.back()
+
+
+@screen
+def reminder_time_sheet():
+    d.nav("More")
+    d.scroll_to("Default reminder")
+    d.tap("Default reminder")
+    save("reminder-time-sheet")
+    d.back()
+
+
+@screen
+def icon_picker():
+    d.nav("Today")
+    d.tap("New habit")
+    d.tap("More icons", contains=True, timeout=5)
+    save("icon-picker")
+    d.back()
+    d.back()
+
+
+@screen
+def drive_restore_sheet():
+    now = int(d.shell("date +%s").strip())
+    d.shell(f"am start -n {d.PACKAGE}/.DriveStateActivity --es account {ACCOUNT} --el lastBackupAt {(now - 18 * 60) * 1000} --ei count 7")
+    time.sleep(1)
+    d.nav("More")
+    d.tap("Backups", contains=True)
+    d.tap("Restore from Drive")
+    save("drive-restore-sheet")
+    d.back()
+    d.back()
+
+
+@screen
+def new_habit():
+    d.nav("Today")
+    d.tap("New habit")
+    save("new-habit")
+    d.back()
+
+
+@screen
+def alarm_ringing():
+    """The ringing screen for Wake up at 7 (made an alarm at 6:30), opened over the lock screen."""
+    db = f"/data/data/{d.PACKAGE}/databases/sprout.db"
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f'sqlite3 {db} "update habit set reminderType=\'ALARM\', reminderMinutes=390 where name=\'Wake up at 7\'"')
+    day = d.shell("date +%s").strip()
+    hid = d.shell(f'sqlite3 {db} "select id from habit where name=\'Wake up at 7\'"').strip()
+    d.shell(f'sqlite3 {db} "delete from entry where habitId={hid} and date={int(day) // 86400}"')
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
+    d.shell("date 092706302026.00")  # 6:30, so the screen shows the alarm's own time
+    demo_status_bar()
+    d.shell("am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0630")
+    d.shell("input keyevent KEYCODE_SLEEP")
+    time.sleep(1.5)
+    d.shell(f"am broadcast -n {d.PACKAGE}/.notify.ReminderReceiver -a app.sprout.habits.action.REMINDER --el habitId {hid}")
+    time.sleep(4)
+    save("alarm-3-ringing")
+    d.shell(f"am broadcast -n {d.PACKAGE}/.notify.ReminderActionReceiver -a app.sprout.habits.action.ALARM_DISMISS --el habitId {hid}")
+    d.shell("date 092709302026.00")
+    d.shell("am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0930")
+    d.shell("input keyevent KEYCODE_WAKEUP")
+    d.shell("wm dismiss-keyguard")
+    time.sleep(1.5)
+
+
+@screen
+def insights():
+    d.nav("Insights")
+    d.scroll_to_top()
+    save_full_length("insights", 3760)
+
+
+def main(words):
+    picked = [s for s in SCREENS if not words or any(w in s.__name__ for w in words)]
+    # The alarm capture clears Wake up at 7's day in the sample data: take it last.
+    picked.sort(key=lambda s: s is alarm_ringing)
+    setup()
+    try:
+        for s in picked:
+            try:
+                # Each screen starts from Weft in front (a sheet's Back may have left the app).
+                d.shell(f"am start -n {d.PACKAGE}/.MainActivity")
+                time.sleep(1.5)
+                s()
+            except Exception as e:  # keep going: one screen failing shouldn't stop the rest
+                print("FAILED", s.__name__, e)
+                d.shell(f"am start -n {d.PACKAGE}/.MainActivity")
+                time.sleep(2)
+    finally:
+        teardown()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

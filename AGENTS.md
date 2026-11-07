@@ -34,7 +34,7 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 
 ## Design and text
 
-- Screens follow the designs in `design/` (one PNG per screen, e.g. `today.png`, `journal.png`, `icon-picker.png`). Exact colors and icon paths are in `design/TOKENS.md`. Since 2026-10-19 they are captures of the app with the sample data (27 Sep); when a screen changes, recapture its PNG too. All captures use the default **Amber** accent; only the store images in `release/` (and fastlane) use **Blue**, the logo's colour. `habit-card-states`, `notifications`, `update-dialog`, `support-prompt` and `drive-restore-sheet` are still mockups.
+- Screens follow the designs in `design/` (one PNG per screen, e.g. `today.png`, `journal.png`, `icon-picker.png`). Exact colors and icon paths are in `design/TOKENS.md`. Since 2026-10-19 they are captures of the app with the sample data (27 Sep); when a screen changes, recapture its PNG too. All captures use the default **Amber** accent; only the store images in `release/` (and fastlane) use **Blue**, the logo's colour. `habit-card-states` and the 2026-11-08 round (`support-prompt-sheet`, `update-sheet`, `alarm-*`, `notifications`, `drive-restore-sheet` and the other screens listed in `DESIGN-CHANGES.md`) are mockups until recaptured with `tools/verify/capture.py`.
 - Play Store shots in `release/phone-screenshots/` are framed by `tools/store_shots.py`, which keeps the status bar clear of the frame's corners.
 - Gaps and sizes follow [`docs/SPACING.md`](docs/SPACING.md): 16 dp side padding, cards 8 dp apart, sections 16 dp apart, 16 dp inside a card, section labels with 16 dp above and 8 dp below, a 44 dp habit tile wherever a habit is listed.
 - Charts (Insights) are drawn with Compose `Canvas` and use only the app colors: primary for done, the light primary tone for partial, outline grey for the rest. Every chart mark that can be tapped shows its numbers and has a content description.
@@ -63,3 +63,9 @@ The app was called Sprout until 1.5.0 (2026-11-01). User-facing text, class name
 3. For UI changes, also check dark mode and the largest font size.
 4. Add a check to `tools/verify/smoke.py` for new behaviour, update or add the feature's skill, and add anything left undone to `TODO.md`.
 5. When the maintainer asks for a commit, write a message that says what changed and why.
+
+## Consistency (2026-11-08)
+- Before building any UI, find the existing element of the same kind and reuse it: `WeftSheet` + `SheetHeader`, `WeftButton` / `ButtonPair`, `PromptSheet`, `ActionGroup` / `ActionRow`, `NoteField`, `ChoiceSheet` / `ChoiceRow`, `HabitTile`, `SectionHeader` / `groupedShape`. No dialogs: every prompt is a sheet.
+- Sizes and gaps come from named constants and `docs/SPACING.md` (Sheets: `SheetSidePadding` 20, `SheetTitleInset` 24, `sheetBottomPadding()`); text only from `WeftType`. A new size gets a constant and a doc line in the same change. See CLAUDE.md → Hard rules → Consistency first.
+- The logo is drawn only by `tools/weft_mark.py` (launcher, in-app mark, notification icon, store icon, site), centred on its canvas.
+

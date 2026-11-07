@@ -12,6 +12,8 @@ description: How the Today screen logs habits (swipe, tap, hold, undo, score) an
 - `ui/today/HabitCard.kt` (4 states), `SwipeableHabitCard.kt` (swipe state lives in the card), `LogSheet.kt`, `TodayScreen.kt` (week strip, score card, list, Add note button that lifts above the snackbar).
 - `domain/Scoring.kt`: `outcomeOf`, `dayCredit`, `score`.
 
+**Log sheet (1.6.0):** `LogSheet` ends with the filled `NoteField` (its placeholder is the outcome's question) and the Cancel | Save `ButtonPair`. A change made from a notification button shows in Today's Undo bar on the next open (`NotificationUndo`, `DayLogger.offer`).
+
 **Verify:** `python3 tools/verify/smoke.py today` (score, circle toggle, swipe + undo, hold sheet). Unit tests: `ScoringTest`.
 
 **Pitfalls**

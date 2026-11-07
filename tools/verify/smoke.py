@@ -189,11 +189,12 @@ def reminder_time_wheel():
     d.tap("New habit")
     assert d.scroll_to("9:00", contains=True), "reminder time missing on New habit"
     d.tap("9:00", contains=True)
-    assert d.exists("Reminder time") and d.exists("Set time"), "time wheel sheet missing"
+    # New habit's Reminder sheet (1.6.0): the time wheel, Notification / Alarm, Set reminder.
+    assert d.exists("Reminder") and d.exists("Set reminder"), "time wheel sheet missing"
     assert d.exists("AM") and d.exists("PM"), "AM/PM column missing"
     d.tap("10")
     time.sleep(0.6)
-    d.tap("Set time")
+    d.tap("Set reminder")
     assert d.exists("10:00", contains=True), "picked time not shown on New habit"
     d.tap("Close")
     if d.exists("Discard", timeout=1.5):
@@ -261,7 +262,8 @@ def skip_opens_note_when_asked():
     n = d.scroll_to("Vitamins")
     w, _ = d.screen_size()
     d.swipe(int(w * 0.62), n.center[1], int(w * 0.02), n.center[1], 250)
-    assert d.exists("Add a note", timeout=4), "skipping a habit that asks for a note didn't open the note sheet"
+    # The note field asks the skip's question (1.6.0 filled note field).
+    assert d.exists("What got in the way?", timeout=4), "skipping a habit that asks for a note didn't open the note sheet"
     d.type_text("Left them at home")
     d.tap("Save")
     assert d.exists("Skipped · note added", contains=True), "note from the skip sheet wasn't saved"
@@ -1216,13 +1218,20 @@ def drive_without_google_fails_cleanly():
     drive_state("tester@example.com")
     backup_screen()
     d.tap("Back up now")
-    labels = [n.label for n in d.dump()]
-    if any("Choose an account" in l or "Sign in" in l for l in labels):
+    # One loop for both outcomes: the result is a short snackbar, gone before a second full read.
+    seen = None
+    end = time.time() + 25
+    while time.time() < end and seen is None:
+        for l in (n.label for n in d.dump()):
+            if "Choose an account" in l or "Sign in" in l:
+                seen = "google"
+            elif "Couldn't reach Google Drive" in l or "Wi-Fi only is on" in l:
+                seen = "message"
+    if seen == "google":
         print("      skipped: Google's account screen opened (this phone has Google); check by hand")
         d.back()
         return
-    assert d.exists("Couldn't reach Google Drive", contains=True, timeout=25) or d.exists("Wi-Fi only is on", contains=True), \
-        "no result message after Back up now"
+    assert seen == "message", "no result message after Back up now"
     assert d.exists("Backup & restore"), "app left Backup & restore"
     drive_state()
 
@@ -1331,6 +1340,289 @@ def touch_targets_48dp():
     assert not problems, "small touch targets: " + "; ".join(problems)
 
 
+# --- 1.6.0: notification buttons and alarm reminders --------------------------------------------
+# These read and set the database with sqlite3, so they need a rootable emulator (a "default"
+# system image such as Sprout_API_35); elsewhere they are skipped. Run with animations off:
+#   for k in window_animation_scale transition_animation_scale animator_duration_scale; do adb shell settings put global $k 0; done
+
+
+class Skip(Exception):
+    pass
+
+
+DB = f"/data/data/{d.PACKAGE}/databases/sprout.db"
+RECEIVER = f"{d.PACKAGE}/.notify.ReminderReceiver"
+ACTIONS = f"{d.PACKAGE}/.notify.ReminderActionReceiver"
+
+
+def root():
+    if "root" not in d.shell("whoami"):
+        d.adb("root")
+        time.sleep(2)
+        d.adb("wait-for-device")
+    if "root" not in d.shell("whoami"):
+        raise Skip("needs a rootable emulator")
+
+
+def sql(query):
+    return d.shell(f'sqlite3 {DB} "{query}"').strip()
+
+
+def _epoch_day():
+    import datetime
+    y, m, dd = map(int, d.shell("date +%Y-%m-%d").strip().split("-"))
+    return (datetime.date(y, m, dd) - datetime.date(1970, 1, 1)).days
+
+
+def habit_id(name):
+    return int(sql(f"select id from habit where name='{name}'"))
+
+
+def entry(habit, day=None):
+    return sql(f"select status, amount from entry where habitId={habit} and date={day or _epoch_day()}")
+
+
+def make_alarm(name="Wake up at 7"):
+    """The habit as an alarm reminder with today not logged; the app restarts so Room reads it fresh."""
+    root()
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
+    d.shell(f"am force-stop {d.PACKAGE}")
+    h = habit_id(name)
+    sql(f"update habit set reminderType='ALARM', reminderMinutes=390 where id={h}; delete from entry where habitId={h} and date={_epoch_day()}")
+    return h
+
+
+def fire(h, action="app.sprout.habits.action.REMINDER"):
+    d.shell(f"am broadcast -n {RECEIVER} -a {action} --el habitId {h}")
+    time.sleep(3)
+
+
+def press_action(h, action):
+    d.shell(f"am broadcast -n {ACTIONS} -a app.sprout.habits.action.{action} --el habitId {h} --el day {_epoch_day()}")
+    time.sleep(2)
+
+
+def ringing():
+    return "channel=alarms" in d.shell("dumpsys notification --noredact")
+
+
+def top_activity():
+    return d.shell("dumpsys activity activities | grep -m1 topResumedActivity")
+
+
+def screen(on):
+    d.shell("input keyevent " + ("KEYCODE_WAKEUP" if on else "KEYCODE_SLEEP"))
+    time.sleep(1.5)
+    if on:
+        d.shell("wm dismiss-keyguard")
+        time.sleep(1)
+
+
+def find_ci(label, timeout=5.0):
+    end = time.time() + timeout
+    while time.time() < end:
+        for n in d.dump():
+            if n.label.lower() == label.lower():
+                return n
+        time.sleep(0.4)
+    return None
+
+
+@check
+def reminder_sheet_offers_notification_and_alarm():
+    root()
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
+    d.open_app()
+    d.nav("Today")
+    d.tap("New habit")
+    assert d.scroll_to("Reminder"), "no Reminder section in New habit"
+    assert d.exists("Tap the reminder to change its time and type."), "hint under the reminder card missing"
+    d.tap("tap to set a time", contains=True)
+    for label in ("Reminder", "Notification", "Alarm", "Set reminder"):
+        assert d.exists(label), f"reminder sheet is missing {label!r}"
+    d.tap("Alarm")
+    if d.exists("Allow alarms in settings", timeout=1) or d.exists("Allow full-screen alarms in settings", timeout=1):
+        d.back()  # the system settings page opened; come back
+    d.tap("Set reminder")
+    assert d.exists("Alarm · on the days above · tap to change", timeout=3), "card doesn't say Alarm after picking it"
+    d.back()
+    d.back()
+
+
+@check
+def alarm_heads_up_while_phone_in_use():
+    h = make_alarm()
+    screen(True)
+    d.home()
+    fire(h)
+    assert ringing(), "alarm notification not posted"
+    assert "AlarmActivity" not in top_activity(), "full screen opened while the phone was in use"
+    # The heads-up hides after a few seconds: open the shade to reach its buttons.
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    n = find_ci("Dismiss")
+    assert n, "no Dismiss button on the alarm notification"
+    d.tap_xy(*n.center)
+    time.sleep(1.5)
+    d.shell("cmd statusbar collapse")
+    assert not ringing(), "Dismiss didn't stop the alarm"
+    assert entry(h) == "", "Dismiss logged something"
+
+
+@check
+def alarm_full_screen_when_locked_and_slide_marks_done():
+    h = make_alarm()
+    screen(False)
+    fire(h)
+    assert "AlarmActivity" in top_activity(), "ringing screen didn't open over the lock screen"
+    assert d.exists("Slide to mark done", timeout=5) and d.exists("Snooze 10 min") and d.exists("Dismiss"), "ringing screen incomplete"
+    w, hgt = d.screen_size()
+    bar = d.find("Slide to mark done")
+    y = bar.center[1]
+    d.swipe(int(w * 0.12), y, int(w * 0.95), y, 600)
+    time.sleep(2)
+    assert entry(h).startswith("DONE"), f"slide didn't mark done: {entry(h)!r}"
+    assert not ringing(), "alarm still ringing after slide"
+    screen(True)
+
+
+@check
+def alarm_snooze_rings_again_later():
+    h = make_alarm()
+    screen(False)
+    fire(h)
+    assert d.exists("Snooze 10 min", timeout=5), "no Snooze on the ringing screen"
+    d.tap("Snooze 10 min")
+    time.sleep(2)
+    assert not ringing(), "Snooze didn't stop the alarm"
+    assert "REMINDER_SNOOZED" in d.shell("dumpsys alarm"), "no snooze alarm scheduled"
+    assert entry(h) == "", "Snooze logged something"
+    fire(h, "app.sprout.habits.action.REMINDER_SNOOZED")
+    assert ringing(), "snoozed alarm didn't ring again"
+    press_action(h, "ALARM_DISMISS")
+    assert not ringing()
+    screen(True)
+
+
+@check
+def alarm_volume_and_power_keys_silence():
+    h = make_alarm()
+    screen(False)
+    fire(h)
+    assert "AlarmActivity" in top_activity()
+    d.shell("input keyevent KEYCODE_VOLUME_DOWN")
+    time.sleep(2)
+    assert not ringing(), "volume key didn't silence the alarm"
+    # Also as a heads-up (screen on and unlocked): the power button still silences it.
+    screen(True)
+    d.home()
+    fire(h)
+    assert ringing()
+    d.shell("input keyevent KEYCODE_SLEEP")
+    time.sleep(2)
+    assert not ringing(), "power button didn't silence the alarm"
+    assert entry(h) == "", "silencing logged something"
+    screen(True)
+
+
+@check
+def alarm_does_not_ring_when_done_or_skipped():
+    h = make_alarm()
+    for status in ("DONE", "SKIP"):
+        sql(f"insert or replace into entry(habitId, date, status, amount) values({h}, {_epoch_day()}, '{status}', 1)")
+        fire(h)
+        assert not ringing(), f"alarm rang although today is {status}"
+    sql(f"delete from entry where habitId={h} and date={_epoch_day()}")
+
+
+@check
+def alarm_unanswered_posts_missed():
+    h = make_alarm()
+    screen(True)
+    d.home()
+    fire(h)
+    assert ringing()
+    fire(h, "app.sprout.habits.action.ALARM_TIMEOUT")
+    assert not ringing(), "alarm kept ringing after its 10 minutes"
+    assert "missed at" in d.shell("dumpsys notification --noredact"), "no missed-alarm notification"
+
+
+@check
+def alarm_falls_back_without_full_screen_permission():
+    h = make_alarm()
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT deny")
+    try:
+        screen(False)
+        fire(h)
+        assert "AlarmActivity" not in top_activity(), "full screen opened without the permission"
+        assert ringing(), "no heads-up alarm without the permission"
+        press_action(h, "ALARM_DISMISS")
+        assert not ringing()
+    finally:
+        d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
+        screen(True)
+
+
+@check
+def alarm_without_exact_alarms_says_so():
+    root()
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM deny")
+    d.shell(f"am force-stop {d.PACKAGE}")
+    try:
+        d.open_app()
+        d.nav("Today")
+        d.tap("New habit")
+        d.scroll_to("Reminder")
+        d.tap("tap to set a time", contains=True)
+        assert d.exists("Allow alarms in settings"), "Alarm row doesn't ask to allow alarms"
+        d.back()
+        d.back()
+    finally:
+        d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+
+
+@check
+def alarm_is_an_alarm_clock_and_survives_reboot():
+    make_alarm()
+    d.open_app()  # the scheduler applies the alarm type on start
+    time.sleep(3)
+    d.shell(f"am broadcast -a android.intent.action.BOOT_COMPLETED -n {d.PACKAGE}/.notify.RescheduleReceiver")
+    time.sleep(3)
+    alarms = d.shell("dumpsys alarm")
+    # An alarm clock carries a showIntent (what the status bar's clock opens): Weft's.
+    assert f"{d.PACKAGE} startActivity" in alarms, "the alarm reminder isn't scheduled as an alarm clock"
+
+
+@check
+def notification_buttons_log_and_offer_undo():
+    root()
+    d.shell(f"am force-stop {d.PACKAGE}")
+    read, vit = habit_id("Read"), habit_id("Vitamins")
+    sql(f"update habit set reminderType='NOTIFICATION' where id in ({read},{vit}); delete from entry where habitId in ({read},{vit}) and date={_epoch_day()}")
+    d.home()
+    fire(read)
+    press_action(read, "REMINDER_ADD_STEP")
+    assert entry(read).startswith("PARTIAL|1"), f"+step didn't log one step: {entry(read)!r}"
+    assert "to go" in d.shell("dumpsys notification --noredact"), "reminder didn't update to the new progress"
+    fire(vit)
+    press_action(vit, "REMINDER_DONE")
+    assert entry(vit).startswith("DONE"), "Done button didn't mark done"
+    d.open_app()
+    # The Undo bar shows for about 4 s: tap it first, then check what it undid.
+    d.tap("Undo", timeout=6)
+    for _ in range(10):  # the write lands a moment after the tap
+        if entry(vit) == "":
+            break
+        time.sleep(0.5)
+    assert entry(vit) == "", "Undo didn't put the day back"
+    fire(vit)
+    press_action(vit, "REMINDER_SNOOZE")
+    assert "REMINDER_SNOOZED" in d.shell("dumpsys alarm"), "Snooze didn't schedule the reminder again"
+    assert entry(vit) == "", "Snooze logged something"
+
+
 def recover():
     """After a failure, back out of sheets and inner screens to the tabs so later checks run."""
     d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
@@ -1359,6 +1651,8 @@ def main(filters):
         try:
             c()
             print(f"PASS  {c.__name__}")
+        except Skip as e:
+            print(f"SKIP  {c.__name__}: {e}")
         except Exception as e:  # noqa: BLE001 - report and continue
             failures += 1
             print(f"FAIL  {c.__name__}: {e}")
