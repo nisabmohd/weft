@@ -644,8 +644,6 @@
     <string name="reminder_type_notification_desc">Ein leiser Hinweis in deinen Benachrichtigungen</string>
     <string name="reminder_type_alarm">Wecker</string>
     <string name="reminder_type_alarm_desc">Klingelt im Vollbild, bis du reagierst</string>
-    <string name="reminder_alarm_allow">Wecker in den Einstellungen erlauben</string>
-    <string name="reminder_fullscreen_allow">Vollbild-Wecker in den Einstellungen erlauben</string>
     <string name="set_reminder">Erinnerung festlegen</string>
     <string name="reminder_card_line">%1$s · an den Tagen oben · zum Ändern tippen</string>
     <string name="reminder_card_off">Aus · zum Festlegen einer Uhrzeit tippen</string>
@@ -659,4 +657,48 @@
     <string name="alarm_goal">Ziel %1$s</string>
     <string name="alarm_skip_today">Heute auslassen</string>
     <string name="alarm_position">%1$d von %2$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="alarms">Wecker</string>
+    <string name="alarms_all_set">Alles bereit</string>
+    <string name="alarms_all_set_desc">Wecker klingeln pünktlich</string>
+    <string name="alarms_may_not_ring">Wecker klingeln vielleicht nicht pünktlich</string>
+    <string name="action_done">Fertig</string>
+    <string name="set_up_alarms">Wecker einrichten</string>
+    <string name="alarm_need_notifications">Benachrichtigungen</string>
+    <string name="alarm_need_notifications_desc">Damit der Wecker erscheinen kann</string>
+    <string name="alarm_need_exact">Wecker &amp; Erinnerungen</string>
+    <string name="alarm_need_exact_desc">Damit er auf die Minute klingelt</string>
+    <string name="alarm_need_full_screen">Vollbild-Wecker</string>
+    <string name="alarm_need_full_screen_desc">Damit er bei Sperre den Bildschirm füllt</string>
+    <string name="alarm_overlay">Über anderen Apps anzeigen</string>
+    <string name="alarm_overlay_desc">Optional · hilft auf manchen Handys</string>
+    <string name="alarm_lock_screen">Sperrbildschirm &amp; Pop-ups</string>
+    <string name="alarm_lock_screen_desc">Einmal in den Einstellungen prüfen</string>
+    <string name="alarm_battery">Akku</string>
+    <string name="alarm_battery_desc">Einmal „Nicht einschränken“ wählen</string>
+    <string name="alarm_use_notification">Stattdessen Benachrichtigung</string>
+    <string name="alarms_needed">Erforderlich</string>
+    <string name="alarms_some_phones">Auf manchen Handys</string>
+    <string name="alarms_sound_section">Ton</string>
+    <string name="alarm_sound">Weckton</string>
+    <string name="alarm_vibrate">Vibrieren</string>
+    <string name="alarm_vibrate_desc">Zusammen mit dem Ton</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">Standard</string>
+    <string name="alarm_sound_weft_soft">Weft · Sanft</string>
+    <string name="alarm_sound_weft_soft_desc">Ein sanfterer Ton</string>
+    <string name="alarm_sound_phone">Weckton des Handys</string>
+    <string name="alarm_sound_picked_desc">Von deinem Handy</string>
+    <string name="alarm_sound_playing">Wird abgespielt</string>
+    <string name="alarm_sound_choose">Vom Handy wählen</string>
+    <string name="alarm_sound_choose_desc">Jeder Ton auf deinem Handy</string>
+    <string name="reminder_card_fix">Wecker · %1$s · zum Beheben tippen</string>
+    <string name="reminder_fix_notifications">Benachrichtigungen sind aus</string>
+    <string name="reminder_fix_exact">klingelt evtl. zu spät</string>
+    <string name="reminder_fix_full_screen">kein Vollbild möglich</string>
+    <plurals name="alarms_to_allow">
+        <item quantity="one">%d Sache zu erlauben</item>
+        <item quantity="other">%d Sachen zu erlauben</item>
+    </plurals>
 </resources>

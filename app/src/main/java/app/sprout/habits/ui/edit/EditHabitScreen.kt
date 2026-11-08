@@ -75,6 +75,9 @@ import app.sprout.habits.R
 import androidx.compose.foundation.selection.selectableGroup
 import app.sprout.habits.ui.components.ChoiceRow
 import app.sprout.habits.data.ReminderType
+import app.sprout.habits.notify.AlarmNeed
+import app.sprout.habits.ui.alarm.AlarmSetupSheet
+import app.sprout.habits.ui.alarm.rememberAlarmSetup
 import app.sprout.habits.ui.components.ButtonPair
 import app.sprout.habits.ui.components.ButtonRole
 import app.sprout.habits.ui.components.groupedShape
@@ -130,6 +133,11 @@ private fun EditHabitContent(
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(form.hue.toFloat())
     var pickingTime by rememberSaveable { mutableStateOf(false) }
+    // Set up alarms (alarm-9a/b/c): from the Reminder card warning, or on picking Alarm in the sheet.
+    var settingUpAlarms by rememberSaveable { mutableStateOf(false) }
+    val alarmSetup = rememberAlarmSetup()
+    // The Reminder sheet's Notification / Alarm choice, set from the habit each time it opens.
+    var type by rememberSaveable { mutableStateOf(form.reminderType) }
     // Tapping anything that isn't a text field ends typing, so the keyboard doesn't come back
     // on the Name field when a dialog closes or a switch flips. Focus moves to the screen itself
     // rather than being cleared: before Android 9, clearing focus hands it straight back to the
@@ -316,10 +324,21 @@ private fun EditHabitContent(
                 }
             }
 
+            // alarm-10-reminder-card-warning.png: the most important thing an alarm still needs.
+            val alarmWarning = form.reminderOn && form.reminderType == ReminderType.ALARM && !alarmSetup.allSet
             Section(stringResource(R.string.reminder)) {
                 Card {
                     Row(
-                        Modifier.fillMaxWidth().clickable { endTyping(); pickingTime = true }.padding(horizontal = 16.dp, vertical = 14.dp),
+                        Modifier.fillMaxWidth().clickable {
+                            endTyping()
+                            // An alarm that can't ring properly: the card says so, and tapping fixes it.
+                            if (alarmWarning) {
+                                settingUpAlarms = true
+                            } else {
+                                type = form.reminderType
+                                pickingTime = true
+                            }
+                        }.padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         // The habit's own tile with an alarm (alarm-1-new-habit-reminder.png).
@@ -328,7 +347,18 @@ private fun EditHabitContent(
                             // 16sp like the titles in the card below; 22sp looked too big next to them.
                             Text(TodayViewModel.formatTime(form.reminderMinutes), style = WeftType.cardTitle, color = colors.onSurface)
                             Text(
-                                if (form.reminderOn) {
+                                if (alarmWarning) {
+                                    stringResource(
+                                        R.string.reminder_card_fix,
+                                        stringResource(
+                                            when (alarmSetup.missing.first()) {
+                                                AlarmNeed.NOTIFICATIONS -> R.string.reminder_fix_notifications
+                                                AlarmNeed.EXACT_ALARMS -> R.string.reminder_fix_exact
+                                                AlarmNeed.FULL_SCREEN -> R.string.reminder_fix_full_screen
+                                            },
+                                        ),
+                                    )
+                                } else if (form.reminderOn) {
                                     stringResource(
                                         R.string.reminder_card_line,
                                         stringResource(if (form.reminderType == ReminderType.ALARM) R.string.reminder_type_alarm else R.string.reminder_type_notification),
@@ -337,7 +367,7 @@ private fun EditHabitContent(
                                     stringResource(R.string.reminder_card_off)
                                 },
                                 style = WeftType.supporting,
-                                color = colors.onSurfaceVariant,
+                                color = if (alarmWarning) colors.error else colors.onSurfaceVariant,
                             )
                         }
                         Switch(checked = form.reminderOn, onCheckedChange = { v -> haptics.toggle(v); needsNotifications(v); edit { it.copy(reminderOn = v) } })
@@ -351,7 +381,7 @@ private fun EditHabitContent(
                 )
             }
 
-            if (form.reminderOn && notifications.granted && !exactAlarms) {
+            if (form.reminderOn && form.reminderType != ReminderType.ALARM && notifications.granted && !exactAlarms) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         stringResource(R.string.exact_alarm_hint),
@@ -399,9 +429,6 @@ private fun EditHabitContent(
 
     if (pickingTime) {
         // The Reminder sheet (alarm-2-reminder-sheet.png): the time wheel, then Notification / Alarm.
-        var type by rememberSaveable { mutableStateOf(form.reminderType) }
-        val canExact = exactAlarms
-        val canFullScreen = remember { Notifications.canUseFullScreen(context) }
         TimePickerSheet(
             title = stringResource(R.string.reminder),
             initialMinutes = form.reminderMinutes,
@@ -422,25 +449,27 @@ private fun EditHabitContent(
                     ) { haptics.tick(); type = ReminderType.NOTIFICATION }
                     ChoiceRow(
                         stringResource(R.string.reminder_type_alarm),
-                        // An alarm needs exact alarms (Android 12+) and, to ring full screen,
-                        // full-screen notifications (Android 14+): say which one to allow.
-                        stringResource(
-                            when {
-                                !canExact -> R.string.reminder_alarm_allow
-                                !canFullScreen -> R.string.reminder_fullscreen_allow
-                                else -> R.string.reminder_type_alarm_desc
-                            },
-                        ),
+                        stringResource(R.string.reminder_type_alarm_desc),
                         selected = type == ReminderType.ALARM,
                     ) {
                         haptics.tick()
                         type = ReminderType.ALARM
-                        when {
-                            !canExact -> Notifications.openExactAlarmSettings(context)
-                            !canFullScreen -> Notifications.openFullScreenSettings(context)
-                        }
+                        // Everything an alarm still needs, in one sheet over this one.
+                        if (!alarmSetup.allSet) settingUpAlarms = true
                     }
                 }
+            },
+        )
+    }
+
+    if (settingUpAlarms) {
+        AlarmSetupSheet(
+            onDismiss = { settingUpAlarms = false },
+            // "Use a notification instead": this reminder becomes a notification.
+            onUseNotification = {
+                settingUpAlarms = false
+                type = ReminderType.NOTIFICATION
+                edit { it.copy(reminderType = ReminderType.NOTIFICATION) }
             },
         )
     }

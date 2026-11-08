@@ -57,14 +57,57 @@ Designs: `alarm-7-two-alarms-1-of-2.png`, `alarm-8-two-alarms-2-of-2.png`.
 - Answering the first (slide, Skip today, Log amount → Save, or Dismiss) shows the next habit straight away with "2 of 2", in its own habit colour, without ringing again. The last screen has no "Next" line.
 - **Snooze** snoozes only the habit on screen and moves on to the next one. **Open Weft** opens the app on Today and leaves the rest unanswered (their notifications stay).
 
+## 7. Set up alarms sheet (`alarm-9a/b/c-setup-sheet-*.png`)
+One sheet lists everything an alarm needs on this phone. It's built like the app's other sheets: a plain list, with no cards or tiles.
+
+- Title "Set up alarms" (sheet title, no subtitle, like Backup frequency). The switches show the state.
+- Rows are full width with the same padding and type as `ChoiceRow` (24dp sides, 8dp vertical, cardTitle + supporting, about 53dp tall). Only rows this Android version needs are shown:
+  - Notifications (13+): "So the alarm can show"
+  - Alarms & reminders (exact alarms, 12+): "So it rings on the minute"
+  - Full-screen alarms (14+): "So it fills the screen when locked"
+- Trailing: the app's switch, the same as Wi-Fi only. **On** = allowed, **off** = missing. Tapping an off switch (or the row) opens that system page. On return (`ON_RESUME`), re-check every row and flip the switch to match. Tapping an on switch also opens the page, since Android doesn't let apps revoke permissions; the switch only reflects the real state.
+- **Show over other apps** (optional, `SYSTEM_ALERT_WINDOW`): a switch row right after the required rows, reading "Show over other apps" with the subtitle "Optional · helps on some phones".
+  - Shown only on phones that block the full-screen alarm (OnePlus / ColorOS seen), together with the phone-maker rows.
+  - A switch, because Android can report it (`Settings.canDrawOverlays`). On = allowed, off = not. Tapping opens `ACTION_MANAGE_OVERLAY_PERMISSION`, and the switch updates on return.
+  - Never counted in "N things to allow", never blocks **Done** (the sheet says Done with it off), and never triggers the Reminder card warning.
+  - When on and the phone is locked, Weft opens the ringing screen itself if the full-screen intent was blocked. Play reviews this permission, and Android 15+ limits it, so it stays optional.
+- Under them, with no label, the phone-maker rows. They're shown only on phones whose maker adds its own switches (ColorOS / OnePlus / Oppo / Realme, Xiaomi / HyperOS, Vivo, Huawei, Samsung battery) and hidden on Pixel and similar:
+  - "Lock screen & pop-ups": "Check once in phone settings"
+  - "Battery": "Check "Don't restrict" once"
+  - Trailing muted `arrow-right-up` (opens the maker's page), never a switch, because Android can't report these.
+- Bottom `WeftButton`, full width, 20dp from the list: secondary **Use a notification instead** while a required row is missing (it switches this reminder to Notification and closes the sheet), primary **Done** when all set.
+- Opens from three places: picking Alarm in the Reminder sheet when something is missing; the Reminder card warning; More → Alarms rows.
+
+## 8. Reminder card warning (`alarm-10-reminder-card-warning.png`)
+- If a habit's reminder is an Alarm and a required permission is missing, the card's second line turns error colour: "Alarm · can't ring full screen · tap to fix". Name the most important missing piece: notifications > exact alarms > full screen.
+- Tapping the card opens Set up alarms. Once fixed, the line goes back to "Alarm · on the days above · tap to change".
+
+## 9. Alarm sound sheet (`alarm-11-sound-sheet.png`, `ChoiceSheet`)
+- Title "Alarm sound". `ChoiceRow`s:
+  - **Weft** (default)
+  - **Weft · Soft** ("A gentler tone", if we ship it)
+  - **Phone's alarm sound** (subtitle: the phone's alarm sound name)
+- Below the list, the same extra-action card as "Help translate Weft": **Choose from phone** ("Any sound on your phone", primaryContainer tile with `music-note-2`, trailing `arrow-right-up`). It opens Android's sound picker. Once a sound is picked, it appears as a fourth ChoiceRow with its name.
+- Tapping a row selects it and plays about 4 seconds on the alarm stream. The row's subtitle shows `volume-loud` + "Playing" in primary. Swiping the sheet away, or Back, stops playback. There's no Done button, as in the other ChoiceSheets.
+- **Vibrate** isn't in this sheet. It's a switch on the Alarms screen (below).
+
+## 10. More → Alarms (`more-alarms-row.png`, `more-alarms-screen.png`)
+- New row in **General**, between Default reminder and Notifications: "Alarms", with the subtitle "All set" (muted) or "2 things to allow" (error colour), and a chevron.
+- Decided: it opens a **screen**, built like Backup & restore:
+  - a status card (44dp tile with `danger-circle` on errorContainer, "2 things to allow", "Alarms may not ring on time"; when all set, a `check` tile on surfaceContainerHigh with "All set")
+  - **Needed**: the same three rows as grouped white cards (24/6 corners, 2dp gaps), with the same switches
+  - **On some phones**: Show over other apps (optional switch), then the two phone-maker rows, with ↗
+  - **Sound**: "Alarm sound" with the value "Weft" and a chevron (opens the sound sheet), and "Vibrate" ("Along with the sound") with a switch, on by default
+- The row and screen always show, even with no alarm habits, so people can set things up ahead of time.
+
 ## Platform notes
-- Use `AlarmManager.setAlarmClock()` (exact, shown in the status bar). On Android 12+ this needs `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`. If it isn't granted, the Alarm row shows "Allow alarms in settings" and opens the system page.
+- Use `AlarmManager.setAlarmClock()` (exact, shown in the status bar). On Android 12+ this needs `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`. If it isn't granted, picking Alarm opens Set up alarms (section 7).
 - Android 14+: `USE_FULL_SCREEN_INTENT` must be granted. Otherwise, fall back to a heads-up notification with the same actions.
 - Reschedule after boot, time change and app update (the existing reminder receiver).
 - Backup/restore: store the reminder type with the reminder (`"type": "notification" | "alarm"`, default notification).
 
 ## Out of scope
-- Picking a ringtone, and gradual volume. These may come later, in the reminder sheet.
+- Gradual volume. (Picking the alarm sound is in 1.6.2: section 9.)
 
 ## As built (1.6.0, 2026-11-08)
 - **Power or a volume button** silences every alarm that is ringing, like Dismiss on each (confirmed by the user, 2026-11-08).

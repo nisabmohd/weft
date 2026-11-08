@@ -19,6 +19,9 @@ import app.sprout.habits.R
 import app.sprout.habits.data.EntryStatus
 import app.sprout.habits.data.Habit
 import app.sprout.habits.data.HabitRepository
+import app.sprout.habits.data.Settings
+import app.sprout.habits.data.SettingsRepository
+import kotlinx.coroutines.flow.first
 import app.sprout.habits.ui.alarm.AlarmActivity
 import app.sprout.habits.ui.today.TodayViewModel
 import java.time.LocalDate
@@ -50,7 +53,11 @@ data class Ringing(
  * notification, the one on top: "6:45 AM · 1 of 2 · Next: Workout". After [RING_MINUTES] it
  * stops by itself and a missed-alarm notification is posted.
  */
-class AlarmRinger(private val context: Context, private val repository: HabitRepository) {
+class AlarmRinger(
+    private val context: Context,
+    private val repository: HabitRepository,
+    private val settings: SettingsRepository,
+) {
     /**
      * Every alarm ringing now, in the order they rang (two habits can share a time). Only the
      * first one sounds and is on the ringing screen; the rest wait silently, and when the first is
@@ -135,7 +142,7 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
                 AlarmSoundService.stop()
                 NotificationManagerCompat.from(context).cancel(ReminderNotifier.reminderId(oldHead.habitId))
             }
-            post(habit, minutes, loud = true)
+            post(habit, minutes, loud = true, sound = settings.settings.first())
         } else {
             // It waits: the card on top now says "1 of 2 · Next: …".
             showHead(loud = false)
@@ -147,7 +154,8 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
     /** Posts the alarm on top again: after one is answered, or to update its "1 of 2" line. */
     private suspend fun showHead(loud: Boolean) {
         val head = _queue.value.firstOrNull() ?: return
-        repository.getHabit(head.habitId)?.let { post(it, head.minutes, loud) }
+        val prefs = if (loud) settings.settings.first() else null
+        repository.getHabit(head.habitId)?.let { post(it, head.minutes, loud, sound = prefs) }
     }
 
     /** "6:45 AM · 1 of 2 · Next: Workout" for the alarm on top; just the time otherwise. */
@@ -168,7 +176,7 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
      * [loud]: the sound ([AlarmSoundService]) and the full-screen intent; otherwise it is quiet.
      */
     @SuppressLint("MissingPermission") // checked by canPost()
-    private fun post(habit: Habit, minutes: Int, loud: Boolean, line: String = line(habit.id, minutes)) {
+    private fun post(habit: Habit, minutes: Int, loud: Boolean, line: String = line(habit.id, minutes), sound: Settings? = null) {
         val id = ReminderNotifier.reminderId(habit.id)
         val screen = PendingIntent.getActivity(
             context,
@@ -222,7 +230,11 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
         if (loud) builder.setFullScreenIntent(screen, true)
         val notification = builder.build()
         NotificationManagerCompat.from(context).notify(id, notification)
-        if (loud) AlarmSoundService.start(context, id, notification)
+        if (loud) {
+            val prefs = sound ?: Settings()
+            AlarmSoundService.start(context, id, notification, AlarmSounds.uri(context, prefs.alarmSound), prefs.alarmVibrate)
+            AlarmScreenFallback.schedule(context, habit.id) { _queue.value.firstOrNull()?.habitId == habit.id }
+        }
     }
 
     /**

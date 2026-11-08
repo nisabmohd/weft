@@ -47,6 +47,7 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 | Title row and full-width choice rows' text | 24dp | `SheetTitleInset`, `SheetHeader`, `ChoiceRow` |
 | Header: title (`title` 22sp) → muted line (`supporting`) | 4dp | `SheetHeader` |
 | Header → content | 16dp (20dp to an action list) | `SheetHeader`, `ActionGroup` |
+| List → its one full-width button (Set up alarms) | 20dp | `SheetActionGap` |
 | Under the last element | 16dp + the navigation bar's inset | `Modifier.sheetBottomPadding()` |
 | Buttons | 48dp, fully rounded, `cardTitle` 16sp label; a pair is two equal buttons 8dp apart | `WeftButton`, `ButtonPair`, `ButtonHeight`, `ButtonPairGap` |
 | Action rows | 60dp (68dp with a second line), surfaceContainerHigh, grouped 2dp apart, 16dp inside, 40dp tile with 14dp corners and a 20dp icon, 16dp tile → text | `ActionGroup`, `ActionRow` |

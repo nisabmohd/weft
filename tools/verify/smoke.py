@@ -1448,8 +1448,8 @@ def reminder_sheet_offers_notification_and_alarm():
     for label in ("Reminder", "Notification", "Alarm", "Set reminder"):
         assert d.exists(label), f"reminder sheet is missing {label!r}"
     d.tap("Alarm")
-    if d.exists("Allow alarms in settings", timeout=1) or d.exists("Allow full-screen alarms in settings", timeout=1):
-        d.back()  # the system settings page opened; come back
+    if d.exists("Set up alarms", timeout=1):
+        d.back()  # something isn't allowed yet (1.6.2: Set up alarms opens over the sheet)
     d.tap("Set reminder")
     assert d.exists("Alarm · on the days above · tap to change", timeout=3), "card doesn't say Alarm after picking it"
     d.back()
@@ -1573,7 +1573,7 @@ def alarm_falls_back_without_full_screen_permission():
 
 
 @check
-def alarm_without_exact_alarms_says_so():
+def alarm_without_exact_alarms_opens_setup():
     root()
     # Off the battery allow-list (root() puts it there): Android lets allow-listed apps set exact alarms.
     d.shell(f"dumpsys deviceidle whitelist -{d.PACKAGE}")
@@ -1585,11 +1585,42 @@ def alarm_without_exact_alarms_says_so():
         d.tap("New habit")
         d.scroll_to("Reminder")
         d.tap("tap to set a time", contains=True)
-        assert d.exists("Allow alarms in settings"), "Alarm row doesn't ask to allow alarms"
-        d.back()
+        d.tap("Alarm")
+        # 1.6.2: picking Alarm opens Set up alarms with every need, not a settings page.
+        assert d.exists("Set up alarms", timeout=3), "picking Alarm without exact alarms doesn't open Set up alarms"
+        assert d.exists("Alarms & reminders"), "Set up alarms has no Alarms & reminders row"
+        assert d.exists("Use a notification instead"), "Set up alarms offers no way out while something is missing"
+        d.back()  # keep Alarm: the card warns
+        d.tap("Set reminder")
+        assert d.exists("may ring late · tap to fix", contains=True, timeout=3), "Reminder card doesn't warn about exact alarms"
+        d.tap("may ring late · tap to fix", contains=True)
+        assert d.exists("Set up alarms", timeout=3), "the warning doesn't open Set up alarms"
+        d.tap("Use a notification instead")
+        assert d.exists("Notification · on the days above · tap to change", timeout=3), "Use a notification instead didn't switch the reminder"
         d.back()
     finally:
         d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+
+
+@check
+def more_alarms_screen():
+    d.open_app()
+    d.nav("More")
+    assert d.scroll_to("Alarms"), "no Alarms row in More"
+    d.tap("Alarms")
+    for label in ("Needed", "Notifications", "Alarms & reminders", "Full-screen alarms", "Sound", "Alarm sound", "Vibrate"):
+        assert d.scroll_to(label), f"Alarms screen is missing {label!r}"
+    d.tap("Alarm sound")
+    for label in ("Weft", "Weft · Soft", "Phone’s alarm sound", "Choose from phone"):
+        assert d.exists(label, timeout=3), f"Alarm sound sheet is missing {label!r}"
+    d.tap("Weft · Soft")
+    assert d.exists("Playing", timeout=2), "tapping a sound doesn't preview it"
+    d.back()
+    assert d.exists("Weft · Soft", timeout=2), "the Alarm sound row doesn't show the pick"
+    d.tap("Weft · Soft")
+    d.tap("Weft")
+    d.back()
+    d.back()
 
 
 @check

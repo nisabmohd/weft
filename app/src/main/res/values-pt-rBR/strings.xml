@@ -661,8 +661,6 @@
     <string name="reminder_type_notification_desc">Um lembrete discreto nas suas notificações</string>
     <string name="reminder_type_alarm">Alarme</string>
     <string name="reminder_type_alarm_desc">Toca em tela cheia até você responder</string>
-    <string name="reminder_alarm_allow">Permita alarmes nas configurações</string>
-    <string name="reminder_fullscreen_allow">Permita alarmes em tela cheia nas configurações</string>
     <string name="set_reminder">Definir lembrete</string>
     <string name="reminder_card_line">%1$s · nos dias acima · toque para mudar</string>
     <string name="reminder_card_off">Desligado · toque para escolher o horário</string>
@@ -676,4 +674,48 @@
     <string name="alarm_goal">Meta %1$s</string>
     <string name="alarm_skip_today">Pular hoje</string>
     <string name="alarm_position">%1$d de %2$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="alarms">Alarmes</string>
+    <string name="alarms_all_set">Tudo pronto</string>
+    <string name="alarms_all_set_desc">Os alarmes vão tocar na hora</string>
+    <string name="alarms_may_not_ring">Os alarmes podem não tocar na hora</string>
+    <string name="action_done">Concluído</string>
+    <string name="set_up_alarms">Configurar alarmes</string>
+    <string name="alarm_need_notifications">Notificações</string>
+    <string name="alarm_need_notifications_desc">Para o alarme aparecer</string>
+    <string name="alarm_need_exact">Alarmes e lembretes</string>
+    <string name="alarm_need_exact_desc">Para tocar no minuto certo</string>
+    <string name="alarm_need_full_screen">Alarmes em tela cheia</string>
+    <string name="alarm_need_full_screen_desc">Para ocupar a tela quando bloqueado</string>
+    <string name="alarm_overlay">Mostrar sobre outros apps</string>
+    <string name="alarm_overlay_desc">Opcional · ajuda em alguns celulares</string>
+    <string name="alarm_lock_screen">Tela de bloqueio e pop-ups</string>
+    <string name="alarm_lock_screen_desc">Confira uma vez nas configurações</string>
+    <string name="alarm_battery">Bateria</string>
+    <string name="alarm_battery_desc">Escolha “Sem restrições” uma vez</string>
+    <string name="alarm_use_notification">Usar uma notificação</string>
+    <string name="alarms_needed">Necessário</string>
+    <string name="alarms_some_phones">Em alguns celulares</string>
+    <string name="alarms_sound_section">Som</string>
+    <string name="alarm_sound">Som do alarme</string>
+    <string name="alarm_vibrate">Vibrar</string>
+    <string name="alarm_vibrate_desc">Junto com o som</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">Padrão</string>
+    <string name="alarm_sound_weft_soft">Weft · Suave</string>
+    <string name="alarm_sound_weft_soft_desc">Um toque mais suave</string>
+    <string name="alarm_sound_phone">Som de alarme do celular</string>
+    <string name="alarm_sound_picked_desc">Do seu celular</string>
+    <string name="alarm_sound_playing">Tocando</string>
+    <string name="alarm_sound_choose">Escolher do celular</string>
+    <string name="alarm_sound_choose_desc">Qualquer som do seu celular</string>
+    <string name="reminder_card_fix">Alarme · %1$s · toque para corrigir</string>
+    <string name="reminder_fix_notifications">as notificações estão desativadas</string>
+    <string name="reminder_fix_exact">pode tocar atrasado</string>
+    <string name="reminder_fix_full_screen">não pode tocar em tela cheia</string>
+    <plurals name="alarms_to_allow">
+        <item quantity="one">%d permissão para dar</item>
+        <item quantity="other">%d permissões para dar</item>
+    </plurals>
 </resources>

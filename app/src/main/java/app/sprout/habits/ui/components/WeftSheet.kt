@@ -111,6 +111,9 @@ val SheetSidePadding = 20.dp
 /** A sheet's title row sits a little further in than its content. */
 val SheetTitleInset = 24.dp
 
+/** Space between a sheet's list and the one full-width button under it (Set up alarms). */
+val SheetActionGap = 20.dp
+
 /** Space under a sheet's last element, on top of the navigation bar's own inset. */
 val SheetBottomGap = 16.dp
 

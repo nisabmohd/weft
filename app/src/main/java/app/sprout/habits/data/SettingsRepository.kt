@@ -75,7 +75,18 @@ data class Settings(
     val writingSuggestions: Boolean = true,
     /** Epoch millis of "Clear suggestion history": notes last written before it aren't learned from. */
     val suggestionsClearedAt: Long = 0,
+    /** What an alarm plays: an [AlarmSound] key ("weft", "weft_soft", "system") or a picked sound's URI. */
+    val alarmSound: String = AlarmSound.WEFT,
+    /** Alarms vibrate along with the sound (More → Alarms). */
+    val alarmVibrate: Boolean = true,
 )
+
+/** The alarm sound choices besides a sound picked from the phone (stored as its URI). */
+object AlarmSound {
+    const val WEFT = "weft"
+    const val WEFT_SOFT = "weft_soft"
+    const val SYSTEM = "system"
+}
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
@@ -153,6 +164,8 @@ class SettingsRepository(context: Context) {
     }
     suspend fun setWritingSuggestions(enabled: Boolean) = store.edit { it[WRITING_SUGGESTIONS] = enabled }
     suspend fun clearSuggestionHistory(now: Long = System.currentTimeMillis()) = store.edit { it[SUGGESTIONS_CLEARED_AT] = now }
+    suspend fun setAlarmSound(sound: String) = store.edit { it[ALARM_SOUND] = sound }
+    suspend fun setAlarmVibrate(on: Boolean) = store.edit { it[ALARM_VIBRATE] = on }
     suspend fun addCheckIn() = store.edit { it[CHECK_INS] = (it[CHECK_INS] ?: 0) + 1 }
     suspend fun supportPromptShown(dismissed: Boolean, now: Long = System.currentTimeMillis()) = store.edit {
         it[PROMPT_SHOWN_AT] = now
@@ -168,6 +181,8 @@ class SettingsRepository(context: Context) {
         it[TEXT_SCALE] = settings.theme.textScale
         it[WEEK_START] = settings.weekStart.name
         it[DEFAULT_REMINDER] = settings.defaultReminderMinutes
+        it[ALARM_SOUND] = settings.alarmSound
+        it[ALARM_VIBRATE] = settings.alarmVibrate
     }
 
     private fun Preferences.toSettings(): Settings {
@@ -205,6 +220,8 @@ class SettingsRepository(context: Context) {
             sampleBannerHidden = this[SAMPLE_BANNER_HIDDEN] == true,
             writingSuggestions = this[WRITING_SUGGESTIONS] ?: defaults.writingSuggestions,
             suggestionsClearedAt = this[SUGGESTIONS_CLEARED_AT] ?: 0,
+            alarmSound = this[ALARM_SOUND] ?: defaults.alarmSound,
+            alarmVibrate = this[ALARM_VIBRATE] ?: defaults.alarmVibrate,
         )
     }
 
@@ -237,6 +254,8 @@ class SettingsRepository(context: Context) {
         val SAMPLE_BANNER_HIDDEN = booleanPreferencesKey("sampleBannerHidden")
         val WRITING_SUGGESTIONS = booleanPreferencesKey("writingSuggestions")
         val SUGGESTIONS_CLEARED_AT = longPreferencesKey("suggestionsClearedAt")
+        val ALARM_SOUND = stringPreferencesKey("alarmSound")
+        val ALARM_VIBRATE = booleanPreferencesKey("alarmVibrate")
 
         inline fun <reified E : Enum<E>> enumOrDefault(name: String?, default: E): E =
             name?.let { n -> enumValues<E>().firstOrNull { it.name == n } } ?: default

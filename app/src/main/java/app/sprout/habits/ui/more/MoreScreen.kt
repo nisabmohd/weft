@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.more
 
+import androidx.compose.ui.graphics.Color
+import app.sprout.habits.ui.alarm.rememberAlarmSetup
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -83,6 +85,7 @@ fun MoreScreen(
     repository: SettingsRepository,
     drive: DriveBackup,
     onOpenBackup: () -> Unit,
+    onOpenAlarms: () -> Unit,
     onOpenAbout: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -187,6 +190,16 @@ fun MoreScreen(
                         SettingsRow(stringResource(R.string.default_reminder), stringResource(R.string.default_reminder_desc), onClick = { pickingReminder = true }) {
                             TrailingValue(TodayViewModel.formatTime(settings.defaultReminderMinutes))
                         }
+                    },
+                    {
+                        // Alarms (more-alarms-row.png): what alarms still need, in the error colour.
+                        val alarms = rememberAlarmSetup()
+                        SettingsRow(
+                            stringResource(R.string.alarms),
+                            alarmsLine(alarms),
+                            onClick = onOpenAlarms,
+                            subtitleColor = if (alarms.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
+                        ) { Chevron() }
                     },
                     { SettingsRow(stringResource(R.string.notifications), onClick = { Notifications.openSettings(context) }) { TrailingValue(stringResource(R.string.system_settings)) } },
                 )

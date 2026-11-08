@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import app.sprout.habits.AppLanguage
 import app.sprout.habits.BuildConfig
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.ExtraActionCard
 import app.sprout.habits.ui.components.ChoiceRow
 import app.sprout.habits.ui.components.ChoiceSheet
 import app.sprout.habits.ui.openUrl
@@ -42,38 +43,16 @@ fun LanguageSheet(current: String?, onPick: (String?) -> Unit, onDismiss: () -> 
     ChoiceSheet(
         title = stringResource(R.string.language),
         onDismiss = onDismiss,
-        footer = { HelpTranslateCard { openUrl(context, "${BuildConfig.REPO_URL}/blob/main/CONTRIBUTING.md#translations") } },
+        footer = {
+            ExtraActionCard(R.drawable.ic_translate, stringResource(R.string.help_translate), stringResource(R.string.help_translate_desc)) {
+                openUrl(context, "${BuildConfig.REPO_URL}/blob/main/CONTRIBUTING.md#translations")
+            }
+        },
     ) {
         ChoiceRow(stringResource(R.string.language_system), system, current == null) { onPick(null) }
         AppLanguage.LANGUAGES.forEach { lang ->
             // English needs no second line; the others show their English name under them.
             ChoiceRow(lang.nativeName, lang.englishName.takeIf { it != lang.nativeName }, current == lang.tag) { onPick(lang.tag) }
         }
-    }
-}
-
-@Composable
-private fun HelpTranslateCard(onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    Row(
-        Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
-            .navigationBarsPadding()
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(colors.surfaceContainerHigh)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        Box(Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(colors.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(painterResource(R.drawable.ic_translate), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(20.dp))
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(stringResource(R.string.help_translate), style = WeftType.cardTitle, color = colors.onSurface)
-            Text(stringResource(R.string.help_translate_desc), style = WeftType.supporting, color = colors.onSurfaceVariant)
-        }
-        Icon(painterResource(R.drawable.ic_open_external), contentDescription = null, tint = colors.onSurface, modifier = Modifier.size(18.dp))
     }
 }

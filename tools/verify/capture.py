@@ -286,6 +286,96 @@ def alarm_ringing():
     time.sleep(1.5)
 
 
+def alarm_permissions(notifications, exact, full_screen, restart=True):
+    """Sets what alarms are allowed (1.6.2's Set up alarms), on a phone that passes for a OnePlus."""
+    if restart:
+        d.shell(f"am force-stop {d.PACKAGE}")
+        d.shell("setprop debug.weft.maker oneplus")
+    d.shell(f"pm {'grant' if notifications else 'revoke'} {d.PACKAGE} android.permission.POST_NOTIFICATIONS")
+    # Off the battery allow-list (root puts the app there): allow-listed apps may always set exact alarms.
+    d.shell(f"dumpsys deviceidle whitelist -{d.PACKAGE}")
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM {'allow' if exact else 'deny'}")
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT {'allow' if full_screen else 'deny'}")
+    if restart:
+        d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+        time.sleep(1.5)
+    else:
+        # Weft re-reads them when it comes back to the front, as after the system settings page.
+        d.shell("input keyevent KEYCODE_HOME")
+        time.sleep(1)
+        d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+        time.sleep(1.5)
+
+
+def alarm_permissions_reset():
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell("setprop debug.weft.maker ''")
+    alarm_permissions(True, True, True, restart=False)
+
+
+@screen
+def alarm_setup():
+    """Set up alarms (alarm-9a/b/c) and the Reminder card warning (alarm-10), from New habit."""
+    alarm_permissions(False, False, False)
+    d.nav("Today")
+    d.tap("New habit")
+    d.scroll_to("tap to set a time", contains=True)
+    d.tap("tap to set a time", contains=True)
+    d.tap("Alarm")  # nothing is allowed: Set up alarms opens over the Reminder sheet
+    assert d.exists("Set up alarms", timeout=5)
+    d.back()
+    d.tap("Set reminder")
+    # Set reminder asks for notifications; say no, to keep "nothing allowed".
+    if d.exists("DON’T ALLOW", timeout=3):
+        d.tap("DON’T ALLOW")
+    # The warning opens it over New habit itself, as in the design.
+    d.scroll_to("tap to fix", contains=True)
+    d.tap("tap to fix", contains=True)
+    assert d.exists("Set up alarms", timeout=5)
+    save("alarm-9a-setup-sheet-none")
+    alarm_permissions(True, True, False, restart=False)
+    assert d.exists("Set up alarms", timeout=5)
+    save("alarm-9b-setup-sheet-partly")
+    d.back()
+    d.scroll_to_top()
+    d.tap("Name")
+    d.shell("input text 'Wake%sup%sat%s7'")
+    d.back()  # the keyboard
+    time.sleep(0.5)
+    d.scroll_to("Tap the reminder to change its time and type.")
+    save("alarm-10-reminder-card-warning")
+    d.tap("tap to fix", contains=True)
+    assert d.exists("Set up alarms", timeout=5)
+    alarm_permissions(True, True, True, restart=False)
+    assert d.exists("Done", timeout=5)
+    save("alarm-9c-setup-sheet-all-set")
+    d.tap("Done")
+    d.back()
+    if d.exists("Discard", contains=True, timeout=1):
+        d.tap("Discard", contains=True)
+    alarm_permissions_reset()
+
+
+@screen
+def more_alarms():
+    """More with its Alarms row, the Alarms screen (2 things to allow) and the Alarm sound sheet."""
+    alarm_permissions(True, False, False)
+    d.nav("More")
+    d.scroll_to_top()
+    save_full_length("more-alarms-row", 3582)
+    d.scroll_to("Alarms")
+    d.tap("Alarms")
+    assert d.exists("2 things to allow", timeout=5)
+    save("more-alarms-screen")
+    d.scroll_to("Alarm sound")
+    d.tap("Alarm sound")
+    d.tap("Weft")  # plays it: the row says "Playing"
+    save("alarm-11-sound-sheet")
+    d.back()
+    d.back()
+    alarm_permissions_reset()
+
+
 @screen
 def insights():
     d.nav("Insights")

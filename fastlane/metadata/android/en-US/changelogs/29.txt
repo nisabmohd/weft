@@ -1,0 +1,3 @@
+• Set up alarms: one sheet shows what alarms need on your phone and opens the right settings.
+• More → Alarms: alarm sound (Weft's own tone, a softer one, or any sound on your phone) and vibrate.
+• OnePlus, Xiaomi and similar phones: optional "Show over other apps" so alarms open on the lock screen.

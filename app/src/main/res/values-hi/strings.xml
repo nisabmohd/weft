@@ -645,8 +645,6 @@
     <string name="reminder_type_notification_desc">सूचनाओं में एक हल्की याद</string>
     <string name="reminder_type_alarm">अलार्म</string>
     <string name="reminder_type_alarm_desc">जब तक आप कुछ न करें, पूरी स्क्रीन पर बजता है</string>
-    <string name="reminder_alarm_allow">सेटिंग में अलार्म की अनुमति दें</string>
-    <string name="reminder_fullscreen_allow">सेटिंग में पूरी स्क्रीन वाले अलार्म की अनुमति दें</string>
     <string name="set_reminder">रिमाइंडर सेट करें</string>
     <string name="reminder_card_line">%1$s · ऊपर वाले दिनों पर · बदलने के लिए टैप करें</string>
     <string name="reminder_card_off">बंद · समय चुनने के लिए टैप करें</string>
@@ -660,4 +658,48 @@
     <string name="alarm_goal">लक्ष्य %1$s</string>
     <string name="alarm_skip_today">आज छोड़ें</string>
     <string name="alarm_position">%2$d में से %1$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="alarms">अलार्म</string>
+    <string name="alarms_all_set">सब तैयार</string>
+    <string name="alarms_all_set_desc">अलार्म समय पर बजेंगे</string>
+    <string name="alarms_may_not_ring">अलार्म शायद समय पर न बजें</string>
+    <string name="action_done">हो गया</string>
+    <string name="set_up_alarms">अलार्म सेट करें</string>
+    <string name="alarm_need_notifications">सूचनाएँ</string>
+    <string name="alarm_need_notifications_desc">ताकि अलार्म दिख सके</string>
+    <string name="alarm_need_exact">अलार्म और रिमाइंडर</string>
+    <string name="alarm_need_exact_desc">ताकि यह ठीक समय पर बजे</string>
+    <string name="alarm_need_full_screen">फ़ुल-स्क्रीन अलार्म</string>
+    <string name="alarm_need_full_screen_desc">ताकि लॉक होने पर पूरी स्क्रीन पर दिखे</string>
+    <string name="alarm_overlay">दूसरे ऐप के ऊपर दिखाएँ</string>
+    <string name="alarm_overlay_desc">वैकल्पिक · कुछ फ़ोन पर मदद करता है</string>
+    <string name="alarm_lock_screen">लॉक स्क्रीन और पॉप-अप</string>
+    <string name="alarm_lock_screen_desc">फ़ोन सेटिंग में एक बार देखें</string>
+    <string name="alarm_battery">बैटरी</string>
+    <string name="alarm_battery_desc">एक बार “प्रतिबंधित न करें” चुनें</string>
+    <string name="alarm_use_notification">इसके बजाय सूचना दें</string>
+    <string name="alarms_needed">ज़रूरी</string>
+    <string name="alarms_some_phones">कुछ फ़ोन पर</string>
+    <string name="alarms_sound_section">आवाज़</string>
+    <string name="alarm_sound">अलार्म की आवाज़</string>
+    <string name="alarm_vibrate">कंपन</string>
+    <string name="alarm_vibrate_desc">आवाज़ के साथ</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">डिफ़ॉल्ट</string>
+    <string name="alarm_sound_weft_soft">Weft · हल्की</string>
+    <string name="alarm_sound_weft_soft_desc">हल्की धुन</string>
+    <string name="alarm_sound_phone">फ़ोन की अलार्म आवाज़</string>
+    <string name="alarm_sound_picked_desc">आपके फ़ोन से</string>
+    <string name="alarm_sound_playing">बज रही है</string>
+    <string name="alarm_sound_choose">फ़ोन से चुनें</string>
+    <string name="alarm_sound_choose_desc">आपके फ़ोन की कोई भी आवाज़</string>
+    <string name="reminder_card_fix">अलार्म · %1$s · ठीक करने के लिए टैप करें</string>
+    <string name="reminder_fix_notifications">सूचनाएँ बंद हैं</string>
+    <string name="reminder_fix_exact">देर से बज सकता है</string>
+    <string name="reminder_fix_full_screen">फ़ुल स्क्रीन पर नहीं बज सकता</string>
+    <plurals name="alarms_to_allow">
+        <item quantity="one">अनुमति के लिए %d चीज़</item>
+        <item quantity="other">अनुमति के लिए %d चीज़ें</item>
+    </plurals>
 </resources>

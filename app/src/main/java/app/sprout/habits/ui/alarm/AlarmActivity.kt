@@ -189,6 +189,16 @@ class AlarmActivity : ComponentActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onStart() {
+        super.onStart()
+        showing = true
+    }
+
+    override fun onStop() {
+        showing = false
+        super.onStop()
+    }
+
     override fun onDestroy() {
         unregisterReceiver(screenOff)
         super.onDestroy()
@@ -261,6 +271,11 @@ class AlarmActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA_HABIT_ID = "habitId"
+
+        /** True while the ringing screen is on screen: the overlay fallback leaves it alone. */
+        @Volatile
+        var showing = false
+            private set
 
         fun intent(context: Context, habitId: Long): Intent = Intent(context, AlarmActivity::class.java)
             .putExtra(EXTRA_HABIT_ID, habitId)

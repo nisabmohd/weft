@@ -23,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
@@ -55,6 +59,9 @@ fun ChoiceRow(
     subtitle: String?,
     selected: Boolean,
     fontFamily: FontFamily? = null,
+    /** A 16 dp icon before the line, and its colour (the alarm sound's "Playing"). */
+    subtitleIcon: Int? = null,
+    subtitleColor: Color = Color.Unspecified,
     trailing: (@Composable () -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -72,7 +79,13 @@ fun ChoiceRow(
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(title, style = WeftType.cardTitle.copy(fontFamily = fontFamily ?: WeftType.cardTitle.fontFamily), color = colors.onSurface)
-            subtitle?.let { Text(it, style = WeftType.supporting.copy(fontFamily = fontFamily ?: WeftType.supporting.fontFamily), color = colors.onSurfaceVariant) }
+            subtitle?.let {
+                val color = subtitleColor.takeOrElse { colors.onSurfaceVariant }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    subtitleIcon?.let { icon -> Icon(painterResource(icon), contentDescription = null, tint = color, modifier = Modifier.size(16.dp)) }
+                    Text(it, style = WeftType.supporting.copy(fontFamily = fontFamily ?: WeftType.supporting.fontFamily), color = color)
+                }
+            }
         }
         trailing?.invoke()
         RadioButton(selected = selected, onClick = null)

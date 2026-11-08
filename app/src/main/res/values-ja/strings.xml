@@ -626,8 +626,6 @@
     <string name="reminder_type_notification_desc">通知でそっとお知らせ</string>
     <string name="reminder_type_alarm">アラーム</string>
     <string name="reminder_type_alarm_desc">操作するまで全画面で鳴ります</string>
-    <string name="reminder_alarm_allow">設定でアラームを許可してください</string>
-    <string name="reminder_fullscreen_allow">設定で全画面アラームを許可してください</string>
     <string name="set_reminder">リマインダーを設定</string>
     <string name="reminder_card_line">%1$s · 上の曜日 · タップで変更</string>
     <string name="reminder_card_off">オフ · タップして時刻を設定</string>
@@ -641,4 +639,47 @@
     <string name="alarm_goal">目標 %1$s</string>
     <string name="alarm_skip_today">今日はスキップ</string>
     <string name="alarm_position">%1$d / %2$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="alarms">アラーム</string>
+    <string name="alarms_all_set">準備完了</string>
+    <string name="alarms_all_set_desc">アラームは時間どおりに鳴ります</string>
+    <string name="alarms_may_not_ring">アラームが時間どおりに鳴らないことがあります</string>
+    <string name="action_done">完了</string>
+    <string name="set_up_alarms">アラームの設定</string>
+    <string name="alarm_need_notifications">通知</string>
+    <string name="alarm_need_notifications_desc">アラームを表示するため</string>
+    <string name="alarm_need_exact">アラームとリマインダー</string>
+    <string name="alarm_need_exact_desc">時間ぴったりに鳴らすため</string>
+    <string name="alarm_need_full_screen">全画面アラーム</string>
+    <string name="alarm_need_full_screen_desc">ロック中に全画面で表示するため</string>
+    <string name="alarm_overlay">他のアプリの上に表示</string>
+    <string name="alarm_overlay_desc">任意 · 一部のスマートフォンで役立ちます</string>
+    <string name="alarm_lock_screen">ロック画面とポップアップ</string>
+    <string name="alarm_lock_screen_desc">設定で一度確認してください</string>
+    <string name="alarm_battery">バッテリー</string>
+    <string name="alarm_battery_desc">一度「制限しない」を選んでください</string>
+    <string name="alarm_use_notification">代わりに通知を使う</string>
+    <string name="alarms_needed">必要</string>
+    <string name="alarms_some_phones">一部のスマートフォン</string>
+    <string name="alarms_sound_section">サウンド</string>
+    <string name="alarm_sound">アラーム音</string>
+    <string name="alarm_vibrate">バイブレーション</string>
+    <string name="alarm_vibrate_desc">音と一緒に</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">デフォルト</string>
+    <string name="alarm_sound_weft_soft">Weft · ソフト</string>
+    <string name="alarm_sound_weft_soft_desc">やさしい音</string>
+    <string name="alarm_sound_phone">スマートフォンのアラーム音</string>
+    <string name="alarm_sound_picked_desc">スマートフォンから</string>
+    <string name="alarm_sound_playing">再生中</string>
+    <string name="alarm_sound_choose">スマートフォンから選ぶ</string>
+    <string name="alarm_sound_choose_desc">スマートフォンの好きな音</string>
+    <string name="reminder_card_fix">アラーム · %1$s · タップして修正</string>
+    <string name="reminder_fix_notifications">通知がオフです</string>
+    <string name="reminder_fix_exact">遅れて鳴ることがあります</string>
+    <string name="reminder_fix_full_screen">全画面で鳴らせません</string>
+    <plurals name="alarms_to_allow">
+        <item quantity="other">許可が必要な項目: %d</item>
+    </plurals>
 </resources>

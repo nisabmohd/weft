@@ -22,7 +22,7 @@ class AppContainer(private val context: Context) {
     val settings by lazy { SettingsRepository(context) }
     val reminders by lazy { ReminderScheduler(context, repository) }
     val reminderNotifier by lazy { ReminderNotifier(context, repository) }
-    val alarmRinger by lazy { app.sprout.habits.notify.AlarmRinger(context, repository) }
+    val alarmRinger by lazy { app.sprout.habits.notify.AlarmRinger(context, repository, settings) }
     val notificationUndo by lazy { app.sprout.habits.notify.NotificationUndo(context) }
     val widgets by lazy { WidgetUpdater(context, repository, settings) }
     val backup by lazy { BackupManager(repository, settings) }

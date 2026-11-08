@@ -74,6 +74,8 @@ fun SettingsRow(
     icon: Int? = null,
     onClick: (() -> Unit)? = null,
     titleColor: Color = Color.Unspecified,
+    /** The line under the title; error for "2 things to allow" (More → Alarms). */
+    subtitleColor: Color = Color.Unspecified,
     /** Shown after the subtitle, e.g. the "Update available" pill. */
     badge: (@Composable () -> Unit)? = null,
     trailing: @Composable RowScope.() -> Unit = {},
@@ -93,7 +95,7 @@ fun SettingsRow(
         Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(title, style = WeftType.cardTitle, color = titleColor.takeOrElse { MaterialTheme.colorScheme.onSurface })
             if (badge == null) {
-                subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                subtitle?.let { Text(it, style = WeftType.supporting, color = subtitleColor.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }) }
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f, fill = false)) }

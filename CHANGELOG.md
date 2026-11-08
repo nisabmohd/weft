@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.2
+
+Added:
+
+- Set up alarms: picking Alarm for a reminder shows everything an alarm needs on your phone in one sheet (notifications, Alarms & reminders, full-screen alarms), each with a switch that shows whether it's allowed and opens the right settings page, instead of sending you to one settings page with no explanation. "Use a notification instead" if you'd rather not. The Reminder card says when an alarm can't ring properly ("Alarm · can't ring full screen · tap to fix").
+- More → Alarms: the same setup ("All set" or "2 things to allow"), Alarm sound and Vibrate.
+- Alarm sound: Weft's own tone (the new default) or a softer one, the phone's alarm sound, or any sound on your phone. Tap one to hear it. Backups keep the choice.
+- On OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei and Honor phones: an optional "Show over other apps" switch, so Weft can open a ringing alarm on the locked screen when the phone doesn't, and shortcuts to the lock screen and battery settings these phones add.
+
+Fixed:
+
+- After allowing full-screen alarms, the Reminder sheet still said "Allow full-screen alarms in settings".
+
 ## 1.6.1
 
 Fixed:

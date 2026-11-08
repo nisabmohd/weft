@@ -91,6 +91,9 @@ data class SettingsDto(
     val textScale: Float,
     val weekStart: String,
     val defaultReminderMinutes: Int,
+    /** 1.6.2; older backups leave the current choice. A sound picked from the phone may be missing on another phone: it then plays Weft's. */
+    val alarmSound: String? = null,
+    val alarmVibrate: Boolean? = null,
 )
 
 class BackupException(
@@ -132,6 +135,8 @@ class BackupManager(
                     textScale = it.theme.textScale,
                     weekStart = it.weekStart.name,
                     defaultReminderMinutes = it.defaultReminderMinutes,
+                    alarmSound = it.alarmSound,
+                    alarmVibrate = it.alarmVibrate,
                 )
             },
         )
@@ -161,6 +166,8 @@ class BackupManager(
                     ),
                     weekStart = enumOr(dto.weekStart, current.weekStart),
                     defaultReminderMinutes = dto.defaultReminderMinutes.coerceIn(0, 24 * 60 - 1),
+                    alarmSound = dto.alarmSound?.takeIf { it.isNotBlank() } ?: current.alarmSound,
+                    alarmVibrate = dto.alarmVibrate ?: current.alarmVibrate,
                 ),
             )
         }
