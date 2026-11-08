@@ -31,8 +31,16 @@ class ReminderReceiver : BroadcastReceiver() {
                     ReminderScheduler.ACTION_REMINDER -> {
                         val habitId = intent.getLongExtra(ReminderScheduler.EXTRA_HABIT_ID, 0L)
                         val habit = container.repository.getHabit(habitId) ?: return@launch
-                        if (onTime) container.reminderNotifier.showReminder(habit)
+                        if (onTime) remind(container, habit)
                         container.reminders.schedule(habit)
+                    }
+                    ReminderScheduler.ACTION_SNOOZED -> {
+                        val habitId = intent.getLongExtra(ReminderScheduler.EXTRA_HABIT_ID, 0L)
+                        val habit = container.repository.getHabit(habitId) ?: return@launch
+                        if (onTime) remind(container, habit)
+                    }
+                    ReminderScheduler.ACTION_ALARM_TIMEOUT -> {
+                        container.alarmRinger.timedOut(intent.getLongExtra(ReminderScheduler.EXTRA_HABIT_ID, 0L))
                     }
                     ReminderScheduler.ACTION_NOTE_NUDGE -> {
                         val habits = container.repository.observeHabits().first()
@@ -45,6 +53,12 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         }
     }
+}
+
+/** A habit's reminder, as its notification or its alarm. */
+private suspend fun remind(container: app.sprout.habits.AppContainer, habit: app.sprout.habits.data.Habit) {
+    if (habit.reminderType == app.sprout.habits.data.ReminderType.ALARM) container.alarmRinger.ring(habit)
+    else container.reminderNotifier.showReminder(habit)
 }
 
 /**

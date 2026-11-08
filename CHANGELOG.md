@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.6.0
+
+Added:
+
+- Alarm reminders: a habit's reminder can be a quiet notification or an alarm that rings full screen, even over the lock screen, until you answer it. Slide to mark it done, Log amount (measured habits, the app's amount sheet right on the alarm) or Skip today, Snooze 10 min, or Dismiss; Open Weft unlocks and opens the habit; the power or a volume button silences it. Alarms at the same time ring as one, one habit after another ("1 of 2", "Next: Workout"); logging the habit anywhere, even part of it, stops its alarm. It uses the alarm sound on the alarm stream with vibration, stops by itself after 10 minutes with a "missed at" notification, doesn't ring when the habit is already done or skipped, and shows in the status bar like any alarm clock. Without full-screen permission (Android 14+) it rings as a notification with Done / Snooze / Dismiss. New habit → Reminder opens one sheet for the time and the type. Backups keep the type.
+- Buttons on reminder notifications: Done and Dismiss; measured habits also get +step (e.g. "+5 pages") and the reminder updates to show what's left; the evening note nudge gets Add note (opens New note for that habit and day) and Done. Today offers Undo for the change the next time it opens.
+
+Changed:
+
+- No more dialogs: Update available, Enjoying Weft?, Delete habit, Replace your data, Delete backups and Delete note are sheets now. Two actions are always two equal buttons (Cancel | Save, Later | Update); action lists (a note's Edit / Share / Delete, Google account, the support prompt) are grouped rows with icon tiles.
+- The amount and edit-day sheets: the note field is filled like New note's and asks the question for the outcome ("What stopped you from finishing?"); Cancel | Save at the bottom.
+- Insights → Patterns: each card has an icon tile; Needs focus shows a falling graph in the habit's colours and a drop in red.
+- Sheets never close by accident: a scroll or fling inside a sheet stops at the top instead of dragging the sheet down.
+- A new Weft logo: a ball of yarn, white on green, exactly centred on the launcher icon (with a themed-icon layer), the Play Store icon, the website, notifications and in the app (Welcome, About, More, the widgets' loading screen, which follow your colours). Android 8–11 use its green for the launch screen and widgets. Icons for Delete, Edit note, Read, Vitamins and Stay calm follow the new design.
+- "Enjoying Weft?" can show once a week (it was every 60 days); four "Maybe later"s stop it for good, and anyone who rates, stars or sponsors isn't asked again for six months.
+
+Internal:
+
+- Shared sheet pieces in `ui/components/`: `SheetHeader`, `WeftButton` / `ButtonPair`, `PromptSheet`, `ActionGroup` / `ActionRow`, `NoteField`, with their spacing as named constants (`docs/SPACING.md` → Sheets). Room 5 (`habit.reminderType`). `tools/verify/capture.py` recaptures design PNGs; the smoke suite covers notification buttons and every alarm case.
+- Alarm queue, Log amount, Skip today and Open Weft on the ringing screen (design `alarm-4` … `alarm-8`); notification reminders say Dismiss instead of Snooze. The This week widget's rows fill its height and the Streak widget centres its number. Store shots in the same layout as Burrow's; the feature graphic on the logo green.
+
+## 1.5.2
+
+Fixed:
+
+- Progress strip widget: "Next: …" ran past the right edge on smaller phones and wide launcher fonts, with no gap after "1 of 14 today". The habit name is now cut with "…" to the space left after the count, with a 12dp gap.
+- Widgets: with nothing left but something skipped today, the strip said "All done" and the Today widget "All done for today" (e.g. "3 of 5 today · All done"). They now say "All logged" / "All logged for today"; "All done" only when every habit is Done.
+
+Internal:
+
+- Android Gradle plugin 9.1.0 (Play Console asked for AGP 9+ for R8 optimization; 9.1.0 is the newest that Android Studio 2025.3.2 syncs), Gradle 9.8.2, Kotlin 2.4.21, KSP 2.3.13, benchmark / baseline profile 1.5.0. AGP 9 compiles Kotlin itself, so the `org.jetbrains.kotlin.android` plugin is gone and the flavor folders (`src/drive`, `src/noDrive`, `src/noPlay`) are added to the `kotlin` source sets.
+
 ## 1.5.1
 
 Changed:

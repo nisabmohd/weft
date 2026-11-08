@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import app.sprout.habits.data.Habit
+import app.sprout.habits.data.ReminderType
 import app.sprout.habits.data.HabitRepository
 import app.sprout.habits.domain.firstDay
 import app.sprout.habits.domain.nextReminderTime
@@ -35,6 +36,7 @@ class ReminderScheduler(
         val archived: Boolean,
         val firstDay: Long,
         val askForNote: Boolean,
+        val type: ReminderType,
     )
 
     /**
@@ -65,7 +67,7 @@ class ReminderScheduler(
 
     fun schedule(habit: Habit) = apply(habit.key())
 
-    private fun Habit.key() = Key(id, reminderMinutes, daysMask, archived, firstDay(), askForNote)
+    private fun Habit.key() = Key(id, reminderMinutes, daysMask, archived, firstDay(), askForNote, reminderType)
 
     /** The evening check for skipped habits that ask for a note; one alarm for all of them. */
     fun scheduleNoteNudge(enabled: Boolean) {
@@ -102,10 +104,21 @@ class ReminderScheduler(
         val at = nextReminderTime(System.currentTimeMillis(), ZoneId.systemDefault(), minutes, key.daysMask, key.firstDay)
         when {
             at == null -> cancel(key.id)
+            // An alarm reminder is an alarm clock: exact, and shown in the status bar.
+            key.type == ReminderType.ALARM && canScheduleExact() ->
+                alarms.setAlarmClock(AlarmManager.AlarmClockInfo(at, openApp()), pendingIntent(key.id, dayOf(at)))
             canScheduleExact() -> alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pendingIntent(key.id, dayOf(at)))
             else -> alarms.setWindow(AlarmManager.RTC_WAKEUP, at, WINDOW_MILLIS, pendingIntent(key.id, dayOf(at)))
         }
     }
+
+    /** What the status bar's alarm clock opens: the app. */
+    private fun openApp(): PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        Intent(context, app.sprout.habits.MainActivity::class.java),
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+    )
 
     fun canScheduleExact(): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
@@ -123,6 +136,10 @@ class ReminderScheduler(
     companion object {
         const val ACTION_REMINDER = "app.sprout.habits.action.REMINDER"
         const val ACTION_NOTE_NUDGE = "app.sprout.habits.action.NOTE_NUDGE"
+        /** A reminder brought back by its Snooze button; it doesn't move the daily schedule. */
+        const val ACTION_SNOOZED = "app.sprout.habits.action.REMINDER_SNOOZED"
+        /** An alarm that rang for [AlarmRinger.RING_MINUTES] without an answer. */
+        const val ACTION_ALARM_TIMEOUT = "app.sprout.habits.action.ALARM_TIMEOUT"
         const val EXTRA_HABIT_ID = "habitId"
         const val EXTRA_DAY = "day"
         const val NO_DAY = Long.MIN_VALUE

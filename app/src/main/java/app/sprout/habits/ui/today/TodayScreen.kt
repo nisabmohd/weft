@@ -47,7 +47,7 @@ import app.sprout.habits.ui.components.BarSegment
 import app.sprout.habits.ui.components.SegmentBar
 import app.sprout.habits.ui.components.HeaderIconButton
 import app.sprout.habits.ui.components.TabHeader
-import app.sprout.habits.support.SupportPromptDialog
+import app.sprout.habits.support.SupportPromptSheet
 import app.sprout.habits.ui.openUrl
 import app.sprout.habits.data.update.PlayReview
 import android.app.Activity
@@ -81,7 +81,7 @@ fun TodayScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val reviewScope = rememberCoroutineScope()
     if (showSupport) {
-        SupportPromptDialog(
+        SupportPromptSheet(
             showRate = BuildConfig.PLAY_LISTED,
             showSponsor = !BuildConfig.PLAY_STORE,
             // Google Play's rating card over the app; the store listing if Play can't show it.

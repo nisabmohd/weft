@@ -21,7 +21,10 @@ import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-/** Simple notifications: a title and one line, no action buttons; a tap opens the habit. */
+/**
+ * Reminder notifications: a title, one line and the buttons from [ReminderActions] (Done, +step,
+ * Snooze; Add note on the evening nudge); a tap opens the habit.
+ */
 class ReminderNotifier(
     private val context: Context,
     private val repository: HabitRepository,
@@ -33,7 +36,7 @@ class ReminderNotifier(
         val entry = repository.getEntry(habit.id, LocalDate.now().toEpochDay())
         if (entry?.status == EntryStatus.DONE || entry?.status == EntryStatus.SKIP) return
         val (title, text) = reminderText(habit, entry?.amount ?: 0.0, ResourceStrings(context))
-        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id))
+        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id), ReminderActions.forReminder(context, habit))
     }
 
     /**
@@ -63,20 +66,30 @@ class ReminderNotifier(
             if (!habit.askForNote || habit.archived || !isScheduled(habit.daysMask, today)) continue
             if (repository.getEntry(habit.id, day)?.status != EntryStatus.SKIP) continue
             if (repository.getNote(habit.id, day) != null) continue
-            post(habit.id, Notifications.CHANNEL_NOTES, context.getString(R.string.nudge_title, habit.name), context.getString(R.string.nudge_text), noteReminderId(habit.id))
+            post(
+                habit.id,
+                Notifications.CHANNEL_NOTES,
+                context.getString(R.string.nudge_title, habit.name),
+                context.getString(R.string.nudge_text),
+                noteReminderId(habit.id),
+                ReminderActions.forNoteNudge(context, habit, day),
+            )
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun post(habitId: Long, channel: String, title: String, text: String, id: Int) {
+    fun post(habitId: Long, channel: String, title: String, text: String, id: Int, actions: List<NotificationCompat.Action> = emptyList()) {
         if (!Notifications.canPost(context)) return
-        val notification = NotificationCompat.Builder(context, channel)
+        val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
             .setContentIntent(openHabit(habitId, id))
             .setAutoCancel(true)
-            .build()
+            // +step updates the same notification: it shouldn't ring again.
+            .setOnlyAlertOnce(true)
+        actions.forEach(builder::addAction)
+        val notification = builder.build()
         NotificationManagerCompat.from(context).notify(id, notification)
     }
 

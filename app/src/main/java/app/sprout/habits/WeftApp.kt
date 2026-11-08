@@ -32,6 +32,7 @@ class WeftApp : Application() {
         }
         container.reminders.start(container.appScope)
         container.reminderNotifier.start(container.appScope)
+        container.alarmRinger.start(container.appScope)
         container.widgets.start(container.appScope)
         lastUiMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         lastLocales = resources.configuration.locales.toLanguageTags()

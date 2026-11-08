@@ -405,6 +405,8 @@
     <string name="widget_of_today">%1$d sur %2$d aujourd\'hui</string>
     <string name="widget_next">Ensuite : %1$s</string>
     <string name="widget_all_done">Tout est fait</string>
+    <string name="widget_all_logged_today">Tout est noté pour aujourd\'hui</string>
+    <string name="widget_all_logged">Tout est noté</string>
     <string name="widget_habits_done_today">%1$d habitudes sur %2$d faites aujourd\'hui</string>
     <string name="streak_empty">Ajoutez une habitude pour voir sa série.</string>
     <string name="day_streak">jours de série</string>
@@ -557,7 +559,7 @@
     <string name="welcome_try_hold">Appui long</string>
     <string name="welcome_try_hold_desc">Fait en partie ? Notez combien : Partiel</string>
     <string name="welcome_try_undo">Annuler</string>
-    <string name="welcome_try_undo_desc">Changé d\'avis ? Touchez Annuler dans la barre en bas</string>
+    <string name="welcome_try_undo_desc">Changé d\'avis ? Glissez dans l\'autre sens</string>
     <string name="welcome_tried">Essayé</string>
     <string name="welcome_go">Aller à Aujourd\'hui</string>
     <string name="welcome_own_row">Ajouter votre propre habitude</string>
@@ -649,4 +651,29 @@
         <item quantity="one">%d sauvegarde</item>
         <item quantity="other">%d sauvegardes</item>
     </plurals>
+    <string name="support_rate_line">Quelques secondes suffisent</string>
+    <string name="support_star_line">Aide d\'autres personnes à trouver Weft</string>
+    <string name="support_sponsor_line">L\'aide à grandir</string>
+    <string name="notify_snooze">Reporter</string>
+    <string name="notify_snooze_minutes">Reporter %1$d min</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">Notification</string>
+    <string name="reminder_type_notification_desc">Un petit rappel discret dans vos notifications</string>
+    <string name="reminder_type_alarm">Alarme</string>
+    <string name="reminder_type_alarm_desc">Sonne en plein écran jusqu\'à ce que vous réagissiez</string>
+    <string name="reminder_alarm_allow">Autorisez les alarmes dans les paramètres</string>
+    <string name="reminder_fullscreen_allow">Autorisez les alarmes en plein écran dans les paramètres</string>
+    <string name="set_reminder">Définir le rappel</string>
+    <string name="reminder_card_line">%1$s · les jours ci-dessus · touchez pour modifier</string>
+    <string name="reminder_card_off">Désactivé · touchez pour choisir l\'heure</string>
+    <string name="reminder_card_hint">Touchez le rappel pour changer l\'heure et le type.</string>
+    <string name="alarm_slide">Glissez pour marquer comme fait</string>
+    <string name="alarm_dismiss">Arrêter</string>
+    <string name="alarm_missed">%1$s · manquée à %2$s</string>
+    <string name="channel_alarms">Alarmes</string>
+    <string name="channel_alarms_desc">Rappels d\'habitudes qui sonnent en plein écran</string>
+    <string name="alarm_open_weft">Ouvrir Weft</string>
+    <string name="alarm_goal">Objectif %1$s</string>
+    <string name="alarm_skip_today">Passer aujourd\'hui</string>
+    <string name="alarm_position">%1$d sur %2$d</string>
 </resources>

@@ -66,7 +66,7 @@ import androidx.compose.runtime.setValue
 import app.sprout.habits.R
 import app.sprout.habits.ui.components.HeaderIconButton
 import app.sprout.habits.ui.components.MarkKind
-import app.sprout.habits.ui.manage.DeleteHabitDialog
+import app.sprout.habits.ui.manage.DeleteHabitSheet
 import app.sprout.habits.ui.theme.HabitColors
 import app.sprout.habits.ui.theme.StatValueMinSize
 import app.sprout.habits.ui.theme.habitColors
@@ -179,7 +179,7 @@ fun HabitDetailScreen(
     }
 
     if (deleting) {
-        DeleteHabitDialog(ui.habit.name, onConfirm = { deleting = false; viewModel.delete(onBack) }, onDismiss = { deleting = false })
+        DeleteHabitSheet(ui.habit.name, onDelete = { deleting = false; viewModel.delete(onBack) }, onDismiss = { deleting = false })
     }
 }
 

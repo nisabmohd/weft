@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Optional, granted by the user in "Alarms & reminders" so reminders fire on time. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Alarm reminders open the ringing screen over the lock screen (1.6.0). Declared in Play Console
+         as an alarm feature; when Android 14+ doesn't grant it, alarms show as heads-up notifications. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:name=".WeftApp"
@@ -36,8 +39,21 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+        <!-- The alarm ringing screen: over the lock screen, in its own task, never in Recents. -->
+        <activity
+            android:name=".ui.alarm.AlarmActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity="app.sprout.habits.alarm"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Weft.Alarm" />
         <receiver
             android:name=".notify.ReminderReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".notify.ReminderActionReceiver"
             android:exported="false" />
         <receiver
             android:name=".notify.RescheduleReceiver"

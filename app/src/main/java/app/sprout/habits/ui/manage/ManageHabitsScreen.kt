@@ -181,7 +181,7 @@ fun ManageHabitsScreen(
     }
 
     deleting?.let { habit ->
-        DeleteHabitDialog(habit.name, onConfirm = { viewModel.delete(habit); deleting = null }, onDismiss = { deleting = null })
+        DeleteHabitSheet(habit.name, onDelete = { viewModel.delete(habit); deleting = null }, onDismiss = { deleting = null })
     }
 }
 

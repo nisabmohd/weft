@@ -135,9 +135,13 @@ class UpdateManager(private val context: Context, private val settings: Settings
         }
     }.flowOn(Dispatchers.IO)
 
-    /** False on Android 8+ until the user allows Weft to install apps; see [openInstallPermission]. */
+    /**
+     * False on Android 8+ until the user allows Weft to install apps; see [openInstallPermission].
+     * Always false in builds without GitHub updates: they don't declare REQUEST_INSTALL_PACKAGES, and
+     * asking without it throws.
+     */
     fun canInstall(): Boolean =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.packageManager.canRequestPackageInstalls()
+        enabled && (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.packageManager.canRequestPackageInstalls())
 
     /** Opens "Install unknown apps" for Weft. */
     fun openInstallPermission() {

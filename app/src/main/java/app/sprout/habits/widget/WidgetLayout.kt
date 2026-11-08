@@ -63,24 +63,39 @@ internal object WidgetLayout {
         val showLetters: Boolean,
         val bigPercent: Boolean,
         val marksWidth: Float,
+        /**
+         * Each habit row's height: the rows share the height below the header so a tall widget is
+         * filled, not left empty at the bottom (user, 2026-11-08). Never below [WEEK_ROW_MIN] (then
+         * the list scrolls) nor above [WEEK_ROW_MAX].
+         */
+        val rowHeight: Float = WEEK_ROW_MIN,
     )
+
+    /** A week row at its smallest: the 28 dp tile and 5 dp above and below. */
+    const val WEEK_ROW_MIN = 38f
+    /** Taller rows only spread the marks apart; past this they'd look loose. */
+    const val WEEK_ROW_MAX = 56f
 
     /** The habit tile (28) and the gap after it. */
     private const val TILE = 28f + 10f
     /** The tile, the name and the gap before the marks, when names are shown. */
     private const val NAME_COLUMN = 130f
 
-    fun week(width: Float, height: Float): Week {
+    fun week(width: Float, height: Float, habits: Int = 0): Week {
         val inner = width - 32f
         val showNames = width >= 290f
         val marksWidth = if (showNames) (inner - NAME_COLUMN).coerceAtLeast(120f) else (inner - TILE).coerceAtLeast(70f)
-        return Week(
-            showNames = showNames,
-            showRange = height >= 150f,
-            showLetters = height >= 130f,
-            bigPercent = width >= 220f,
-            marksWidth = marksWidth,
-        )
+        val showRange = height >= 150f
+        val showLetters = height >= 130f
+        val bigPercent = width >= 220f
+        // What sits above the rows: the 16 dp padding, the header (the title and range, or the
+        // big percent, whichever is taller), the 8 dp gap and the day letters; then 16 dp below.
+        val header = maxOf(28f + if (showRange) 20f else 0f, if (bigPercent) 36f else 28f)
+        val above = 16f + header + 8f + if (showLetters) 16f else 0f
+        // 16 dp padding below, and 8 dp of slack: Glance's text runs a little taller than its size.
+        val room = height - above - 16f - 8f
+        val rowHeight = if (habits > 0) (room / habits).coerceIn(WEEK_ROW_MIN, WEEK_ROW_MAX) else WEEK_ROW_MIN
+        return Week(showNames, showRange, showLetters, bigPercent, marksWidth, rowHeight)
     }
 
     /** The Today strip: the count, "Next: …" and one bar per habit. */

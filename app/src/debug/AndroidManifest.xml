@@ -6,6 +6,15 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
+            android:name=".SheetPreviewActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- The widgets on one screen with a calm wallpaper of its own, for screenshots. -->
+        <activity
+            android:name=".WidgetBoardActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Weft" />
+        <activity
             android:name=".DriveStateActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />

@@ -1,0 +1,6 @@
+• New: alarm reminders that ring full screen. Slide to mark done, log an amount, skip, snooze or dismiss.
+• New: Done, +step and Dismiss buttons on reminders, with Undo in the app.
+• Every prompt is now a sheet, with one clear pair of buttons.
+• Sheets no longer close by accident while you scroll.
+• A new logo, new icons and clearer Insights patterns.
+• Fixed: the progress widget fits small screens; "All logged" when you skipped something.

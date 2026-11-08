@@ -3,6 +3,7 @@ package app.sprout.habits.data.backup
 import app.sprout.habits.data.Entry
 import app.sprout.habits.data.EntryStatus
 import app.sprout.habits.data.Habit
+import app.sprout.habits.data.ReminderType
 import app.sprout.habits.data.HabitRepository
 import app.sprout.habits.data.Note
 import app.sprout.habits.data.SettingsRepository
@@ -62,6 +63,8 @@ data class HabitDto(
     val sortOrder: Int = 0,
     val archived: Boolean = false,
     val createdAt: Long,
+    /** "notification" or "alarm" (1.6.0); absent in older backups, which means notification. */
+    val reminderType: String = "notification",
 )
 
 @Serializable
@@ -115,6 +118,7 @@ class BackupManager(
                 HabitDto(
                     it.id, it.name, it.icon, it.colorHue, it.trackType.name, it.target, it.unit, it.durationUnit.name, it.step, it.daysMask,
                     it.reminderMinutes, it.askForNote, it.showOnWidget, it.sortOrder, it.archived, it.createdAt,
+                    it.reminderType.name.lowercase(),
                 )
             },
             entries = entries.map { EntryDto(it.habitId, LocalDate.ofEpochDay(it.date).toString(), it.status.name, it.amount, it.loggedAt) },
@@ -200,6 +204,7 @@ class BackupManager(
                     daysMask = it.daysMask and 0b111_1111, reminderMinutes = it.reminderMinutes?.takeIf { m -> m in 0 until 24 * 60 },
                     askForNote = it.askForNote, showOnWidget = it.showOnWidget, sortOrder = it.sortOrder,
                     archived = it.archived, createdAt = it.createdAt,
+                    reminderType = if (it.reminderType.equals("alarm", ignoreCase = true)) ReminderType.ALARM else ReminderType.NOTIFICATION,
                 )
             }
             val ids = habits.mapTo(HashSet()) { it.id }

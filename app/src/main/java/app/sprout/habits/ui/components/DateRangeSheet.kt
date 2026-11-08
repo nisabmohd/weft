@@ -77,8 +77,9 @@ fun DateRangeSheet(
     val dm = datePattern("d MMM")
 
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).navigationBarsPadding()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding)) {
+            // The title row sits SheetTitleInset in, like every sheet's title.
+            Row(Modifier.padding(start = SheetTitleInset - SheetSidePadding), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.date_range), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
                 TextButton(onClick = onShortcut) { Text(shortcutLabel, style = WeftType.label) }
             }
@@ -93,6 +94,7 @@ fun DateRangeSheet(
                 },
                 style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
+                modifier = Modifier.padding(start = SheetTitleInset - SheetSidePadding),
             )
             MonthHeader(month, today) { month = it }
             MonthGrid(month, weekStart, today, start, end ?: start) { day ->
@@ -106,21 +108,18 @@ fun DateRangeSheet(
                     end = day
                 }
             }
-            Button(
+            WeftButton(
+                when {
+                    s == null || e == null -> stringResource(R.string.show)
+                    s == e -> stringResource(R.string.show_value, s.format(dm))
+                    s.month == e.month && englishDates() -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.dayOfMonth.toString(), e.format(dm)))
+                    else -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.format(dm), e.format(dm)))
+                },
+                ButtonRole.Primary,
                 onClick = { if (s != null && e != null) onApply(s, e) },
                 enabled = s != null,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).height(48.dp),
-            ) {
-                Text(
-                    when {
-                        s == null || e == null -> stringResource(R.string.show)
-                        s == e -> stringResource(R.string.show_value, s.format(dm))
-                        s.month == e.month && englishDates() -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.dayOfMonth.toString(), e.format(dm)))
-                        else -> stringResource(R.string.show_value, stringResource(R.string.range_short, s.format(dm), e.format(dm)))
-                    },
-                    style = WeftType.label,
-                )
-            }
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).sheetBottomPadding(),
+            )
         }
     }
 }
@@ -140,20 +139,20 @@ fun DatePickerSheet(
     var month by remember { mutableStateOf(YearMonth.from(date)) }
 
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).navigationBarsPadding()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding)) {
+            Row(Modifier.padding(start = SheetTitleInset - SheetSidePadding), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.date), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
                 TextButton(onClick = { picked = today; month = YearMonth.from(today) }) { Text(stringResource(R.string.today), style = WeftType.label) }
             }
-            Text(picked.format(datePattern("EEEE, d MMM yyyy")), style = WeftType.supporting, color = colors.onSurfaceVariant)
+            Text(picked.format(datePattern("EEEE, d MMM yyyy")), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(start = SheetTitleInset - SheetSidePadding))
             MonthHeader(month, today) { month = it }
             MonthGrid(month, weekStart, today, picked, picked) { picked = it }
-            Button(
+            WeftButton(
+                stringResource(R.string.use_value, picked.format(datePattern("d MMM"))),
+                ButtonRole.Primary,
                 onClick = { onApply(picked) },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).height(48.dp),
-            ) {
-                Text(stringResource(R.string.use_value, picked.format(datePattern("d MMM"))), style = WeftType.label)
-            }
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).sheetBottomPadding(),
+            )
         }
     }
 }

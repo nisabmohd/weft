@@ -6,4 +6,11 @@
         <!-- Draw into the camera cutout too, as Android 15+ always does. -->
         <item name="android:windowLayoutInDisplayCutoutMode">always</item>
     </style>
+    <!-- The alarm ringing screen: see-through until its first frame, so it fades in finished
+         instead of flashing the page colour while the habit loads (2026-11-08). -->
+    <style name="Theme.Weft.Alarm">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
 </resources>

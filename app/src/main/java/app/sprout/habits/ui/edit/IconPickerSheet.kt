@@ -45,6 +45,11 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.WeftButton
+import app.sprout.habits.ui.components.sheetBottomPadding
+import app.sprout.habits.ui.components.SheetSidePadding
+import app.sprout.habits.ui.components.SheetHeader
 import app.sprout.habits.data.HabitIcon
 import app.sprout.habits.data.IconGroup
 import app.sprout.habits.ui.theme.HabitColors
@@ -69,8 +74,8 @@ fun IconPickerSheet(
     val matches = HabitIcon.entries.filter { query.isBlank() || res.getString(it.label).contains(query.trim(), ignoreCase = true) || it.key.replace('_', ' ').contains(query.trim(), ignoreCase = true) }
 
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding().imePadding()) {
-            Text(stringResource(R.string.choose_icon), style = WeftType.title, color = scheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
+        SheetHeader(stringResource(R.string.choose_icon))
+        Column(Modifier.padding(horizontal = SheetSidePadding).sheetBottomPadding().imePadding()) {
             TextField(
                 value = query,
                 onValueChange = { query = it },
@@ -122,12 +127,12 @@ fun IconPickerSheet(
                     }
                 }
             }
-            Button(
+            WeftButton(
+                stringResource(R.string.use_this_icon),
+                ButtonRole.Primary,
                 onClick = { onPick(picked) },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp).height(48.dp),
-            ) {
-                Text(stringResource(R.string.use_this_icon), style = WeftType.label)
-            }
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            )
         }
     }
 }

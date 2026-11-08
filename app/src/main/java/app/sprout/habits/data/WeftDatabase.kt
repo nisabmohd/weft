@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Habit::class, Entry::class, Note::class], version = 4, exportSchema = true)
+@Database(entities = [Habit::class, Entry::class, Note::class], version = 5, exportSchema = true)
 abstract class WeftDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun entryDao(): EntryDao
@@ -16,7 +16,7 @@ abstract class WeftDatabase : RoomDatabase() {
     companion object {
         fun create(context: Context): WeftDatabase =
             Room.databaseBuilder(context, WeftDatabase::class.java, "sprout.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .build()
 
         /** 0.3.0: when each entry was logged, for "Done at 6:52 AM". Old entries stay null. */
@@ -30,6 +30,13 @@ abstract class WeftDatabase : RoomDatabase() {
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE habit ADD COLUMN durationUnit TEXT NOT NULL DEFAULT 'MINUTES'")
+            }
+        }
+
+        /** 1.6.0: a reminder can ring as an alarm. Every existing reminder stays a notification. */
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE habit ADD COLUMN reminderType TEXT NOT NULL DEFAULT 'NOTIFICATION'")
             }
         }
 

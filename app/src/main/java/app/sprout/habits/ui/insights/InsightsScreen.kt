@@ -231,46 +231,57 @@ private fun Patterns(ui: InsightsUi) {
                 PatternTile(
                     shape = if (both) RoundedCornerShape(topStart = 24.dp, topEnd = 6.dp, bottomEnd = 6.dp, bottomStart = 24.dp) else RoundedCornerShape(24.dp),
                     icon = R.drawable.ic_trophy,
-                    pill = colors.secondaryContainer,
-                    pillContent = colors.onSecondaryContainer,
+                    tile = colors.secondaryContainer,
+                    tileContent = colors.onSecondaryContainer,
                     label = stringResource(R.string.insights_prime_time),
                     value = ui.primeDay,
                     detail = stringResource(R.string.insights_completion, ui.primePercent),
+                    detailColor = colors.onSurfaceVariant,
                 )
             }
             if (ui.focusName != null) {
+                // The habit's colours; a drop is in the error colour.
+                val hc = habitColors(ui.focusHue ?: 0f)
                 PatternTile(
                     shape = if (both) RoundedCornerShape(topStart = 6.dp, topEnd = 24.dp, bottomEnd = 24.dp, bottomStart = 6.dp) else RoundedCornerShape(24.dp),
+                    // A falling graph, in the habit's colours (user, 2026-11-08: not the habit's own icon).
                     icon = R.drawable.ic_trending_down,
-                    pill = colors.surfaceContainerHigh,
-                    pillContent = colors.onSurface,
+                    tile = if (ui.focusHue != null) hc.soft else colors.surfaceContainerHigh,
+                    tileContent = if (ui.focusHue != null) hc.ink else colors.onSurface,
                     label = stringResource(R.string.insights_needs_focus),
                     value = ui.focusName,
                     detail = ui.focusDrop?.let { stringResource(R.string.insights_down, it) } ?: stringResource(R.string.insights_lowest),
+                    detailColor = if (ui.focusDrop != null) colors.error else colors.onSurfaceVariant,
                 )
             }
         }
     }
 }
 
+/** One Patterns card: a 40 dp icon tile, then the muted label, the value and the detail line. */
 @Composable
-private fun RowScope.PatternTile(shape: RoundedCornerShape, icon: Int, pill: Color, pillContent: Color, label: String, value: String, detail: String) {
+private fun RowScope.PatternTile(
+    shape: RoundedCornerShape,
+    icon: Int,
+    tile: Color,
+    tileContent: Color,
+    label: String,
+    value: String,
+    detail: String,
+    detailColor: Color,
+) {
     val colors = MaterialTheme.colorScheme
     Column(
         Modifier.weight(1f).fillMaxHeight().background(colors.surfaceContainerLowest, shape).padding(16.dp).semantics(mergeDescendants = true) {},
     ) {
-        // The label as a pill: icon + "Prime time".
-        Row(
-            Modifier.background(pill, RoundedCornerShape(12.dp)).padding(start = 10.dp, top = 6.dp, end = 12.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(painterResource(icon), contentDescription = null, tint = pillContent, modifier = Modifier.size(18.dp))
-            Text(label, style = WeftType.label, color = pillContent, modifier = Modifier.padding(start = 6.dp))
+        Box(Modifier.size(40.dp).background(tile, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+            Icon(painterResource(icon), contentDescription = null, tint = tileContent, modifier = Modifier.size(22.dp))
         }
-        Text(value, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
-        // One line at normal text sizes; with large text the label and detail wrap rather than
-        // clip, and the row's IntrinsicSize.Min keeps both cards the same height.
-        Text(detail, style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+        Text(label, style = WeftType.caption, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 12.dp))
+        Text(value, style = WeftType.patternValue, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+        // One line at normal text sizes; with large text it wraps rather than clips, and the row's
+        // IntrinsicSize.Min keeps both cards the same height.
+        Text(detail, style = WeftType.supporting, color = detailColor, modifier = Modifier.padding(top = 2.dp))
     }
 }
 
@@ -369,7 +380,7 @@ private fun WeeklyRhythm(ui: InsightsUi) {
                     ui.columns.forEach { column ->
                         Text(
                             column.label,
-                            style = WeftType.tiny,
+                            style = if (column.isBest) WeftType.captionStrong else WeftType.caption,
                             color = if (column.isBest) colors.onSurface else colors.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             maxLines = 1,

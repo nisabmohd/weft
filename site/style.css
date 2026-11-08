@@ -1,5 +1,5 @@
 :root {
-  --navy: #2e4a7a;
+  --brand: #77453f; /* the logo tile (2026-11-08) */
   --ink: #1b2230;
   --muted: #5b6474;
   --line: #e4e7ee;
@@ -14,7 +14,7 @@ body {
   color: var(--ink);
   background: var(--bg);
 }
-a { color: var(--navy); }
+a { color: var(--brand); }
 .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
 header.top { border-bottom: 1px solid var(--line); }
 header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
@@ -28,7 +28,7 @@ nav a:hover { color: var(--ink); }
 .hero p { font-size: 19px; color: var(--muted); max-width: 600px; margin: 0 auto; }
 .buttons { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .button { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 16px; text-decoration: none; }
-.button.primary { background: var(--navy); color: #fff; }
+.button.primary { background: var(--brand); color: #fff; }
 .button.secondary { background: var(--soft); color: var(--ink); }
 .shots { display: flex; gap: 20px; justify-content: center; padding: 24px 0 8px; }
 .shots img { width: 30%; max-width: 240px; border-radius: 22px; border: 1px solid var(--line); }

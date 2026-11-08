@@ -132,6 +132,14 @@ object WeftType {
     @Composable @ReadOnlyComposable
     private fun TextStyle.inBodyFont() = copy(fontFamily = body.fontFamily)
 
+    /** Exception: the time on the alarm ringing screen, 88 SemiBold in the body font (design 2026-11-08). */
+    val alarmTime: TextStyle
+        @Composable @ReadOnlyComposable get() = displayNumber.let { it.copy(fontSize = it.fontSize * (88f / 40f), lineHeight = it.fontSize * (88f / 40f)) }
+
+    /** Exception: the value in Insights' Patterns cards ("Tuesday", "Stay calm"), 18 SemiBold (design 2026-11-08). */
+    val patternValue: TextStyle
+        @Composable @ReadOnlyComposable get() = cardTitle.let { it.copy(fontSize = it.fontSize * (18f / 16f), lineHeight = it.fontSize * (18f / 16f) * 1.3f) }
+
     /** Exception: the New note editor, 18 Regular at 1.55, for comfortable writing. */
     val noteEditor: TextStyle
         @Composable @ReadOnlyComposable get() = body.let { it.copy(fontSize = it.fontSize * (18f / 16f), lineHeight = it.fontSize * (18f / 16f) * 1.55f) }

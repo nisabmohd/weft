@@ -405,6 +405,8 @@
     <string name="widget_of_today">今日 %1$d/%2$d</string>
     <string name="widget_next">次：%1$s</string>
     <string name="widget_all_done">すべて完了</string>
+    <string name="widget_all_logged_today">今日はすべて記録済み</string>
+    <string name="widget_all_logged">すべて記録済み</string>
     <string name="widget_habits_done_today">今日は %2$d 件中 %1$d 件の習慣を完了</string>
     <string name="streak_empty">習慣を追加すると連続記録が表示されます。</string>
     <string name="day_streak">日連続</string>
@@ -524,7 +526,7 @@
     <string name="welcome_try_hold">長押し</string>
     <string name="welcome_try_hold_desc">一部だけできた？量を記録：一部</string>
     <string name="welcome_try_undo">元に戻す</string>
-    <string name="welcome_try_undo_desc">気が変わったら、下に出るバーの「元に戻す」をタップ</string>
+    <string name="welcome_try_undo_desc">気が変わったら、反対方向にスワイプ</string>
     <string name="welcome_tried">試しました</string>
     <string name="welcome_go">「今日」へ</string>
     <string name="welcome_own_row">自分の習慣を追加</string>
@@ -614,4 +616,29 @@
     <plurals name="drive_backup_count">
         <item quantity="other">%d 件のバックアップ</item>
     </plurals>
+    <string name="support_rate_line">数秒で終わります</string>
+    <string name="support_star_line">ほかの人が Weft を見つけやすくなります</string>
+    <string name="support_sponsor_line">開発を続ける力になります</string>
+    <string name="notify_snooze">スヌーズ</string>
+    <string name="notify_snooze_minutes">%1$d分スヌーズ</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">通知</string>
+    <string name="reminder_type_notification_desc">通知でそっとお知らせ</string>
+    <string name="reminder_type_alarm">アラーム</string>
+    <string name="reminder_type_alarm_desc">操作するまで全画面で鳴ります</string>
+    <string name="reminder_alarm_allow">設定でアラームを許可してください</string>
+    <string name="reminder_fullscreen_allow">設定で全画面アラームを許可してください</string>
+    <string name="set_reminder">リマインダーを設定</string>
+    <string name="reminder_card_line">%1$s · 上の曜日 · タップで変更</string>
+    <string name="reminder_card_off">オフ · タップして時刻を設定</string>
+    <string name="reminder_card_hint">リマインダーをタップして時刻と種類を変更できます。</string>
+    <string name="alarm_slide">スライドして完了にする</string>
+    <string name="alarm_dismiss">止める</string>
+    <string name="alarm_missed">%1$s · %2$sに鳴りました（未応答）</string>
+    <string name="channel_alarms">アラーム</string>
+    <string name="channel_alarms_desc">全画面で鳴る習慣のリマインダー</string>
+    <string name="alarm_open_weft">Weft を開く</string>
+    <string name="alarm_goal">目標 %1$s</string>
+    <string name="alarm_skip_today">今日はスキップ</string>
+    <string name="alarm_position">%1$d / %2$d</string>
 </resources>

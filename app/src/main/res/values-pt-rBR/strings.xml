@@ -405,6 +405,8 @@
     <string name="widget_of_today">%1$d de %2$d hoje</string>
     <string name="widget_next">A seguir: %1$s</string>
     <string name="widget_all_done">Tudo feito</string>
+    <string name="widget_all_logged_today">Tudo registrado por hoje</string>
+    <string name="widget_all_logged">Tudo registrado</string>
     <string name="widget_habits_done_today">%1$d de %2$d hábitos feitos hoje</string>
     <string name="streak_empty">Adicione um hábito para ver a sequência.</string>
     <string name="day_streak">dias seguidos</string>
@@ -557,7 +559,7 @@
     <string name="welcome_try_hold">Toque e segure</string>
     <string name="welcome_try_hold_desc">Fez só uma parte? Registre quanto: Parcial</string>
     <string name="welcome_try_undo">Desfazer</string>
-    <string name="welcome_try_undo_desc">Mudou de ideia? Toque em Desfazer na barra que aparece</string>
+    <string name="welcome_try_undo_desc">Mudou de ideia? Deslize para o outro lado</string>
     <string name="welcome_tried">Testado</string>
     <string name="welcome_go">Ir para Hoje</string>
     <string name="welcome_own_row">Adicionar seu próprio hábito</string>
@@ -649,4 +651,29 @@
         <item quantity="one">%d backup</item>
         <item quantity="other">%d backups</item>
     </plurals>
+    <string name="support_rate_line">Leva só alguns segundos</string>
+    <string name="support_star_line">Ajuda outras pessoas a encontrar o Weft</string>
+    <string name="support_sponsor_line">Ajuda a continuar crescendo</string>
+    <string name="notify_snooze">Adiar</string>
+    <string name="notify_snooze_minutes">Adiar %1$d min</string>
+    <string name="notify_add_step">+%1$s</string>
+    <string name="reminder_type_notification">Notificação</string>
+    <string name="reminder_type_notification_desc">Um lembrete discreto nas suas notificações</string>
+    <string name="reminder_type_alarm">Alarme</string>
+    <string name="reminder_type_alarm_desc">Toca em tela cheia até você responder</string>
+    <string name="reminder_alarm_allow">Permita alarmes nas configurações</string>
+    <string name="reminder_fullscreen_allow">Permita alarmes em tela cheia nas configurações</string>
+    <string name="set_reminder">Definir lembrete</string>
+    <string name="reminder_card_line">%1$s · nos dias acima · toque para mudar</string>
+    <string name="reminder_card_off">Desligado · toque para escolher o horário</string>
+    <string name="reminder_card_hint">Toque no lembrete para mudar o horário e o tipo.</string>
+    <string name="alarm_slide">Deslize para marcar como feito</string>
+    <string name="alarm_dismiss">Dispensar</string>
+    <string name="alarm_missed">%1$s · perdido às %2$s</string>
+    <string name="channel_alarms">Alarmes</string>
+    <string name="channel_alarms_desc">Lembretes de hábitos que tocam em tela cheia</string>
+    <string name="alarm_open_weft">Abrir o Weft</string>
+    <string name="alarm_goal">Meta %1$s</string>
+    <string name="alarm_skip_today">Pular hoje</string>
+    <string name="alarm_position">%1$d de %2$d</string>
 </resources>

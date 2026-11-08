@@ -109,4 +109,12 @@ class BackupFormatTest {
         assertEquals(30.0, entries.first { it.habitId == 1L }.amount, 0.0)
         assertEquals(6.5, entries.first { it.habitId == 2L }.amount, 0.0)
     }
+
+    @Test fun reminderTypeIsReadAndDefaultsToNotification() {
+        val habit = """{"id":1,"name":"Wake up","icon":"alarm","colorHue":38,"trackType":"CHECK","target":1.0,"daysMask":127,"reminderMinutes":390,"createdAt":0"""
+        val old = BackupManager.parse("""{"app":"sprout","version":1,"exportedAt":0,"habits":[$habit}],"entries":[],"notes":[]}""".byteInputStream())
+        assertEquals("notification", old.habits.single().reminderType)
+        val alarm = BackupManager.parse("""{"app":"sprout","version":1,"exportedAt":0,"habits":[$habit,"reminderType":"alarm"}],"entries":[],"notes":[]}""".byteInputStream())
+        assertEquals("alarm", alarm.habits.single().reminderType)
+    }
 }

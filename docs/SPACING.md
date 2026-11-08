@@ -37,6 +37,22 @@ The Journal's day groups are the model. In code: `ui/components/Grouping.kt` (`S
 - A row that stands alone is a plain 24dp card.
 - Used by: Journal days, Insights (Patterns, Weekly rhythm, Habit breakdown), More (Backup & restore, Appearance, General), About links, habit detail Notes, New habit (sections and the two switches), Manage habits "Archived".
 
+## Sheets (2026-11-08, `docs/DESIGN-RULES.md`)
+
+Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/`; never hand-roll one.
+
+| Element | Value | In code |
+| --- | --- | --- |
+| Content side padding (rows, fields, buttons) | 20dp | `SheetSidePadding` |
+| Title row and full-width choice rows' text | 24dp | `SheetTitleInset`, `SheetHeader`, `ChoiceRow` |
+| Header: title (`title` 22sp) → muted line (`supporting`) | 4dp | `SheetHeader` |
+| Header → content | 16dp (20dp to an action list) | `SheetHeader`, `ActionGroup` |
+| Under the last element | 16dp + the navigation bar's inset | `Modifier.sheetBottomPadding()` |
+| Buttons | 48dp, fully rounded, `cardTitle` 16sp label; a pair is two equal buttons 8dp apart | `WeftButton`, `ButtonPair`, `ButtonHeight`, `ButtonPairGap` |
+| Action rows | 60dp (68dp with a second line), surfaceContainerHigh, grouped 2dp apart, 16dp inside, 40dp tile with 14dp corners and a 20dp icon, 16dp tile → text | `ActionGroup`, `ActionRow` |
+| Note field | filled surfaceContainerHigh, 24dp corners, 18 × 14dp padding, `body` text | `NoteField` |
+| Yes / no question | header + Cancel | action | `PromptSheet` |
+
 ## Sizes
 
 | Element | Size |

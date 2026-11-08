@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -17,8 +16,8 @@ android {
         applicationId = "app.sprout.habits"
         minSdk = 26
         targetSdk = 36
-        versionCode = 24
-        versionName = "1.5.1"
+        versionCode = 27
+        versionName = "1.6.0"
         // Component tests (app/src/androidTest): ./gradlew :app:connectedFossDebugAndroidTest
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Where the About screen's links point. Set once the GitHub repo exists.
@@ -71,9 +70,10 @@ android {
     sourceSets {
         // src/play: Google Play only (In-App Updates, In-App Review); src/drive: Google Drive backup,
         // in the play and github builds. foss has neither: it gets the stand-ins.
-        getByName("play").java.srcDir("src/drive/java")
-        getByName("github").java.srcDirs("src/drive/java", "src/noPlay/java")
-        getByName("foss").java.srcDirs("src/noDrive/java", "src/noPlay/java")
+        // AGP 9 compiles Kotlin itself and reads Kotlin files from the `kotlin` source set, not `java`.
+        getByName("play").kotlin.srcDir("src/drive/java")
+        getByName("github").kotlin.srcDirs("src/drive/java", "src/noPlay/java")
+        getByName("foss").kotlin.srcDirs("src/noDrive/java", "src/noPlay/java")
     }
 
     signingConfigs {

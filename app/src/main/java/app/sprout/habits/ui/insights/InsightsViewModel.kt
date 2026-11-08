@@ -88,6 +88,8 @@ data class InsightsUi(
     val primePercent: Int,
     /** The habit that dropped most against the range before, or else the lowest one. */
     val focusName: String?,
+    /** The focus habit's hue, for its tile's colours. */
+    val focusHue: Float?,
     /** How many points it dropped; null when [focusName] is only the lowest. */
     val focusDrop: Int?,
     val bestDay: String?,
@@ -172,7 +174,7 @@ class InsightsViewModel(
 
         val allCredits = mutableListOf<Double?>()
         // The habit that fell most against the range before this one, and by how many points.
-        var dropped: Pair<String, Int>? = null
+        var dropped: Pair<Long, Int>? = null
         val rates = habits.map { habit ->
             val history = habit.history(byHabit[habit.id].orEmpty())
             val habitCredits = mutableListOf<Double?>()
@@ -203,7 +205,7 @@ class InsightsViewModel(
                 val before = (1..8).map { k -> first - k * length }.filter { it + length - 1 >= history.firstDay }
                     .map { start -> history.score(start, start + length - 1, todayDay) }
                 val fall = (before.first() * 100).roundToInt() - percent
-                if (fall > 0 && fall > (dropped?.second ?: 0)) dropped = habit.name to fall
+                if (fall > 0 && fall > (dropped?.second ?: 0)) dropped = habit.id to fall
             }
             HabitRateUi(
                 id = habit.id,
@@ -243,6 +245,8 @@ class InsightsViewModel(
             }
         }
 
+        // With nothing down, the lowest habit, as long as there is more than one to pick from.
+        val focus = dropped?.let { (id, _) -> rates.firstOrNull { it.id == id } } ?: rates.takeIf { it.size > 1 }?.last()
         return InsightsUi(
             thisWeek = thisWeek,
             rangeLabel = if (thisWeek) strings(R.string.this_week) else chipRangeLabel(from, to, today),
@@ -255,8 +259,8 @@ class InsightsViewModel(
             partialCount = partial.sum(),
             primeDay = primeIndex?.let { weekdays[it].getDisplayName(TextStyle.FULL, Locale.getDefault()) },
             primePercent = primeIndex?.let { (score(weekdayCredits[it]) * 100).roundToInt() } ?: 0,
-            // With nothing down, the lowest habit, as long as there is more than one to pick from.
-            focusName = dropped?.first ?: rates.takeIf { it.size > 1 }?.last()?.name,
+            focusName = focus?.name,
+            focusHue = focus?.hue,
             focusDrop = dropped?.second,
             bestDay = bestIndex?.let { columnUis[it].name },
             byWeek = byWeek,

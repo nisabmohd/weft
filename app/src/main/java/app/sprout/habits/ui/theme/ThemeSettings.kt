@@ -22,7 +22,8 @@ data class ThemeSettings(
 const val DEFAULT_ACCENT_HUE = 38f
 
 /**
- * The logo's blue (the Blue accent). Used where the user's accent can't apply: the widgets below
- * Android 12, the launch screen and the launcher shortcuts (`res/values/colors.xml`) (user, 2026-11-02).
+ * The logo's hue: its green tile #2A6F52 (weft-icon.zip, 2026-11-08; navy, hue 215, before). Used
+ * where the user's accent can't apply: the widgets below Android 12, the launch screen and the
+ * launcher shortcuts (`res/values/colors.xml`).
  */
-const val LOGO_HUE = 215f
+const val LOGO_HUE = 155f

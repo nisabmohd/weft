@@ -14,6 +14,9 @@ enum class TrackType { CHECK, AMOUNT }
 
 enum class EntryStatus { DONE, PARTIAL, SKIP }
 
+/** How a habit's reminder comes: a quiet notification, or an alarm that rings full screen (1.6.0). */
+enum class ReminderType { NOTIFICATION, ALARM }
+
 /** Legacy (before 1.1): how a Duration habit was shown. Only kept so the habit table keeps its column. */
 enum class DurationUnit { MINUTES, HOURS }
 
@@ -36,6 +39,8 @@ data class Habit(
     val daysMask: Int = EVERY_DAY,
     /** Minutes after midnight, or null for no reminder. */
     val reminderMinutes: Int? = null,
+    /** Notification or alarm; only matters while [reminderMinutes] is set. */
+    @ColumnInfo(defaultValue = "NOTIFICATION") val reminderType: ReminderType = ReminderType.NOTIFICATION,
     val askForNote: Boolean = false,
     val showOnWidget: Boolean = true,
     val sortOrder: Int = 0,

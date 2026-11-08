@@ -204,6 +204,11 @@ class DayLogger(
         }
     }
 
+    /** Shows a change made elsewhere (a notification button) in the Undo bar. */
+    fun offer(change: UndoableChange) {
+        scope.launch { _changes.send(change) }
+    }
+
     /** Puts back exactly what was there before, including deleting an entry that didn't exist. */
     fun undo(change: UndoableChange) {
         scope.launch {

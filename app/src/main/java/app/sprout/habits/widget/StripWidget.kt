@@ -28,6 +28,12 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
+import androidx.glance.layout.width
+import androidx.glance.text.TextAlign
+import android.graphics.Typeface
+import android.text.TextPaint
+import android.text.TextUtils
+import android.util.TypedValue
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -64,15 +70,28 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
             .clickable(actionStartActivity(context.openAppIntent())),
         verticalAlignment = Alignment.Vertical.CenterVertically,
     ) {
-        Row(GlanceModifier.fillMaxWidth()) {
-            Text(LocalContext.current.getString(R.string.widget_of_today, data.done, data.total), maxLines = 1, style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
-            Spacer(GlanceModifier.defaultWeight())
-            if (layout.showNext) Text(
-                data.nextLabel?.let { context.getString(R.string.widget_next, it) }
-                    ?: context.getString(if (data.total == 0) R.string.widget_nothing_today else R.string.widget_all_done),
-                maxLines = 1,
-                style = TextStyle(fontSize = WidgetType.supporting, color = colors.onSurfaceVariant),
+        val count = context.getString(R.string.widget_of_today, data.done, data.total)
+        val next = data.nextLabel?.let { context.getString(R.string.widget_next, it) }
+            ?: context.getString(
+                when {
+                    data.total == 0 -> R.string.widget_nothing_today
+                    data.done == data.total -> R.string.widget_all_done
+                    else -> R.string.widget_all_logged // something was skipped
+                },
             )
+        Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+            Text(count, maxLines = 1, style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
+            if (layout.showNext) {
+                Spacer(GlanceModifier.width(12.dp))
+                // Glance's Text can't ellipsize, so shorten "Next: …" to the room left after the count.
+                val room = width - 12f - textWidthDp(context, count, WidgetType.supporting.value, bold = true)
+                Text(
+                    ellipsizeToWidth(context, next, WidgetType.supporting.value, room),
+                    maxLines = 1,
+                    modifier = GlanceModifier.defaultWeight(),
+                    style = TextStyle(fontSize = WidgetType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.End),
+                )
+            }
         }
         if (!layout.showBar) return@Column
         Spacer(GlanceModifier.height(10.dp))
@@ -83,6 +102,26 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         )
     }
 }
+
+private fun paint(context: Context, sp: Float, bold: Boolean) = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
+    val dm = context.resources.displayMetrics
+    textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, dm)
+    typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+}
+
+/** Rough width in dp of [text]; the launcher's font may be wider than the default, hence the margin. */
+private fun textWidthDp(context: Context, text: String, sp: Float, bold: Boolean): Float =
+    paint(context, sp, bold).measureText(text) / context.resources.displayMetrics.density * FONT_MARGIN
+
+/** [text] cut with "…" so it fits [widthDp] (with the same margin as [textWidthDp]). */
+private fun ellipsizeToWidth(context: Context, text: String, sp: Float, widthDp: Float): String {
+    if (widthDp <= 0f) return ""
+    val px = widthDp * context.resources.displayMetrics.density / FONT_MARGIN
+    return TextUtils.ellipsize(text, paint(context, sp, bold = false), px, TextUtils.TruncateAt.END).toString()
+}
+
+/** Wide system fonts (like Samsung's or custom OEM fonts) run up to ~15% wider than Roboto. */
+private const val FONT_MARGIN = 1.15f
 
 class StripWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget = StripWidget()

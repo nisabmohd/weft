@@ -465,7 +465,9 @@ internal fun PracticeStep(habit: Habit, strings: Strings) {
             habit = row,
             onDone = { change(DayOutcome.DONE, habit.target, strings(R.string.log_marked_done, habit.name)); tried(Gesture.RIGHT) },
             onSkip = { change(DayOutcome.SKIP, 0.0, strings(R.string.log_skipped, habit.name)); tried(Gesture.LEFT) },
-            onUndo = { change(DayOutcome.OPEN, 0.0, strings(R.string.log_undone, habit.name)) },
+            // The opposite swipe undoes a swipe, as on Today: that is what the Undo row teaches
+            // (user, 2026-11-08); the bar's Undo still ticks it too.
+            onUndo = { change(DayOutcome.OPEN, 0.0, strings(R.string.log_undone, habit.name)); tried(Gesture.UNDO) },
             onToggle = {
                 if (outcome == DayOutcome.DONE) change(DayOutcome.OPEN, 0.0, strings(R.string.log_marked_not_done, habit.name))
                 else change(DayOutcome.DONE, habit.target, strings(R.string.log_marked_done, habit.name))

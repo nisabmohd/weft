@@ -69,7 +69,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -91,6 +90,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sprout.habits.R
+import app.sprout.habits.ui.components.SheetHeader
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.ui.components.HeaderIconButton
 import app.sprout.habits.data.HabitIcon
 import app.sprout.habits.ui.components.DatePickerSheet
@@ -245,11 +247,12 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
     }
 
     if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text(stringResource(R.string.delete_note_title)) },
-            confirmButton = { TextButton(onClick = { confirmDelete = false; viewModel.delete() }) { Text(stringResource(R.string.action_delete), color = colors.error) } },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(R.string.action_cancel)) } },
+        PromptSheet(
+            title = stringResource(R.string.delete_note_title),
+            action = stringResource(R.string.action_delete),
+            onAction = { confirmDelete = false; viewModel.delete() },
+            onDismiss = { confirmDelete = false },
+            actionRole = ButtonRole.Destructive,
         )
     }
 }
@@ -267,12 +270,7 @@ private fun HabitPickerSheet(
     val colors = MaterialTheme.colorScheme
     // Fully open right away so every habit is visible; the list scrolls if there are many.
     WeftSheet(onDismissRequest = onDismiss) {
-        Text(
-            stringResource(R.string.choose_habit),
-            style = WeftType.title,
-            color = colors.onSurface,
-            modifier = Modifier.padding(start = 24.dp, bottom = 8.dp),
-        )
+        SheetHeader(stringResource(R.string.choose_habit))
         LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp)) {
             items(habits, key = { it.id }) { h ->
                 val c = habitColors(h.colorHue.toFloat())

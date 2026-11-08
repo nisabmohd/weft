@@ -13,9 +13,11 @@ Weft (formerly Sprout) is a small, open-source habit tracker for Android. It kee
 | **Habit detail** | **Journal** | **Insights** | **Dark mode** |
 | ![Habit detail](docs/screenshots/06-habit-detail.png) | ![Journal](docs/screenshots/07-journal.png) | ![Insights](docs/screenshots/09-insights.png) | ![Dark mode](docs/screenshots/13-today-dark.png) |
 
-More: [welcome](docs/screenshots/01-welcome.png), [filter by habit](docs/screenshots/08-filter-by-habit.png), [date range](docs/screenshots/10-date-range.png), [new habit](docs/screenshots/12-new-habit.png), [settings](docs/screenshots/11-more.png), [Google Drive backup](docs/screenshots/19-drive-backup.png), [font](docs/screenshots/18-font-sheet.png).
+More: [welcome](docs/screenshots/01-welcome.png), [filter by habit](docs/screenshots/08-filter-by-habit.png), [date range](docs/screenshots/10-date-range.png), [new habit](docs/screenshots/12-new-habit.png), [settings](docs/screenshots/11-more.png), [Google Drive backup](docs/screenshots/19-drive-backup.png), [font](docs/screenshots/18-font-sheet.png), [alarm](docs/screenshots/20-alarm.png).
 
 ### Widgets
+
+<img src="docs/screenshots/21-widgets.png" alt="All four widgets on one home screen" width="270">
 
 | Today | This week | Today strip | Streak |
 | --- | --- | --- | --- |
@@ -30,7 +32,7 @@ You can also:
 - see each week at a glance, or the last 26 weeks as a heatmap, with scores and streaks
 - keep a Journal of short notes tied to a habit and a day, filtered by habit or by dates
 - look back at any date range in Insights, for all habits or a few, with each habit ranked by score or by streak
-- get a reminder at the time you pick, and a nudge in the evening to add a note when you skip a habit that asks for one
+- get a reminder at the time you pick, as a notification with Done / +step / Dismiss buttons or as an alarm that rings full screen until you slide it done, and a nudge in the evening to add a note when you skip a habit that asks for one
 - add four home-screen widgets that stay in sync with the app; the Today widget marks habits done from the home screen
 - export everything, including your settings, to a JSON file and import it again, or export a CSV for spreadsheets
 - back up to your own Google Drive, by hand or every night while charging, and restore any of the last 10 backups (Google Play and GitHub builds)
@@ -54,7 +56,7 @@ Weft runs on Android 8.0 and later.
 
 ## Privacy
 
-Weft has no ads, no analytics and no trackers. It asks for two permissions: notifications, for reminders, and "Alarms & reminders" if you want them to arrive on the minute. Your data only leaves the phone when you export it or turn on Google Drive backup, which writes to a hidden folder in your own Drive that only Weft can see. See the [privacy policy](https://nisabmohd.com/weft/privacy) ([`PRIVACY.md`](PRIVACY.md)).
+Weft has no ads, no analytics and no trackers. It asks for notifications, for reminders; "Alarms & reminders" if you want them on the minute (and for alarm reminders); and full-screen notifications, so an alarm reminder can ring over the lock screen. Your data only leaves the phone when you export it or turn on Google Drive backup, which writes to a hidden folder in your own Drive that only Weft can see. See the [privacy policy](https://nisabmohd.com/weft/privacy) ([`PRIVACY.md`](PRIVACY.md)).
 
 ## Build
 
@@ -81,4 +83,4 @@ Weft is made by **mid apps** (Nisab Mohd & contributors). Questions, ideas or pr
 
 ## License
 
-Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the sock in the app icon) is from [Tabler Icons](https://tabler.io/icons), MIT License, and the app's icons are [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, CC BY 4.0; see [`licenses/icons`](licenses/icons).
+Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the ball of yarn in the app icon) is mid apps' own, and the app's icons are [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, CC BY 4.0; see [`licenses/icons`](licenses/icons).

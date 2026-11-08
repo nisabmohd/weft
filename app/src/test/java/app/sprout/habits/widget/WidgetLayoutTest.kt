@@ -81,6 +81,21 @@ class WidgetLayoutTest {
     }
 
     @Test
+    fun weekRowsFillTheHeight() {
+        // A tall widget with 8 habits: the rows grow to fill it, and stay within their limits.
+        val tall = WidgetLayout.week(320f, 560f, habits = 8)
+        assertTrue("rows don't stretch: $tall", tall.rowHeight > WidgetLayout.WEEK_ROW_MIN)
+        assertTrue(tall.rowHeight <= WidgetLayout.WEEK_ROW_MAX)
+        // The rows plus what's above them never take more than the widget.
+        val above = 16f + 48f + 8f + 16f
+        assertTrue("rows overflow: $tall", above + tall.rowHeight * 8 + 16f + 8f <= 560f + 0.5f)
+        // Too many habits for the height: the smallest rows, and the list scrolls.
+        assertTrue(WidgetLayout.week(320f, 200f, habits = 12).rowHeight == WidgetLayout.WEEK_ROW_MIN)
+        // Two habits on a big widget: capped, not spread across the whole height.
+        assertTrue(WidgetLayout.week(320f, 560f, habits = 2).rowHeight == WidgetLayout.WEEK_ROW_MAX)
+    }
+
+    @Test
     fun stripFitsAtEverySize() {
         for ((w, h) in sizes(limits("strip"))) {
             val s = WidgetLayout.strip(w, h)

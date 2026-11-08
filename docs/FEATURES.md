@@ -42,9 +42,11 @@ Code: `ui/insights/`.
 
 ## Reminders
 
-Each habit can have one daily reminder on its scheduled days. The time is set in the one time sheet, the same wheel as Burrow's: three snapping columns (hour, minute in 5s, AM/PM; hours 00–23 and no AM/PM on a 24-hour phone) over a pill band, the top and bottom rows fading out (`ui/components/TimePickerSheet.kt`). Every time setting uses it. The notification shows what's left for today and opens the habit when tapped. A habit already marked Done or Skip today gets no reminder; a Partial one still does, with what's left. Reminders are exact when the user allows "Alarms & reminders", and otherwise arrive within 10 minutes. At 9 PM, habits that were skipped and ask for a note get a short prompt to add one.
+Each habit can have one daily reminder on its scheduled days, as a **notification** or an **alarm** (1.6.0). Tapping New habit's Reminder card opens one sheet: the time (the one time wheel, the same as Burrow's: hour, minute in 5s, AM/PM over a pill band; `ui/components/TimePickerSheet.kt`), then Notification ("A quiet nudge in your notifications") or Alarm ("Rings full screen until you act"), then Set reminder.
 
-Code: `notify/`, timing in `domain/ReminderTime.kt`.
+A notification shows what's left for today and has buttons: Done and Dismiss; a measured habit also gets +step (e.g. "+5 pages", and the line updates to what's left). Logging from a notification counts like logging in the app, and Today offers Undo the next time it opens. An alarm rings with the alarm sound until answered, over the lock screen: slide to mark done, Log amount (a measured habit: the amount sheet, right there) or Skip today (a check-off habit), Snooze 10 min, or Dismiss; Open Weft unlocks and opens the habit; the power or a volume button silences it. Alarms at the same time ring as one, one habit after another ("1 of 2"). Logging the habit anywhere, even part of it, stops its alarm. Unanswered, it stops after 10 minutes and leaves a "missed at" notification. While the phone is in use, or when Android 14+ doesn't allow full-screen alarms, it rings as a notification with the same three buttons. A habit already Done or Skip today gets no reminder and no alarm; a Partial one still does. Reminders are exact when "Alarms & reminders" is allowed, otherwise within 10 minutes; an alarm needs it, and the sheet says so. At 9 PM, habits that were skipped and ask for a note get a prompt with Add note (opens New note for that day) and Done.
+
+Code: `notify/`, `ui/alarm/`, timing in `domain/ReminderTime.kt`.
 
 ## Widgets
 
