@@ -10,4 +10,11 @@
     <!-- Launcher shortcuts (fixed, any accent): the logo's hue, primaryContainer hsl(155 88% 91%) and onPrimaryContainer hsl(155 62% 19%). -->
     <color name="shortcut_background">#FFD4FCEB</color>
     <color name="shortcut_icon">#FF124E35</color>
+    <!-- The alarm notification's buttons (notification_alarm.xml, like Burrow's): a Done pill and text buttons.
+         They can't know the accent either: below Android 12 the logo's hue, primaryContainer / onPrimaryContainer
+         for the pill and the logo green for the text buttons; Android 12+ in values-v31. -->
+    <color name="notification_pill">#FFD4FCEB</color>
+    <color name="notification_pill_text">#FF124E35</color>
+    <color name="notification_accent">#FF2A6F52</color>
+    <color name="notification_ripple">#33124E35</color>
 </resources>

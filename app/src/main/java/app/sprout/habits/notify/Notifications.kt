@@ -2,8 +2,6 @@ package app.sprout.habits.notify
 
 import android.Manifest
 import android.app.NotificationChannel
-import android.media.AudioAttributes
-import android.media.RingtoneManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -20,8 +18,11 @@ object Notifications {
     /** The evening nudge to add a note to a skipped habit. */
     const val CHANNEL_NOTES = "notes"
 
-    /** Alarm reminders: the alarm sound on the alarm stream, with vibration (1.6.0). */
-    const val CHANNEL_ALARMS = "alarms"
+    /** Alarm reminders: a silent heads-up; AlarmSoundService plays the sound and vibrates. */
+    const val CHANNEL_ALARMS = "alarms_ring"
+
+    /** 1.6.0 (27)'s alarm channel, with the sound in the channel; deleted on start. */
+    private const val OLD_CHANNEL_ALARMS = "alarms"
 
     fun createChannels(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java)
@@ -33,20 +34,19 @@ object Notifications {
                 NotificationChannel(CHANNEL_NOTES, context.getString(R.string.channel_notes), NotificationManager.IMPORTANCE_DEFAULT).apply {
                     description = context.getString(R.string.channel_notes_desc)
                 },
+                // Silent: AlarmSoundService plays the alarm itself, so no phone (a cooldown on
+                // repeated notifications, ColorOS) can mute it. The heads-up still needs HIGH.
                 NotificationChannel(CHANNEL_ALARMS, context.getString(R.string.channel_alarms), NotificationManager.IMPORTANCE_HIGH).apply {
                     description = context.getString(R.string.channel_alarms_desc)
-                    setSound(
-                        RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
-                            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
-                        AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build(),
-                    )
-                    enableVibration(true)
-                    vibrationPattern = longArrayOf(0, 600, 400, 600, 400)
+                    setSound(null, null)
+                    enableVibration(false)
                     setBypassDnd(true)
                     lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
                 },
             ),
         )
+        // 1.6.0 (27) rang through this channel's sound; a channel's sound can't change once made.
+        manager.deleteNotificationChannel(OLD_CHANNEL_ALARMS)
     }
 
     /** True when the app may post notifications right now. */

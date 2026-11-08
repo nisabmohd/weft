@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.1
+
+Fixed:
+
+- Widgets stayed on the Weft logo and never showed anything in release builds: the build tool removed a piece WorkManager needs to start the widget's drawing job. Kept now (`app/proguard-rules.pro`).
+- Alarms could stay silent on some phones (ColorOS, newer Android): the sound came from the notification, which the phone muted. Weft now plays the alarm sound and vibration itself until you answer it.
+- Alarms at the same time while the phone was in use came as separate cards, and their buttons were cut off ("Snooz…") and hard to read. They are one card now, "6:45 AM · 1 of 2 · Next: Workout", with a Done pill and Snooze 10 min / Dismiss buttons (like Burrow's); answering one shows the next without ringing again.
+- Habit details: Edit uses the pen (like Edit note), and Archive / Restore a box with a lid and an arrow, instead of two look-alike rounded squares.
+
 ## 1.6.0
 
 Added:

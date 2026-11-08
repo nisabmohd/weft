@@ -1,0 +1,4 @@
+• Fixed: home-screen widgets showed only the Weft logo; they draw again.
+• Fixed: alarms now ring with sound on every phone.
+• Alarms at the same time are one card ("1 of 2 · Next: Workout") with Done, Snooze 10 min and Dismiss.
+• Clearer Edit and Archive icons on a habit's page.

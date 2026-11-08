@@ -2,14 +2,17 @@ package app.sprout.habits.notify
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Build
+import androidx.compose.ui.graphics.toArgb
+import app.sprout.habits.ui.theme.habitColors
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import app.sprout.habits.R
@@ -41,11 +44,11 @@ data class Ringing(
 
 /**
  * Alarm reminders (features/FEATURE-ALARM-REMINDERS.md). An alarm is a notification on the
- * Alarms channel: the alarm sound on the alarm stream with vibration, repeated until it is
- * answered, and a full-screen intent that opens [AlarmActivity] (a heads-up notification with
- * Done / Snooze / Dismiss when Android doesn't allow full-screen intents). No service keeps
- * running: cancelling the notification stops the sound. After [RING_MINUTES] it stops by
- * itself and a missed-alarm notification is posted.
+ * (silent) Alarms channel with a full-screen intent that opens [AlarmActivity] (a heads-up with
+ * Done / Snooze / Dismiss when Android doesn't open it full screen), while [AlarmSoundService]
+ * plays the alarm sound and vibrates until it is answered. Alarms ringing together are one
+ * notification, the one on top: "6:45 AM · 1 of 2 · Next: Workout". After [RING_MINUTES] it
+ * stops by itself and a missed-alarm notification is posted.
  */
 class AlarmRinger(private val context: Context, private val repository: HabitRepository) {
     /**
@@ -127,43 +130,99 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
             before to q.first()
         }
         if (newHead.habitId == habit.id) {
+            // The one that was on top now waits behind this one, without a card of its own.
             if (oldHead != null && oldHead.habitId != habit.id) {
-                repository.getHabit(oldHead.habitId)?.let { post(it, oldHead.minutes, loud = false) }
+                AlarmSoundService.stop()
+                NotificationManagerCompat.from(context).cancel(ReminderNotifier.reminderId(oldHead.habitId))
             }
             post(habit, minutes, loud = true)
         } else {
-            post(habit, minutes, loud = false)
+            // It waits: the card on top now says "1 of 2 · Next: …".
+            showHead(loud = false)
         }
         scheduleTimeout(habit.id)
         listenForPowerButton()
     }
 
+    /** Posts the alarm on top again: after one is answered, or to update its "1 of 2" line. */
+    private suspend fun showHead(loud: Boolean) {
+        val head = _queue.value.firstOrNull() ?: return
+        repository.getHabit(head.habitId)?.let { post(it, head.minutes, loud) }
+    }
+
+    /** "6:45 AM · 1 of 2 · Next: Workout" for the alarm on top; just the time otherwise. */
+    private fun line(habitId: Long, minutes: Int): String {
+        val time = TodayViewModel.formatTime(minutes)
+        val q = _queue.value
+        if (q.firstOrNull()?.habitId != habitId) return time
+        val total = _answered.value + q.size
+        if (total < 2) return time
+        val parts = mutableListOf(time, context.getString(R.string.alarm_position, _answered.value + 1, total))
+        q.getOrNull(1)?.let { parts += context.getString(R.string.widget_next, it.name) }
+        return parts.joinToString(" · ")
+    }
+
     /**
-     * The alarm's notification. [loud]: the alarm sound, repeated until it is cancelled, and the
-     * full-screen intent. A waiting alarm is the same notification without sound or screen.
+     * The alarm's notification: our own layout (like Burrow's) with a Done pill and Snooze 10 min /
+     * Dismiss as text buttons, as Android's action buttons get cut and tinted on some phones.
+     * [loud]: the sound ([AlarmSoundService]) and the full-screen intent; otherwise it is quiet.
      */
     @SuppressLint("MissingPermission") // checked by canPost()
-    private fun post(habit: Habit, minutes: Int, loud: Boolean) {
+    private fun post(habit: Habit, minutes: Int, loud: Boolean, line: String = line(habit.id, minutes)) {
+        val id = ReminderNotifier.reminderId(habit.id)
         val screen = PendingIntent.getActivity(
             context,
-            ReminderNotifier.reminderId(habit.id),
+            id,
             AlarmActivity.intent(context, habit.id),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
+        val small = RemoteViews(context.packageName, R.layout.notification_alarm_small).apply {
+            setTextViewText(R.id.title, habit.name)
+            setTextViewText(R.id.line, line)
+        }
+        val big = RemoteViews(context.packageName, R.layout.notification_alarm).apply {
+            setTextViewText(R.id.title, habit.name)
+            setTextViewText(R.id.line, line)
+            setTextViewText(R.id.done, context.getString(R.string.outcome_done))
+            setOnClickPendingIntent(R.id.done, ReminderActions.pendingAction(context, ReminderActions.ACTION_DONE, habit.id))
+            setTextViewText(R.id.snooze, context.getString(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES))
+            setOnClickPendingIntent(R.id.snooze, ReminderActions.pendingAction(context, ReminderActions.ACTION_SNOOZE, habit.id))
+            setTextViewText(R.id.dismiss, context.getString(R.string.alarm_dismiss))
+            setOnClickPendingIntent(R.id.dismiss, ReminderActions.pendingAction(context, ReminderActions.ACTION_DISMISS, habit.id))
+            // In the habit's colours, like the ringing screen (user, 2026-11-08): Done a pill in its
+            // soft tone with ink text, Snooze / Dismiss in its solid tone, light and dark. Android 12+
+            // only (night-aware colours); below that the logo green from colors.xml.
+            if (Build.VERSION.SDK_INT >= 31) {
+                val light = habitColors(habit.colorHue.toFloat(), dark = false)
+                val dark = habitColors(habit.colorHue.toFloat(), dark = true)
+                setColorStateList(
+                    R.id.done, "setBackgroundTintList",
+                    ColorStateList.valueOf(light.soft.toArgb()), ColorStateList.valueOf(dark.soft.toArgb()),
+                )
+                setColorInt(R.id.done, "setTextColor", light.ink.toArgb(), dark.ink.toArgb())
+                for (id in intArrayOf(R.id.snooze, R.id.dismiss)) {
+                    setColorInt(id, "setTextColor", light.solid.toArgb(), dark.solid.toArgb())
+                }
+            }
+        }
         val builder = NotificationCompat.Builder(context, Notifications.CHANNEL_ALARMS)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(habit.name)
-            .setContentText(TodayViewModel.formatTime(minutes))
+            .setContentText(line)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(small)
+            .setCustomBigContentView(big)
+            .setCustomHeadsUpContentView(big)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
+            .setOnlyAlertOnce(!loud)
             .setContentIntent(screen)
-            .apply { ReminderActions.forAlarm(context, habit).forEach(::addAction) }
-        if (loud) builder.setFullScreenIntent(screen, true) else builder.setSilent(true)
+        if (loud) builder.setFullScreenIntent(screen, true)
         val notification = builder.build()
-        if (loud) notification.flags = notification.flags or Notification.FLAG_INSISTENT
-        NotificationManagerCompat.from(context).notify(ReminderNotifier.reminderId(habit.id), notification)
+        NotificationManagerCompat.from(context).notify(id, notification)
+        if (loud) AlarmSoundService.start(context, id, notification)
     }
 
     /**
@@ -172,7 +231,7 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
      * is already there); its notification stays until it is answered.
      */
     fun stop(habitId: Long) {
-        val next = synchronized(this) {
+        val (wasHead, next) = synchronized(this) {
             val before = _queue.value
             _queue.value = before.filterNot { it.habitId == habitId }
             val next = _queue.value.firstOrNull()
@@ -181,16 +240,35 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
                 before.size != _queue.value.size -> _answered.value + 1
                 else -> _answered.value
             }
-            next
+            val wasHead = before.firstOrNull()?.habitId == habitId
+            // The sound service takes its card down (Android ignores the app's cancel of a foreground
+            // service's notification); the cancel covers a card it never held. Inside the lock, so a
+            // "next" card being posted can't come back after it.
+            if (wasHead) AlarmSoundService.stop()
+            NotificationManagerCompat.from(context).cancel(ReminderNotifier.reminderId(habitId))
+            wasHead to next
         }
-        NotificationManagerCompat.from(context).cancel(ReminderNotifier.reminderId(habitId))
         context.getSystemService(AlarmManager::class.java).cancel(timeoutIntent(habitId))
-        if (next == null) stopListening()
+        if (next == null) {
+            stopListening()
+        } else {
+            // The next one shows without ringing again (design 2026-11-08: the user is already there),
+            // or the one on top gets its new "2 of 2" line.
+            val head = next.habitId
+            CoroutineScope(Dispatchers.IO).launch {
+                val habit = repository.getHabit(head) ?: return@launch
+                // Only if it's still waiting (the power button answers every alarm at once).
+                synchronized(this@AlarmRinger) {
+                    if (_queue.value.firstOrNull()?.habitId == head) post(habit, next.minutes, loud = false)
+                }
+            }
+        }
     }
 
     /** Stops the sound of the alarm for [habitId] but keeps it on screen (Log amount). */
     fun hush(habitId: Long) {
         val r = _queue.value.firstOrNull { it.habitId == habitId } ?: return
+        AlarmSoundService.stop(keepCard = true)
         CoroutineScope(Dispatchers.IO).launch {
             repository.getHabit(habitId)?.let { post(it, r.minutes, loud = false) }
         }
@@ -207,11 +285,12 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
             _answered.value = 0
             r
         }
+        AlarmSoundService.stop()
         NotificationManagerCompat.from(context).cancel(ReminderNotifier.reminderId(habitId))
         context.getSystemService(AlarmManager::class.java).cancel(timeoutIntent(habitId))
         stopListening()
         CoroutineScope(Dispatchers.IO).launch {
-            rest.forEach { r -> repository.getHabit(r.habitId)?.let { post(it, r.minutes, loud = false) } }
+            rest.forEach { r -> repository.getHabit(r.habitId)?.let { post(it, r.minutes, loud = false, line = TodayViewModel.formatTime(r.minutes)) } }
         }
     }
 
@@ -222,7 +301,8 @@ class AlarmRinger(private val context: Context, private val repository: HabitRep
             .any { it.id == ReminderNotifier.reminderId(habitId) && it.notification.channelId == Notifications.CHANNEL_ALARMS }
         val rang = _queue.value.firstOrNull { it.habitId == habitId }
         stop(habitId)
-        if (!active) return
+        // A waiting alarm has no card of its own, but it rang unanswered too.
+        if (!active && rang == null) return
         val habit = repository.getHabit(habitId) ?: return
         val at = rang?.minutes ?: habit.reminderMinutes ?: return
         ReminderNotifier(context, repository).post(

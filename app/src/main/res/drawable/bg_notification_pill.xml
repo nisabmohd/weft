@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Done in the alarm notification: a tonal pill with a ripple (as in Burrow). -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@color/notification_ripple">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="@color/notification_pill" />
+        </shape>
+    </item>
+</ripple>

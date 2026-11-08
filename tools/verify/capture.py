@@ -242,6 +242,17 @@ def drive_restore_sheet():
 
 
 @screen
+def habit_detail():
+    """Read's page (edit, archive and delete buttons; recaptured 2026-11-08 for the new Edit / Archive icons)."""
+    db = f"/data/data/{d.PACKAGE}/databases/sprout.db"
+    hid = d.shell(f'sqlite3 {db} "select id from habit where name=\'Read\'"').strip()
+    d.shell(f"am start -a android.intent.action.VIEW -d weft://habit/{hid} {d.PACKAGE}")
+    assert d.exists("Read", timeout=8)
+    save("habit-detail")
+    d.back()
+
+
+@screen
 def new_habit():
     d.nav("Today")
     d.tap("New habit")

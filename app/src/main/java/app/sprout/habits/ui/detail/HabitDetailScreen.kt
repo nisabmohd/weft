@@ -99,7 +99,7 @@ fun HabitDetailScreen(
                     HeaderIconButton(R.drawable.ic_arrow_back, stringResource(R.string.action_back), onClick = onBack)
                     Spacer(Modifier.weight(1f))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        HeaderIconButton(R.drawable.ic_habit_pen, stringResource(R.string.edit_habit), onClick = onEdit)
+                        HeaderIconButton(R.drawable.ic_pen, stringResource(R.string.edit_habit), onClick = onEdit)
                         HeaderIconButton(
                             if (ui.habit.archived) R.drawable.ic_unarchive else R.drawable.ic_archive,
                             stringResource(if (ui.habit.archived) R.string.restore else R.string.archive),

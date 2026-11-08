@@ -3,4 +3,9 @@
     <color name="weft_bg">#FF0F1412</color>
     <color name="weft_primary">#FF2A6F52</color>
     <color name="widget_bg">#FF374941</color>
+    <!-- Alarm notification buttons, dark: primaryContainer hsl(155 40% 27%), its text hsl(155 90% 92%), primary hsl(155 86% 82%). -->
+    <color name="notification_pill">#FF29604A</color>
+    <color name="notification_pill_text">#FFD8FDEE</color>
+    <color name="notification_accent">#FFA9F9D8</color>
+    <color name="notification_ripple">#33D8FDEE</color>
 </resources>

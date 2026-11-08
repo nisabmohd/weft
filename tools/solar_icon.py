@@ -16,7 +16,7 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 # drawable name → Solar name (Linear style, without the "-linear" suffix)
 ICONS = {
     # App chrome
-    "ic_archive": "archive-down-minimalistic", "ic_unarchive": "archive-up-minimalistic",
+    "ic_archive": "archive-down", "ic_unarchive": "archive-up",
     "ic_arrow_back": "arrow-left", "ic_bell_filled": "bell", "ic_calendar": "calendar",
     "ic_check": "check", "ic_chevron_down": "alt-arrow-down", "ic_chevron_left": "alt-arrow-left",
     "ic_chevron_right": "alt-arrow-right", "ic_chevron_up": "alt-arrow-up", "ic_close": "close",

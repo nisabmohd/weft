@@ -8,6 +8,10 @@
     <!-- Alarm reminders open the ringing screen over the lock screen (1.6.0). Declared in Play Console
          as an alarm feature; when Android 14+ doesn't grant it, alarms show as heads-up notifications. -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- A ringing alarm plays its sound from AlarmSoundService (media playback) and vibrates. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".WeftApp"
@@ -49,6 +53,10 @@
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:theme="@style/Theme.Weft.Alarm" />
+        <service
+            android:name=".notify.AlarmSoundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
         <receiver
             android:name=".notify.ReminderReceiver"
             android:exported="false" />

@@ -41,7 +41,7 @@ object ReminderActions {
     /**
      * The buttons for a habit's notification reminder: Done, +step for a measured habit, Dismiss.
      * No Snooze: a notification stays in the shade until it's answered (user, 2026-11-08); only
-     * alarms snooze ([forAlarm]).
+     * alarms snooze (AlarmRinger's own buttons).
      */
     fun forReminder(context: Context, habit: Habit): List<NotificationCompat.Action> = buildList {
         add(action(context, ACTION_DONE, habit.id, context.getString(R.string.outcome_done)))
@@ -61,21 +61,18 @@ object ReminderActions {
     )
 
     /** The buttons of a ringing alarm's notification (shown when it can't open full screen). */
-    fun forAlarm(context: Context, habit: Habit): List<NotificationCompat.Action> = listOf(
-        action(context, ACTION_DONE, habit.id, context.getString(R.string.outcome_done)),
-        action(context, ACTION_SNOOZE, habit.id, context.getString(R.string.notify_snooze_minutes, SNOOZE_MINUTES)),
-        action(context, ACTION_DISMISS, habit.id, context.getString(R.string.alarm_dismiss)),
-    )
+    private fun action(context: Context, action: String, habitId: Long, label: String): NotificationCompat.Action =
+        NotificationCompat.Action.Builder(0, label, pendingAction(context, action, habitId)).build()
 
-    private fun action(context: Context, action: String, habitId: Long, label: String): NotificationCompat.Action {
+    /** What a notification button sends (also the alarm notification's own buttons). */
+    fun pendingAction(context: Context, action: String, habitId: Long): PendingIntent {
         val intent = Intent(context, ReminderActionReceiver::class.java)
             .setAction(action)
             .putExtra(ReminderScheduler.EXTRA_HABIT_ID, habitId)
             .putExtra(ReminderScheduler.EXTRA_DAY, LocalDate.now().toEpochDay())
         // One request code per habit and button, so the buttons of different habits never mix.
         val code = habitId.toInt() * 8 + ACTIONS.indexOf(action)
-        val pending = PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        return NotificationCompat.Action.Builder(0, label, pending).build()
+        return PendingIntent.getBroadcast(context, code, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun addNoteIntent(context: Context, habitId: Long, day: Long): PendingIntent = PendingIntent.getActivity(

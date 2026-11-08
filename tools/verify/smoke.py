@@ -20,7 +20,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 import device as d  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-APK = os.path.join(ROOT, "app/build/outputs/apk/play/debug/app-play-debug.apk")
+# SMOKE_APK=app/build/outputs/apk/play/release/app-play-release.apk runs the checks on a release build:
+# R8 only runs there (1.6.0's widgets never drew in release; the debug runs passed).
+APK = os.environ.get("SMOKE_APK") or os.path.join(ROOT, "app/build/outputs/apk/play/debug/app-play-debug.apk")
 
 CHECKS = []
 
@@ -1362,6 +1364,9 @@ def root():
         d.adb("wait-for-device")
     if "root" not in d.shell("whoami"):
         raise Skip("needs a rootable emulator")
+    # Alarms fired here by broadcast aren't alarm-clock alarms, so Android wouldn't let them start
+    # AlarmSoundService (a real one may) and would freeze the app; allow-listing Weft behaves like the real thing.
+    d.shell(f"dumpsys deviceidle whitelist +{d.PACKAGE}")
 
 
 def sql(query):
@@ -1458,6 +1463,7 @@ def alarm_heads_up_while_phone_in_use():
     d.home()
     fire(h)
     assert ringing(), "alarm notification not posted"
+    assert sound_playing(), "the alarm is silent"
     assert "AlarmActivity" not in top_activity(), "full screen opened while the phone was in use"
     # The heads-up hides after a few seconds: open the shade to reach its buttons.
     d.shell("cmd statusbar expand-notifications")
@@ -1468,6 +1474,7 @@ def alarm_heads_up_while_phone_in_use():
     time.sleep(1.5)
     d.shell("cmd statusbar collapse")
     assert not ringing(), "Dismiss didn't stop the alarm"
+    assert not sound_playing(), "Dismiss didn't stop the sound"
     assert entry(h) == "", "Dismiss logged something"
 
 
@@ -1568,6 +1575,8 @@ def alarm_falls_back_without_full_screen_permission():
 @check
 def alarm_without_exact_alarms_says_so():
     root()
+    # Off the battery allow-list (root() puts it there): Android lets allow-listed apps set exact alarms.
+    d.shell(f"dumpsys deviceidle whitelist -{d.PACKAGE}")
     d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM deny")
     d.shell(f"am force-stop {d.PACKAGE}")
     try:
@@ -1634,11 +1643,18 @@ def notification_buttons_log_and_offer_undo():
     assert entry(vit) == "", "Dismiss logged something"
 
 
-def insistent():
-    """How many alarms are sounding (only the first of several sounds)."""
-    # Once per notification: its "flags=" line (each record also lists originalFlags and more).
+def sound_playing():
+    """True when something plays on the alarm stream right now (the alarm can be heard). Alarms
+    fired here by a broadcast ring through the fallback Ringtone (Android doesn't let a broadcast
+    start the sound service); real alarm-clock alarms ring through AlarmSoundService."""
+    out = d.shell("dumpsys audio")
+    return any("USAGE_ALARM" in l and "state:started" in l for l in out.splitlines())
+
+
+def alarm_cards():
+    """How many alarm notifications are posted (alarms ringing together are one card)."""
     out = d.shell("dumpsys notification --noredact")
-    return str(sum(1 for l in out.splitlines() if l.strip().startswith("flags=") and "INSISTENT" in l))
+    return sum(1 for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=alarms_ring" in l)
 
 
 def make_alarms(*names):
@@ -1675,13 +1691,13 @@ def alarm_measured_log_amount():
     assert d.exists("Goal 20 pages", timeout=5), "no goal line on a measured alarm"
     d.tap("Log amount")
     time.sleep(1.5)
-    assert insistent() == "0", "Log amount didn't stop the sound"
+    assert not sound_playing(), "Log amount didn't stop the sound"
     assert d.exists("Save") and d.exists("Partial"), "amount sheet didn't open"
     # Cancel: back to the ringing screen, still quiet, nothing logged.
     d.tap("Cancel")
     time.sleep(1.5)
     assert d.exists("Slide to mark done"), "Cancel didn't return to the ringing screen"
-    assert insistent() == "0" and entry(h) == "", "Cancel rang again or logged"
+    assert not sound_playing() and entry(h) == "", "Cancel rang again or logged"
     # Log amount again: + three times, Save logs Partial and closes the alarm.
     d.tap("Log amount")
     time.sleep(1.5)
@@ -1715,7 +1731,7 @@ def alarms_at_the_same_time_queue():
     screen(False)
     fire(wake)
     fire(workout)
-    assert insistent() == "1", f"more than one alarm sounds: {insistent()}"
+    assert sound_playing() and alarm_cards() == 1, f"not one ringing alarm: sound {sound_playing()}, cards {alarm_cards()}"
     assert d.exists("1 of 2", timeout=5), "no 1 of 2 chip"
     assert d.exists("Next: Workout"), "no Next line"
     assert d.exists("Wake up at 7"), "first habit (in list order) not on screen"
@@ -1725,7 +1741,7 @@ def alarms_at_the_same_time_queue():
     assert d.exists("Workout", timeout=5) and d.exists("Slide to mark done"), "next alarm didn't take the screen"
     assert d.exists("2 of 2"), "no 2 of 2 chip"
     assert not d.exists("Next:", contains=True, timeout=1), "Next line on the last alarm"
-    assert insistent() == "0", "the next alarm rang again"
+    assert not sound_playing(), "the next alarm rang again"
     assert "AlarmActivity" in top_activity(), "screen closed with an alarm left"
     d.tap("Snooze 10 min")
     time.sleep(2)
@@ -1736,16 +1752,45 @@ def alarms_at_the_same_time_queue():
 
 
 @check
+def alarms_at_the_same_time_while_phone_in_use():
+    """User, 2026-11-08: two alarms at 6:45 came as two silent cards. One card, and it rings."""
+    wake, workout = make_alarms("Wake up at 7", "Workout")
+    screen(True)
+    d.home()
+    fire(workout)
+    fire(wake)
+    assert alarm_cards() == 1, f"alarms at the same time aren't one card: {alarm_cards()}"
+    assert sound_playing(), "the alarm is silent"
+    out = d.shell("dumpsys notification --noredact")
+    assert "1 of 2" in out and "Next: Workout" in out, "the card doesn't say 1 of 2 · Next: Workout"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    for label in ("Done", "Snooze 10 min", "Dismiss"):
+        assert d.exists(label), f"alarm card is missing {label!r}"
+    d.tap("Dismiss")
+    time.sleep(2)
+    assert alarm_cards() == 1 and ringing(), "the next alarm didn't show after Dismiss"
+    assert not sound_playing(), "the next alarm rang again"
+    assert "2 of 2" in d.shell("dumpsys notification --noredact"), "the next card doesn't say 2 of 2"
+    d.tap("Dismiss")
+    time.sleep(2)
+    d.shell("cmd statusbar collapse")
+    assert not ringing(), "alarms left after answering both"
+    assert entry(wake) == "" and entry(workout) == ""
+
+
+@check
 def alarms_power_button_silences_all():
     wake, workout = make_alarms("Wake up at 7", "Workout")
     screen(True)
     d.home()
     fire(wake)
     fire(workout)
-    assert d.shell("dumpsys notification --noredact | grep -c 'channel=alarms'").strip() not in ("0", "1")
+    # Both ring as one card (the one on top says "1 of 2"); the power button silences both.
+    assert alarm_cards() == 1 and sound_playing(), "the two alarms aren't one ringing card"
     d.shell("input keyevent KEYCODE_SLEEP")
     time.sleep(2.5)
-    assert not ringing(), "the power button left an alarm ringing"
+    assert not ringing() and not sound_playing(), "the power button left an alarm ringing"
     screen(True)
 
 
