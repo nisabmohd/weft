@@ -542,7 +542,7 @@
     <string name="welcome_try_hold">Gedrückt halten</string>
     <string name="welcome_try_hold_desc">Nur einen Teil geschafft? Trag die Menge ein: Teilweise</string>
     <string name="welcome_try_undo">Rückgängig</string>
-    <string name="welcome_try_undo_desc">Doch anders? Tippe in der Leiste unten auf Rückgängig</string>
+    <string name="welcome_try_undo_desc">Doch anders? In die andere Richtung wischen</string>
     <string name="welcome_tried">Ausprobiert</string>
     <string name="welcome_go">Zu Heute</string>
     <string name="welcome_own_row">Eigene Gewohnheit hinzufügen</string>
@@ -655,4 +655,8 @@
     <string name="alarm_missed">%1$s · verpasst um %2$s</string>
     <string name="channel_alarms">Wecker</string>
     <string name="channel_alarms_desc">Gewohnheits-Erinnerungen, die im Vollbild klingeln</string>
+    <string name="alarm_open_weft">Weft öffnen</string>
+    <string name="alarm_goal">Ziel %1$s</string>
+    <string name="alarm_skip_today">Heute auslassen</string>
+    <string name="alarm_position">%1$d von %2$d</string>
 </resources>

@@ -32,6 +32,31 @@ A full-screen activity (`showWhenLocked`, `turnScreenOn`) started by a full-scre
 - Sound: the default alarm ringtone on the alarm stream, with vibration. It stops by itself after 10 minutes, and a missed-alarm notification is posted ("Wake up at 7 · missed at 6:30").
 - If the habit is already done today, the alarm doesn't ring.
 
+## 4. More ways to answer (ringing screen)
+Designs: `alarm-4-ringing-measured.png` (Read), `alarm-5-ringing-check-off.png` (Wake up at 7).
+
+- **Open Weft** at the top: a text button (14sp SemiBold, habit `ink`, trailing `alt-arrow-right`). It stops the sound, asks to unlock (`requestDismissKeyguard`), then opens the habit's detail.
+- Measured habits show their goal under the name ("Goal 20 pages", 15sp, `ink` at 75%).
+- One text button sits between the slide bar and Snooze | Dismiss (48dp tall, 16sp SemiBold, habit `ink`):
+  - measured habit: **Log amount**, which opens the amount sheet (below)
+  - check-off habit: **Skip today**, which logs Skip, stops the alarm and closes the screen
+- Layout from the bottom: the button pair (40dp from the bottom), the text button, then the slide bar.
+
+## 5. Logging an amount from the alarm
+Design: `alarm-6-log-amount.png`.
+
+- **Log amount** stops the sound and opens the app's existing amount sheet over the ringing screen. The habit-coloured screen stays behind it under a 45% scrim.
+- The sheet is the same component as in the app, with nothing alarm-specific: the habit header ("Read · Today · goal 20 pages"), Done / Partial / Skip, − 15 / 20 +, "pages · 75%", the slider, the note field and Cancel | Save. It can show over the lock screen, so no unlock is needed.
+- **Save** logs the amount (Partial below the goal, Done at or above it) and closes the alarm. **Cancel** or a swipe down goes back to the ringing screen, with the sound still stopped and the snooze clock not started.
+
+## 6. Two alarms at the same time
+Designs: `alarm-7-two-alarms-1-of-2.png`, `alarm-8-two-alarms-2-of-2.png`.
+
+- When several alarm habits share a time, they ring as one alarm on one screen, one habit at a time, in the habits' order.
+- A small chip above the tile shows the position: "1 of 2" (13sp SemiBold, habit `mid` / `ink`). Under the time, "Next: Workout" names the next one (14sp, `ink` at 75%).
+- Answering the first (slide, Skip today, Log amount → Save, or Dismiss) shows the next habit straight away with "2 of 2", in its own habit colour, without ringing again. The last screen has no "Next" line.
+- **Snooze** snoozes only the habit on screen and moves on to the next one. **Open Weft** opens the app on Today and leaves the rest unanswered (their notifications stay).
+
 ## Platform notes
 - Use `AlarmManager.setAlarmClock()` (exact, shown in the status bar). On Android 12+ this needs `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`. If it isn't granted, the Alarm row shows "Allow alarms in settings" and opens the system page.
 - Android 14+: `USE_FULL_SCREEN_INTENT` must be granted. Otherwise, fall back to a heads-up notification with the same actions.
@@ -40,3 +65,11 @@ A full-screen activity (`showWhenLocked`, `turnScreenOn`) started by a full-scre
 
 ## Out of scope
 - Picking a ringtone, and gradual volume. These may come later, in the reminder sheet.
+
+## As built (1.6.0, 2026-11-08)
+- **Power or a volume button** silences every alarm that is ringing, like Dismiss on each (confirmed by the user, 2026-11-08).
+- **Any log of the habit for today** stops its alarm: Done, Skip and Partial, from Today, a widget or a notification. A habit already partly done before the alarm still rings.
+- **Notification reminders** have Done · (+step) · Dismiss, no Snooze; only alarms snooze (see FEATURE-NOTIFICATION-ACTIONS.md).
+- **Open and close** fade (no slide), and the screen is see-through until its first frame, so it never flashes the page colour.
+- Code: `notify/AlarmRinger.kt` (the queue, `hush` for Log amount, `leave` for Open Weft, the log watcher), `ui/alarm/AlarmActivity.kt`. Every case is a smoke check (`python3 tools/verify/smoke.py alarm`).
+

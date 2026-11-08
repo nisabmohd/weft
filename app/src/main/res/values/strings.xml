@@ -548,7 +548,7 @@
     <string name="welcome_try_hold">Press and hold</string>
     <string name="welcome_try_hold_desc">Did part of it? Log how much: Partial</string>
     <string name="welcome_try_undo">Undo</string>
-    <string name="welcome_try_undo_desc">Changed your mind? Tap Undo on the bar that pops up</string>
+    <string name="welcome_try_undo_desc">Changed your mind? Swipe the other way</string>
     <string name="welcome_tried">Tried</string>
     <string name="welcome_go">Go to Today</string>
     <string name="mid_apps" translatable="false">mid apps</string>
@@ -664,4 +664,8 @@
     <string name="alarm_missed">%1$s · missed at %2$s</string>
     <string name="channel_alarms">Alarms</string>
     <string name="channel_alarms_desc">Habit reminders that ring full screen</string>
+    <string name="alarm_open_weft">Open Weft</string>
+    <string name="alarm_goal">Goal %1$s</string>
+    <string name="alarm_skip_today">Skip today</string>
+    <string name="alarm_position">%1$d of %2$d</string>
 </resources>

@@ -55,6 +55,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import app.sprout.habits.R
+import app.sprout.habits.ui.today.LogSheet
+import app.sprout.habits.ui.today.DayLogger
+import app.sprout.habits.ui.components.ButtonHeight
+import app.sprout.habits.domain.measure
+import app.sprout.habits.data.TrackType
+import app.sprout.habits.ResourceStrings
+import app.sprout.habits.MainActivity
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.TextButton
+import android.app.KeyguardManager
 import app.sprout.habits.WeftApp
 import app.sprout.habits.data.Habit
 import app.sprout.habits.data.HabitIcon
@@ -80,16 +90,27 @@ import kotlinx.coroutines.launch
  * logs and stops the sound exactly like the notification's buttons.
  */
 class AlarmActivity : ComponentActivity() {
+    /** The habit on screen: the first alarm in the queue. */
     private var habitId = 0L
-    private var answered = false
+    /** The habit last answered, so a double tap doesn't answer the next alarm too. */
+    private var answeredId = 0L
 
     /** The power button turns the screen off: that silences the alarm, like Dismiss. */
     private val screenOff = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) = answer(ReminderActions.ACTION_DISMISS)
+        override fun onReceive(context: Context, intent: Intent) = silenceAll()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Fade in and out (user, 2026-11-08: the default slide looked like a glitch, most of all
+        // when a notification button answered it and the screen opened and shut at once).
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, android.R.anim.fade_in, android.R.anim.fade_out)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
         showOverLockScreen()
         drawEdgeToEdge(dark = false)
         habitId = intent.getLongExtra(EXTRA_HABIT_ID, 0L)
@@ -99,32 +120,70 @@ class AlarmActivity : ComponentActivity() {
         registerReceiver(screenOff, IntentFilter(Intent.ACTION_SCREEN_OFF))
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle(null)
-            val ringing by container.alarmRinger.ringing.collectAsStateWithLifecycle()
+            val queue by container.alarmRinger.queue.collectAsStateWithLifecycle()
+            val ringing = queue.firstOrNull()
+            val answered by container.alarmRinger.answered.collectAsStateWithLifecycle()
             var habit by remember { mutableStateOf<Habit?>(null) }
             var seenRinging by remember { mutableStateOf(false) }
-            LaunchedEffect(habitId) { habit = container.repository.getHabit(habitId) }
-            // Stopped elsewhere (a notification button, the 10-minute limit): close.
-            LaunchedEffect(ringing) {
-                if (ringing?.habitId == habitId) seenRinging = true else if (seenRinging) finish()
+            // Always the alarm that is sounding: after one is answered, the next takes the screen.
+            // Every alarm stopped (answered, a log anywhere, the 10-minute limit): close.
+            LaunchedEffect(ringing?.habitId) {
+                val id = ringing?.habitId
+                if (id != null) {
+                    seenRinging = true
+                    habitId = id
+                    habit = container.repository.getHabit(id)
+                } else if (seenRinging) {
+                    finish()
+                }
             }
             val current = settings ?: return@setContent
-            val h = habit ?: return@setContent
+            val h = habit?.takeIf { it.id == habitId } ?: return@setContent
             val minutes = ringing?.takeIf { it.habitId == habitId }?.minutes ?: LocalTime.now().let { it.hour * 60 + it.minute }
+            val sheet by logger.sheet.collectAsStateWithLifecycle()
             WeftTheme(current.theme) {
                 AlarmScreen(
                     habit = h,
                     time = clockTime(this@AlarmActivity, minutes),
+                    // "1 of 2", then "2 of 2" once the first is answered.
+                    position = (answered + queue.size).takeIf { it > 1 }?.let { answered + 1 to it },
+                    next = queue.getOrNull(1)?.name,
                     onDone = { answer(ReminderActions.ACTION_DONE) },
                     onSnooze = { answer(ReminderActions.ACTION_SNOOZE) },
                     onDismiss = { answer(ReminderActions.ACTION_DISMISS) },
+                    onSkip = { answer(ReminderActions.ACTION_SKIP) },
+                    onLogAmount = {
+                        // The sound stops; the screen stays under the app's own amount sheet.
+                        container.alarmRinger.hush(h.id)
+                        logger.open(h.id, LocalDate.now())
+                    },
+                    onOpenWeft = { openWeft(h.id, several = queue.size > 1) },
                 )
+                // Save logs it, and the alarm moves on (AlarmRinger sees the log); Cancel or a
+                // swipe down comes back here, still quiet.
+                sheet?.let { s ->
+                    LogSheet(
+                        s,
+                        onSave = { status, amount, note -> logger.save(s, status, amount, note) },
+                        onUndo = { logger.clear(s) },
+                        onDismiss = logger::dismiss,
+                    )
+                }
             }
+        }
+    }
+
+    override fun finish() {
+        super.finish()
+        if (Build.VERSION.SDK_INT < 34) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            answer(ReminderActions.ACTION_DISMISS)
+            silenceAll()
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -135,19 +194,59 @@ class AlarmActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun answer(action: String) {
-        if (answered) return
-        answered = true
-        // Stop the sound now; the receiver logs (Done), reschedules (Snooze) and refreshes widgets.
-        (application as WeftApp).container.alarmRinger.stop(habitId)
-        sendBroadcast(
-            Intent(this, ReminderActionReceiver::class.java)
-                .setAction(action)
-                .putExtra(ReminderScheduler.EXTRA_HABIT_ID, habitId)
-                .putExtra(ReminderScheduler.EXTRA_DAY, LocalDate.now().toEpochDay()),
-        )
-        lifecycleScope.launch { finish() }
+    /** The app's own logging, for Log amount: the same sheet and rules as on Today. */
+    private val logger by lazy {
+        val app = application as WeftApp
+        DayLogger(app.container.repository, app.container.settings, lifecycleScope, ResourceStrings(this))
     }
+
+    /**
+     * Open Weft: stops this alarm, asks to unlock, then opens the habit (or Today when other
+     * alarms were waiting; they stay as notifications, unanswered).
+     */
+    private fun openWeft(id: Long, several: Boolean) {
+        (application as WeftApp).container.alarmRinger.leave(id)
+        val open = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        if (!several) open.setAction(MainActivity.ACTION_OPEN_HABIT).putExtra(MainActivity.EXTRA_HABIT_ID, id)
+        val go = { startActivity(open); finish() }
+        val keyguard = getSystemService(KeyguardManager::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && keyguard.isKeyguardLocked) {
+            keyguard.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissSucceeded() = go()
+                override fun onDismissCancelled() = finish()
+                override fun onDismissError() = go()
+            })
+        } else {
+            go()
+        }
+    }
+
+    /** Answers the alarm on screen; the screen stays if another alarm is waiting. */
+    private fun answer(action: String) {
+        val id = habitId
+        if (id == 0L || id == answeredId) return
+        answeredId = id
+        // Stop the sound now (the next alarm, if any, starts); the receiver logs (Done),
+        // reschedules (Snooze) and refreshes widgets.
+        (application as WeftApp).container.alarmRinger.stop(id)
+        send(action, id)
+    }
+
+    /** The power or a volume button: every ringing alarm stops, like Dismiss on each. */
+    private fun silenceAll() {
+        val ringer = (application as WeftApp).container.alarmRinger
+        ringer.queue.value.map { it.habitId }.forEach { id ->
+            ringer.stop(id)
+            send(ReminderActions.ACTION_DISMISS, id)
+        }
+    }
+
+    private fun send(action: String, id: Long) = sendBroadcast(
+        Intent(this, ReminderActionReceiver::class.java)
+            .setAction(action)
+            .putExtra(ReminderScheduler.EXTRA_HABIT_ID, id)
+            .putExtra(ReminderScheduler.EXTRA_DAY, LocalDate.now().toEpochDay()),
+    )
 
     @Suppress("DEPRECATION")
     private fun showOverLockScreen() {
@@ -185,8 +284,21 @@ private val SlideHeight = 64.dp
 private val SlideInset = 8.dp
 
 @Composable
-private fun AlarmScreen(habit: Habit, time: String, onDone: () -> Unit, onSnooze: () -> Unit, onDismiss: () -> Unit) {
+private fun AlarmScreen(
+    habit: Habit,
+    time: String,
+    /** "1 of 2" when alarms share a time; null for one alarm. */
+    position: Pair<Int, Int>?,
+    next: String?,
+    onDone: () -> Unit,
+    onSnooze: () -> Unit,
+    onDismiss: () -> Unit,
+    onSkip: () -> Unit,
+    onLogAmount: () -> Unit,
+    onOpenWeft: () -> Unit,
+) {
     val hc = habitColors(habit.colorHue.toFloat())
+    val measured = habit.trackType == TrackType.AMOUNT
     Column(
         Modifier
             .fillMaxSize()
@@ -196,22 +308,47 @@ private fun AlarmScreen(habit: Habit, time: String, onDone: () -> Unit, onSnooze
             .padding(horizontal = SheetSidePadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Open Weft: a text button with a chevron (alarm-4/5).
+        TextButton(onClick = onOpenWeft, modifier = Modifier.padding(top = 16.dp).heightIn(min = ButtonHeight)) {
+            Text(stringResource(R.string.alarm_open_weft), style = WeftType.label, color = hc.ink)
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = hc.ink, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+        }
         Spacer(Modifier.weight(1f))
+        if (position != null) {
+            Text(
+                stringResource(R.string.alarm_position, position.first, position.second),
+                style = WeftType.captionStrong,
+                color = hc.ink,
+                modifier = Modifier.padding(bottom = 16.dp).background(hc.mid, CircleShape).padding(horizontal = 14.dp, vertical = 6.dp),
+            )
+        }
         HabitTile(hc.mid, Modifier.size(AlarmTileSize), RoundedCornerShape(AlarmTileCorner)) {
             Icon(painterResource(HabitIcon.fromKey(habit.icon).drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(AlarmTileIconSize))
         }
         Text(habit.name, style = WeftType.title, color = hc.ink, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
+        if (measured) {
+            Text(stringResource(R.string.alarm_goal, habit.measure(habit.target)), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 4.dp))
+        }
         Text(time, style = WeftType.alarmTime, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 4.dp))
+        if (next != null) {
+            Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 8.dp))
+        }
         Spacer(Modifier.weight(2f))
         SlideToDone(track = hc.mid, thumb = hc.solid, label = stringResource(R.string.alarm_slide), labelColor = hc.ink, onDone = onDone)
-        Spacer(Modifier.height(16.dp))
+        // Log amount (measured) or Skip today (check-off), between the slide bar and the pair.
+        TextButton(
+            onClick = if (measured) onLogAmount else onSkip,
+            modifier = Modifier.padding(vertical = 8.dp).heightIn(min = ButtonHeight),
+        ) {
+            Text(stringResource(if (measured) R.string.log_amount else R.string.alarm_skip_today), style = WeftType.cardTitle, color = hc.ink)
+        }
         ButtonPair(
             secondaryLabel = stringResource(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES),
             onSecondary = onSnooze,
             primaryLabel = stringResource(R.string.alarm_dismiss),
             onPrimary = onDismiss,
         )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(40.dp))
     }
 }
 

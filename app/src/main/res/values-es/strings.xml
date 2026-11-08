@@ -558,7 +558,7 @@
     <string name="welcome_try_hold">Mantén pulsado</string>
     <string name="welcome_try_hold_desc">¿Hiciste una parte? Registra cuánto: Parcial</string>
     <string name="welcome_try_undo">Deshacer</string>
-    <string name="welcome_try_undo_desc">¿Cambiaste de idea? Toca Deshacer en la barra de abajo</string>
+    <string name="welcome_try_undo_desc">¿Cambiaste de idea? Desliza hacia el otro lado</string>
     <string name="welcome_tried">Probado</string>
     <string name="welcome_go">Ir a Hoy</string>
     <string name="welcome_own_row">Añadir tu propio hábito</string>
@@ -671,4 +671,8 @@
     <string name="alarm_missed">%1$s · perdida a las %2$s</string>
     <string name="channel_alarms">Alarmas</string>
     <string name="channel_alarms_desc">Recordatorios de hábitos que suenan a pantalla completa</string>
+    <string name="alarm_open_weft">Abrir Weft</string>
+    <string name="alarm_goal">Meta %1$s</string>
+    <string name="alarm_skip_today">Saltar hoy</string>
+    <string name="alarm_position">%1$d de %2$d</string>
 </resources>

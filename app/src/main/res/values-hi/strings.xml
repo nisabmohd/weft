@@ -543,7 +543,7 @@
     <string name="welcome_try_hold">दबाकर रखें</string>
     <string name="welcome_try_hold_desc">थोड़ा किया? कितना, दर्ज करें: आंशिक</string>
     <string name="welcome_try_undo">वापस लें</string>
-    <string name="welcome_try_undo_desc">मन बदल गया? नीचे आई पट्टी में वापस लें दबाएँ</string>
+    <string name="welcome_try_undo_desc">मन बदल गया? उल्टी तरफ़ स्वाइप करें</string>
     <string name="welcome_tried">आज़माया</string>
     <string name="welcome_go">आज पर जाएँ</string>
     <string name="welcome_own_row">अपनी आदत जोड़ें</string>
@@ -656,4 +656,8 @@
     <string name="alarm_missed">%1$s · %2$s पर छूट गया</string>
     <string name="channel_alarms">अलार्म</string>
     <string name="channel_alarms_desc">आदतों के रिमाइंडर जो पूरी स्क्रीन पर बजते हैं</string>
+    <string name="alarm_open_weft">Weft खोलें</string>
+    <string name="alarm_goal">लक्ष्य %1$s</string>
+    <string name="alarm_skip_today">आज छोड़ें</string>
+    <string name="alarm_position">%2$d में से %1$d</string>
 </resources>

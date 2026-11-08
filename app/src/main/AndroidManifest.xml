@@ -48,7 +48,7 @@
             android:taskAffinity="app.sprout.habits.alarm"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:theme="@style/Theme.Weft" />
+            android:theme="@style/Theme.Weft.Alarm" />
         <receiver
             android:name=".notify.ReminderReceiver"
             android:exported="false" />

@@ -526,7 +526,7 @@
     <string name="welcome_try_hold">長押し</string>
     <string name="welcome_try_hold_desc">一部だけできた？量を記録：一部</string>
     <string name="welcome_try_undo">元に戻す</string>
-    <string name="welcome_try_undo_desc">気が変わったら、下に出るバーの「元に戻す」をタップ</string>
+    <string name="welcome_try_undo_desc">気が変わったら、反対方向にスワイプ</string>
     <string name="welcome_tried">試しました</string>
     <string name="welcome_go">「今日」へ</string>
     <string name="welcome_own_row">自分の習慣を追加</string>
@@ -637,4 +637,8 @@
     <string name="alarm_missed">%1$s · %2$sに鳴りました（未応答）</string>
     <string name="channel_alarms">アラーム</string>
     <string name="channel_alarms_desc">全画面で鳴る習慣のリマインダー</string>
+    <string name="alarm_open_weft">Weft を開く</string>
+    <string name="alarm_goal">目標 %1$s</string>
+    <string name="alarm_skip_today">今日はスキップ</string>
+    <string name="alarm_position">%1$d / %2$d</string>
 </resources>
