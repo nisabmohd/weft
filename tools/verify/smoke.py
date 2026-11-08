@@ -1634,6 +1634,177 @@ def notification_buttons_log_and_offer_undo():
     assert entry(vit) == "", "Dismiss logged something"
 
 
+def insistent():
+    """How many alarms are sounding (only the first of several sounds)."""
+    # Once per notification: its "flags=" line (each record also lists originalFlags and more).
+    out = d.shell("dumpsys notification --noredact")
+    return str(sum(1 for l in out.splitlines() if l.strip().startswith("flags=") and "INSISTENT" in l))
+
+
+def make_alarms(*names):
+    root()
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
+    d.shell(f"am force-stop {d.PACKAGE}")
+    ids = [habit_id(n) for n in names]
+    sql(f"update habit set reminderType='ALARM', reminderMinutes=390 where id in ({','.join(map(str, ids))}); "
+        f"delete from entry where habitId in ({','.join(map(str, ids))}) and date={_epoch_day()}")
+    return ids
+
+
+@check
+def alarm_check_off_skip_today():
+    h = make_alarm("Wake up at 7")
+    screen(False)
+    fire(h)
+    assert d.exists("Skip today", timeout=5), "no Skip today on a check-off alarm"
+    assert not d.exists("Log amount", timeout=1), "Log amount on a check-off alarm"
+    assert d.exists("Open Weft"), "no Open Weft"
+    d.tap("Skip today")
+    time.sleep(2)
+    assert entry(h).startswith("SKIP"), f"Skip today didn't log Skip: {entry(h)!r}"
+    assert not ringing(), "alarm still ringing after Skip today"
+    screen(True)
+
+
+@check
+def alarm_measured_log_amount():
+    h = make_alarm("Read")
+    screen(False)
+    fire(h)
+    assert d.exists("Goal 20 pages", timeout=5), "no goal line on a measured alarm"
+    d.tap("Log amount")
+    time.sleep(1.5)
+    assert insistent() == "0", "Log amount didn't stop the sound"
+    assert d.exists("Save") and d.exists("Partial"), "amount sheet didn't open"
+    # Cancel: back to the ringing screen, still quiet, nothing logged.
+    d.tap("Cancel")
+    time.sleep(1.5)
+    assert d.exists("Slide to mark done"), "Cancel didn't return to the ringing screen"
+    assert insistent() == "0" and entry(h) == "", "Cancel rang again or logged"
+    # Log amount again: + three times, Save logs Partial and closes the alarm.
+    d.tap("Log amount")
+    time.sleep(1.5)
+    for _ in range(3):
+        d.tap("More")
+    d.tap("Save")
+    time.sleep(2)
+    assert entry(h).startswith("PARTIAL|3"), f"Save didn't log 3 pages: {entry(h)!r}"
+    assert not ringing(), "alarm still there after Save"
+    screen(True)
+
+
+@check
+def alarm_open_weft():
+    h = make_alarm("Read")
+    screen(False)
+    fire(h)
+    assert d.exists("Open Weft", timeout=5)
+    d.tap("Open Weft")
+    time.sleep(3)
+    assert not ringing(), "Open Weft didn't stop the alarm"
+    assert "MainActivity" in top_activity(), "Open Weft didn't open the app"
+    assert d.exists("Every day · 20 pages", timeout=5) or d.exists("Read", timeout=1), "the app didn't open on the habit"
+    assert entry(h) == "", "Open Weft logged something"
+    d.back()
+
+
+@check
+def alarms_at_the_same_time_queue():
+    wake, workout = make_alarms("Wake up at 7", "Workout")
+    screen(False)
+    fire(wake)
+    fire(workout)
+    assert insistent() == "1", f"more than one alarm sounds: {insistent()}"
+    assert d.exists("1 of 2", timeout=5), "no 1 of 2 chip"
+    assert d.exists("Next: Workout"), "no Next line"
+    assert d.exists("Wake up at 7"), "first habit (in list order) not on screen"
+    # Answer the first: the second takes the screen at once, without ringing again.
+    d.tap("Dismiss")
+    time.sleep(2)
+    assert d.exists("Workout", timeout=5) and d.exists("Slide to mark done"), "next alarm didn't take the screen"
+    assert d.exists("2 of 2"), "no 2 of 2 chip"
+    assert not d.exists("Next:", contains=True, timeout=1), "Next line on the last alarm"
+    assert insistent() == "0", "the next alarm rang again"
+    assert "AlarmActivity" in top_activity(), "screen closed with an alarm left"
+    d.tap("Snooze 10 min")
+    time.sleep(2)
+    assert not ringing(), "alarms left after answering both"
+    assert "REMINDER_SNOOZED" in d.shell("dumpsys alarm"), "Snooze on the last one didn't snooze"
+    assert entry(wake) == "" and entry(workout) == ""
+    screen(True)
+
+
+@check
+def alarms_power_button_silences_all():
+    wake, workout = make_alarms("Wake up at 7", "Workout")
+    screen(True)
+    d.home()
+    fire(wake)
+    fire(workout)
+    assert d.shell("dumpsys notification --noredact | grep -c 'channel=alarms'").strip() not in ("0", "1")
+    d.shell("input keyevent KEYCODE_SLEEP")
+    time.sleep(2.5)
+    assert not ringing(), "the power button left an alarm ringing"
+    screen(True)
+
+
+@check
+def alarm_stops_when_logged_in_app_partial():
+    h = make_alarm("Read")
+    screen(True)
+    d.home()
+    fire(h)
+    assert ringing()
+    # A Partial log in the app: Today → hold Read → + → Save.
+    d.open_app()
+    d.nav("Today")
+    d.long_press("Read")
+    d.tap("More")
+    d.tap("Save")
+    time.sleep(2.5)
+    assert entry(h).startswith("PARTIAL"), f"not logged as Partial: {entry(h)!r}"
+    assert not ringing(), "a Partial log in the app didn't stop the alarm"
+    sql(f"delete from entry where habitId={h} and date={_epoch_day()}")
+
+
+@check
+def alarm_still_rings_when_partly_done():
+    h = make_alarm("Read")
+    sql(f"insert or replace into entry(habitId, date, status, amount, loggedAt) values({h}, {_epoch_day()}, 'PARTIAL', 5, 1000)")
+    d.open_app()
+    time.sleep(2)
+    screen(False)
+    fire(h)
+    assert ringing(), "a partly done habit didn't ring"
+    press_action(h, "ALARM_DISMISS")
+    sql(f"delete from entry where habitId={h} and date={_epoch_day()}")
+    screen(True)
+
+
+@check
+def get_started_opposite_swipe_ticks_undo():
+    """Get started's Undo row is taught by the opposite swipe, as on Today (user, 2026-11-08)."""
+    d.shell(f"pm clear {d.PACKAGE}")
+    d.shell(f"pm grant {d.PACKAGE} android.permission.POST_NOTIFICATIONS")
+    d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+    d.tap("Get started", timeout=20)
+    d.tap("Skip for now", timeout=10)
+    assert d.exists("Changed your mind? Swipe the other way", timeout=10), "Undo row doesn't teach the opposite swipe"
+    w, _ = d.screen_size()
+    n = d.find("Read")
+    d.swipe(int(w * 0.15), n.center[1], int(w * 0.9), n.center[1], 250)  # right: Done
+    time.sleep(5)  # let the Undo bar go, so only the swipe can tick Undo
+    n = d.find("Read")
+    d.swipe(int(w * 0.9), n.center[1], int(w * 0.15), n.center[1], 250)  # back: undo
+    time.sleep(1)
+    assert d.exists("Mark Read done", timeout=3), "the opposite swipe didn't put the card back"
+    # Two rows ticked now: Swipe right, and Undo (the opposite swipe isn't a Swipe left).
+    ticks = [x for x in d.dump() if x.label == "Tried"]
+    assert len(ticks) == 2, f"expected Swipe right and Undo ticked, got {len(ticks)}"
+    d.tap("Go to Today", timeout=5) if d.exists("Go to Today", timeout=1) else recover()
+
+
 def recover():
     """After a failure, back out of sheets and inner screens to the tabs so later checks run."""
     d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
