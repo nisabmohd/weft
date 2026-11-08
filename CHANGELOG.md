@@ -5,7 +5,7 @@
 Added:
 
 - Alarm reminders: a habit's reminder can be a quiet notification or an alarm that rings full screen, even over the lock screen, until you answer it. Slide to mark it done, Snooze 10 min, or Dismiss; the power or a volume button silences it. It uses the alarm sound on the alarm stream with vibration, stops by itself after 10 minutes with a "missed at" notification, doesn't ring when the habit is already done or skipped, and shows in the status bar like any alarm clock. Without full-screen permission (Android 14+) it rings as a notification with Done / Snooze / Dismiss. New habit → Reminder opens one sheet for the time and the type. Backups keep the type.
-- Buttons on reminder notifications: Done and Snooze 10 min; measured habits get +step (e.g. "+5 pages") and the reminder updates to show what's left; the evening note nudge gets Add note (opens New note for that habit and day) and Done. Today offers Undo for the change the next time it opens.
+- Buttons on reminder notifications: Done and Dismiss; measured habits also get +step (e.g. "+5 pages") and the reminder updates to show what's left; the evening note nudge gets Add note (opens New note for that habit and day) and Done. Today offers Undo for the change the next time it opens.
 
 Changed:
 
@@ -13,7 +13,7 @@ Changed:
 - The amount and edit-day sheets: the note field is filled like New note's and asks the question for the outcome ("What stopped you from finishing?"); Cancel | Save at the bottom.
 - Insights → Patterns: each card has an icon tile; Needs focus shows the habit's own tile and a drop in red.
 - Sheets never close by accident: a scroll or fling inside a sheet stops at the top instead of dragging the sheet down.
-- New icon colours: the Weft logo is a pale pink sock on rose-brown (launcher, Play Store, website); Android 8–11 use the same colour for the launch screen and widgets. Icons for Delete, Edit note, Read, Vitamins and Stay calm follow the new design.
+- A new Weft logo: a ball of yarn, white on green, exactly centred on the launcher icon (with a themed-icon layer), the Play Store icon, the website, notifications and in the app (Welcome, About, More, the widgets' loading screen, which follow your colours). Android 8–11 use its green for the launch screen and widgets. Icons for Delete, Edit note, Read, Vitamins and Stay calm follow the new design.
 - "Enjoying Weft?" can show once a week (it was every 60 days); four "Maybe later"s stop it for good, and anyone who rates, stars or sponsors isn't asked again for six months.
 
 Internal:

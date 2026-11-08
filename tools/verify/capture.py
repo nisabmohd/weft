@@ -94,6 +94,44 @@ def teardown():
 
 
 @screen
+def welcome():
+    """The first screen: the app's data is cleared (the sample data comes back on the next launch)."""
+    d.shell(f"pm clear {d.PACKAGE}")
+    d.shell(f"pm grant {d.PACKAGE} android.permission.POST_NOTIFICATIONS")
+    d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+    assert d.exists("Get started", timeout=20)
+    save("welcome")
+    d.tap("Get started")
+    d.tap("Skip for now", timeout=10)
+    if d.exists("Go to Today", timeout=4):
+        d.tap("Go to Today")
+    assert d.exists("Today", timeout=10)
+
+
+@screen
+def more():
+    d.nav("More")
+    d.scroll_to_top()
+    save_full_length("more", 3582)
+
+
+@screen
+def about():
+    d.nav("More")
+    d.scroll_to("About Weft")
+    d.tap("About Weft")
+    time.sleep(1)
+    save_full_length("about", 2778)
+    d.back()
+
+
+# design/navigation-bar.png is cut from the 2026-11-08 mockup (insights.png), not captured.
+
+
+# design/notifications.png is a mockup (rendered from its HTML), not captured: there is no lock screen to capture it on.
+
+
+@screen
 def amount_sheet_duration():
     d.nav("Today")
     d.long_press("Workout")

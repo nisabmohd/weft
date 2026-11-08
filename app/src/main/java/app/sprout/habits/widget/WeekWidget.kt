@@ -58,7 +58,7 @@ class WeekWidget : GlanceAppWidget() {
 @Composable
 private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetBitmaps) {
     val size = LocalSize.current
-    val layout = WidgetLayout.week(size.width.value, size.height.value)
+    val layout = WidgetLayout.week(size.width.value, size.height.value, data.habits.size)
     val marksWidth = layout.marksWidth
     Column(
         GlanceModifier
@@ -104,7 +104,8 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
             items(data.habits, itemId = { it.id }) { habit ->
                 val hc = habitColors(habit.hue, bitmaps.dark)
                 Row(
-                    GlanceModifier.fillMaxWidth().padding(vertical = 5.dp).clickable(actionStartActivity(context.openHabitIntent(habit.id))),
+                    // As tall as the layout says, the tile and marks centred in it.
+                    GlanceModifier.fillMaxWidth().height(layout.rowHeight.dp).clickable(actionStartActivity(context.openHabitIntent(habit.id))),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                 ) {
                     Box(

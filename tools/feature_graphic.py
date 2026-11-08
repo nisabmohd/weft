@@ -1,37 +1,31 @@
-"""Builds the Play Store feature graphic (1024 x 500) in the style of the store shots: the logo's rose-brown
-as a flat page, the Weft mark and name with one line under it, and one plain phone (Today) running off
-the bottom.
+"""Builds the Play Store feature graphic (1024 x 500) in the same look as Burrow's (both apps are by mid
+apps, user 2026-11-08): the logo's green as the page, a pale rounded tile with the mark in green, the
+name in white and two short lines under it.
 
-usage: python3 tools/feature_graphic.py <folder with the raw shots> [out file]
-       python3 tools/feature_graphic.py --reframe [out file]
-         (takes the phone screen from release/phone-screenshots/01-today.png,
-         as made by tools/store_shots.py; no raw shots needed)
-Raw shot: today.png, 1080 x 2400 (the same ones as tools/store_shots.py).
-Writes release/feature-graphic-1024x500.png and the fastlane copy. Needs Pillow; the
-Weft mark is taken from release/icon-512.png (tools/weft_mark.py)."""
+usage: python3 tools/feature_graphic.py [out file]
+Writes release/feature-graphic-1024x500.png and the fastlane copy. Needs Pillow; the mark is taken
+from release/icon-512.png (tools/weft_mark.py), so it is the store icon's drawing."""
 import os
 import sys
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REFRAME = sys.argv[1] == "--reframe"
-RAW = None if REFRAME else sys.argv[1]
-OUTS = [sys.argv[2]] if len(sys.argv) > 2 else [
+OUTS = [sys.argv[1]] if len(sys.argv) > 1 else [
     os.path.join(ROOT, "release", "feature-graphic-1024x500.png"),
     os.path.join(ROOT, "fastlane", "metadata", "android", "en-US", "images", "featureGraphic.png"),
 ]
 FONT = os.path.join(ROOT, "app", "src", "main", "res", "font", "lexend.ttf")
 W, H = 1024, 500
-PAGE = (0x77, 0x45, 0x3F)   # the icon's tile, #77453F (2026-11-08; it was navy)
-INK = (0xFF, 0xDA, 0xD4)    # pale pink for text on the rose-brown page
-SUB = (0xE2, 0xBC, 0xB6)    # the line under the name: the ink, quieter
-SHADOW = (0x3A, 0x1C, 0x19, 255)
-LOGO = (0x2A, 0x6F, 0x52)   # the logo's green tile (weft-icon.zip)
+SS = 2                                  # drawn at twice the size, then scaled down
 
-# the phone screen in the store shots (tools/store_shots.py): 622 x 1416 at (229, 466)
-SHOT_SX, SHOT_SY, SHOT_SW, SHOT_SH = 229, 466, 622, 1416
-SS = 2                      # drawn at twice the size, then scaled down
+GREEN = (0x2A, 0x6F, 0x52)              # the logo's tile (weft-icon.zip)
+TILE = (0xD6, 0xEE, 0xE2)               # a pale tint of it, like Burrow's pale tile
+NAME = (0xFF, 0xFF, 0xFF)
+LINES = (0xD6, 0xEE, 0xE2)
+
+TILE_X, TILE_Y, TILE_SIZE, TILE_R = 96, 150, 200, 48   # Burrow's tile
+TEXT_X = 337
 
 
 def font(size, weight):
@@ -40,104 +34,32 @@ def font(size, weight):
     return f
 
 
-def tracked(draw, xy, text, f, fill, tracking):
-    widths = [draw.textlength(text[:i], font=f) + tracking * SS * i for i in range(len(text) + 1)]
-    for i, ch in enumerate(text):
-        draw.text((xy[0] * SS + widths[i], xy[1] * SS), ch, font=f, fill=fill, anchor="ls")
-    return (widths[-1] - tracking * SS) / SS
-
-
-def page():
-    return Image.new("RGBA", (W * SS, H * SS), PAGE + (255,))
-
-
-def screen_from_raw(raw):
-    """The phone screen from a raw 1080 x 2400 shot, as tools/store_shots.py draws it (same BAR band)."""
-    BAR = 110
-    s = Image.open(raw).convert("RGB")
-    K = SHOT_SW / 1080
-    body = s.crop((0, BAR, 1080, 2400)).resize((SHOT_SW, round((2400 - BAR) * K)), Image.LANCZOS)
-    out = Image.new("RGB", (SHOT_SW, SHOT_SH), s.getpixel((540, 4)))
-    out.paste(body, (0, SHOT_SH - body.height))
-    clock = s.crop((20, 0, 300, BAR)).resize((round(280 * K), round(BAR * K)), Image.LANCZOS)
-    icons = s.crop((820, 0, 1060, BAR)).resize((round(240 * K), round(BAR * K)), Image.LANCZOS)
-    top = SHOT_SH - body.height - round(BAR * K) + 6
-    out.paste(clock, (30, top))
-    out.paste(icons, (SHOT_SW - icons.width - 30, top))
-    return out
-
-
-def rounded_mask(w, h, r, k=4):
-    m = Image.new("L", (w * k, h * k), 0)
-    ImageDraw.Draw(m).rounded_rectangle((0, 0, w * k - 1, h * k - 1), r * k, fill=255)
-    return m.resize((w, h), Image.LANCZOS)
-
-
-def phone(scr, width):
-    """A plain phone with a thin light rim around the screen; RGBA, `width` px wide."""
-    bezel = round(width * 0.022)
-    sw = width - 2 * bezel
-    s = scr.resize((sw, round(scr.height * sw / scr.width)), Image.LANCZOS)
-    h = s.height + 2 * bezel
-    ro = round(width * 0.1)
-    k = 4
-    body = Image.new("RGBA", (width * k, h * k), (0, 0, 0, 0))
-    bd = ImageDraw.Draw(body)
-    rim = max(1, round(width * 0.005))
-    bd.rounded_rectangle((0, 0, width * k - 1, h * k - 1), ro * k, fill=(118, 128, 148, 255))
-    bd.rounded_rectangle((rim * k, rim * k, (width - rim) * k - 1, (h - rim) * k - 1), (ro - rim) * k,
-                         fill=(30, 33, 40, 255))
-    bd.rounded_rectangle((2 * rim * k, 2 * rim * k, (width - 2 * rim) * k - 1, (h - 2 * rim) * k - 1),
-                         (ro - 2 * rim) * k, fill=(8, 9, 12, 255))
-    ph = body.resize((width, h), Image.LANCZOS)
-    ph.paste(s, (bezel, bezel), rounded_mask(sw, s.height, ro - bezel))
-    return ph
-
-
-def place(img, ph, x, y, angle):
-    """Rotate the phone, drop a soft shadow under it and paste it with its top-left near (x, y)."""
-    rot = ph.rotate(angle, resample=Image.BICUBIC, expand=True)
-    a = rot.getchannel("A")
-    sh = Image.new("L", img.size, 0)
-    sh.paste(a.point(lambda v: v * 0.75), (x + 10 * SS, y + 26 * SS))
-    img.paste(SHADOW, (0, 0), sh.filter(ImageFilter.GaussianBlur(26 * SS)))
-    sh = Image.new("L", img.size, 0)
-    sh.paste(a.point(lambda v: v * 0.45), (x + 2 * SS, y + 6 * SS))
-    img.paste(SHADOW, (0, 0), sh.filter(ImageFilter.GaussianBlur(6 * SS)))
-    img.alpha_composite(rot, (x, y)) if x >= 0 and y >= 0 else img.paste(rot, (x, y), rot)
-
-
 def mark(px, color):
-    """The Weft mark, `px` wide, from release/icon-512.png (white on the green tile) so it is the store icon's drawing."""
+    """The mark from release/icon-512.png (white on the green tile), `px` wide, in [color]."""
     icon = Image.open(os.path.join(ROOT, "release", "icon-512.png")).convert("L")
-    lo = icon.getpixel((4, 4))
-    hi = icon.getextrema()[1]  # the mark's own lightness: full opacity there, whatever its colour
-    mask = icon.point(lambda v: max(0, min(255, round((v - lo) * 255 / (hi - lo)))))
+    lo, hi = icon.getpixel((4, 4)), icon.getextrema()[1]
+    m = icon.point(lambda v: max(0, min(255, round((v - lo) * 255 / (hi - lo)))))
+    # The mark's own box (it is centred on the icon), so it can be sized on its own.
+    m = m.crop(m.getbbox()).resize((px, px), Image.LANCZOS)
     out = Image.new("RGBA", (px, px), color + (0,))
-    out.putalpha(mask.resize((px, px), Image.LANCZOS))
+    out.putalpha(m)
     return out
 
 
-if REFRAME:
-    shots = os.path.join(ROOT, "release", "phone-screenshots")
-    screens = [Image.open(os.path.join(shots, n)).convert("RGB").crop(
-        (SHOT_SX, SHOT_SY, SHOT_SX + SHOT_SW, SHOT_SY + SHOT_SH)) for n in ("01-today.png", "05-journal.png")]
-else:
-    screens = [screen_from_raw(os.path.join(RAW, n)) for n in ("today.png", "journal.png")]
-
-img = page()
-# one phone, upright, running off the bottom
-place(img, phone(screens[0], 330 * SS), 618 * SS, 64 * SS, 0)
-
+img = Image.new("RGBA", (W * SS, H * SS), GREEN + (255,))
 d = ImageDraw.Draw(img)
-# the logo as on the launcher (the green tile with the white mark), the name, then one line
-tx, ty, ts = 96, 188, 64
-img.paste(LOGO + (255,), (tx * SS, ty * SS), rounded_mask(ts * SS, ts * SS, round(ts * 0.3 * SS)))
-m = mark(ts * SS, (255, 255, 255))
-img.alpha_composite(m, ((tx * SS + ts * SS // 2 - m.width // 2), (ty * SS + ts * SS // 2 - m.height // 2)))
+d.rounded_rectangle(
+    (TILE_X * SS, TILE_Y * SS, (TILE_X + TILE_SIZE) * SS - 1, (TILE_Y + TILE_SIZE) * SS - 1),
+    TILE_R * SS, fill=TILE + (255,),
+)
+# The mark at about the share of the tile Burrow's mark takes (0.56), centred exactly.
+size = round(TILE_SIZE * 0.56) * SS
+m = mark(size, GREEN)
+img.alpha_composite(m, (TILE_X * SS + (TILE_SIZE * SS - size) // 2, TILE_Y * SS + (TILE_SIZE * SS - size) // 2))
 d = ImageDraw.Draw(img)
-tracked(d, (tx + ts + 18, ty + 49), "Weft", font(54, 600), INK, -1)
-tracked(d, (tx, ty + 112), "Habit tracker and journal", font(26, 400), SUB, 0)
+d.text((TEXT_X * SS, 235 * SS), "Weft", font=font(96, 600), fill=NAME, anchor="ls")
+d.text((TEXT_X * SS, 297 * SS), "Small habits, kept honestly.", font=font(32, 400), fill=LINES, anchor="ls")
+d.text((TEXT_X * SS, 341 * SS), "Private. No ads. Open source.", font=font(32, 400), fill=LINES, anchor="ls")
 
 final = img.convert("RGB").resize((W, H), Image.LANCZOS)
 for out in OUTS:

@@ -102,6 +102,8 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
                 style = TextStyle(fontSize = if (compact) WidgetType.caption else WidgetType.supporting, fontWeight = FontWeight.Bold, color = ink, textAlign = TextAlign.End),
             )
         }
+        // The number sits in the middle of the space between the name and the marks, so a tall
+        // widget isn't empty above it (user, 2026-11-08); without marks it sits at the bottom.
         Spacer(GlanceModifier.defaultWeight())
         Text(
             "${data.streak}",
@@ -110,6 +112,7 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
         )
         Text(LocalContext.current.getString(R.string.day_streak), maxLines = 1, style = TextStyle(fontSize = if (compact) WidgetType.caption else WidgetType.supporting, fontWeight = FontWeight.Medium, color = ink))
         if (layout.showMarks) {
+            Spacer(GlanceModifier.defaultWeight())
             Spacer(GlanceModifier.height(if (compact) 6.dp else 10.dp))
             Image(
                 ImageProvider(bitmaps.marks(data.last7, habit.hue, marksWidth, markSize)),

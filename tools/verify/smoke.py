@@ -1617,10 +1617,21 @@ def notification_buttons_log_and_offer_undo():
             break
         time.sleep(0.5)
     assert entry(vit) == "", "Undo didn't put the day back"
+    # A notification reminder has Dismiss, not Snooze (only alarms snooze; user, 2026-11-08).
+    press_action(read, "ALARM_DISMISS")  # alone in the shade, its buttons show
+    d.home()
     fire(vit)
-    press_action(vit, "REMINDER_SNOOZE")
-    assert "REMINDER_SNOOZED" in d.shell("dumpsys alarm"), "Snooze didn't schedule the reminder again"
-    assert entry(vit) == "", "Snooze logged something"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    labels = [n.label.lower() for n in d.dump()]
+    assert not any(l.startswith("snooze") for l in labels), "a notification reminder offers Snooze"
+    n = find_ci("Dismiss")
+    assert n, "no Dismiss on the notification reminder"
+    d.tap_xy(*n.center)
+    time.sleep(1.5)
+    d.shell("cmd statusbar collapse")
+    assert "Vitamins" not in d.shell("dumpsys notification --noredact | grep -A3 'pkg=app.sprout.habits'"), "Dismiss didn't clear the reminder"
+    assert entry(vit) == "", "Dismiss logged something"
 
 
 def recover():

@@ -76,6 +76,36 @@ def widget(kind, path):
     print("cropped", os.path.relpath(path, ROOT), (x1, y1, x2, y2))
 
 
+def widget_board(full_path, crops=None):
+    """
+    All four widgets on one screen (the debug WidgetBoardActivity hosts them over the wallpaper),
+    with six habits so the week widget is full but not crowded, and more of today logged. Changes the
+    sample data, so it runs last. [crops]: name -> path for each widget on its own.
+    """
+    db = f"/data/data/{d.PACKAGE}/databases/sprout.db"
+    q = lambda sql: d.shell(f'sqlite3 {db} "{sql}"')  # noqa: E731
+    day = int(d.shell("date +%s").strip()) // 86400
+    d.shell(f"am force-stop {d.PACKAGE}")
+    q("update habit set archived=1 where name in ('Stay calm','Walk outside')")
+    # Wake up at 7 again too: the alarm capture clears its day.
+    for name, amount in (("Wake up at 7", 1), ("Workout", 45), ("Vitamins", 1)):
+        q(f"insert or replace into entry(habitId, date, status, amount, loggedAt) "
+          f"select id, {day}, 'DONE', {amount}, {day * 86400000 + 8 * 3600000} from habit where name='{name}'")
+    d.shell(f"appwidget grantbind --package {d.PACKAGE}")
+    d.home()
+    time.sleep(1)
+    d.shell(f"am start -n {d.PACKAGE}/.WidgetBoardActivity")
+    time.sleep(8)
+    shot(full_path)
+    if crops:
+        from PIL import Image  # noqa: PLC0415
+        nodes = {n.label: n.bounds for n in d.dump() if n.label.startswith("widget-")}
+        for name, path in crops.items():
+            Image.open(full_path).crop(nodes[name]).save(path)
+            print("cropped", os.path.relpath(path, ROOT))
+    d.back()
+
+
 def long_press_read():
     d.nav("Today")
     d.long_press("Read")
@@ -107,12 +137,15 @@ def docs():
     d.shell("cmd uimode night yes"); time.sleep(2)
     front(); d.nav("Today"); d.scroll_to_top(); shot(p("13-today-dark"))
     d.shell("cmd uimode night no"); time.sleep(2)
-    for kind, name in (("today", "14-widget-today"), ("week", "15-widget-week"), ("strip", "16-widget-strip"), ("streak", "17-widget-streak")):
-        widget(kind, p(name))
     front()
     c.DESIGN = out  # the capture goes to docs/, never over design/'s mockup
     c.alarm_ringing()
     os.replace(os.path.join(out, "alarm-3-ringing.png"), p("20-alarm"))
+    # Last: it trims the sample data to five habits.
+    widget_board(p("21-widgets"), {
+        "widget-today": p("14-widget-today"), "widget-week": p("15-widget-week"),
+        "widget-strip": p("16-widget-strip"), "widget-streak": p("17-widget-streak"),
+    })
 
 
 def store(out):
@@ -148,12 +181,8 @@ def store(out):
     d.shell("cmd uimode night yes"); time.sleep(2)
     front(); d.nav("Today"); d.scroll_to_top(); shot(p("today-dark"))
     d.shell("cmd uimode night no"); time.sleep(2)
-    # Home screen with the This week widget (the page around it is the launcher's).
-    d.pin_widget("week")
-    d.show_widget_page()
-    time.sleep(2)
-    shot(p("w-week"))
-    front()
+    # All four widgets on one screen (last: it trims the sample data to five habits).
+    widget_board(p("w-week"))
 
 
 if __name__ == "__main__":

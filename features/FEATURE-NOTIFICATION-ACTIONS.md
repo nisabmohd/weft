@@ -7,15 +7,15 @@ Design: `design/notifications.png`.
 ## Actions by habit type
 | Reminder | Actions |
 | --- | --- |
-| Check-off habit (e.g. Vitamins) | **Done** · **Snooze 10 min** |
-| Measured habit (e.g. Read, 20 pages) | **Done** · **+5 pages** · **Snooze** |
+| Check-off habit (e.g. Vitamins) | **Done** · **Dismiss** |
+| Measured habit (e.g. Read, 20 pages) | **Done** · **+5 pages** · **Dismiss** |
 | Note reminder ("Stay calm · how did today go?") | **Add note** · **Done** · **Skip** |
 
 - **Done**: marks today Done (a measured habit is set to its goal), cancels the notification, and updates Today and the widgets.
 - **+N <unit>**: adds the habit's step (the same step as + on the amount sheet). The notification updates its text ("You're at 20 of 20 pages today"). Once the goal is reached, the habit is Done and the notification goes away.
 - **Skip**: logs Skip for today.
 - **Add note**: opens New note for that habit and day (it can't run from the lock screen without unlocking).
-- **Snooze**: posts the same notification again in 10 minutes.
+- **Dismiss**: clears the notification without logging anything. (Changed 2026-11-08: notification reminders don't snooze; only alarm reminders have Snooze 10 min. `design/notifications.png` still shows the earlier Snooze.)
 
 ## Notes
 - Use standard `NotificationCompat.Action`s with `PendingIntent`s to a broadcast receiver. Add note uses an activity intent. Labels come from string resources so they're translated.

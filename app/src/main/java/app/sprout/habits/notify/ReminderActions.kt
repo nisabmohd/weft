@@ -32,21 +32,23 @@ object ReminderActions {
     const val ACTION_ADD_STEP = "app.sprout.habits.action.REMINDER_ADD_STEP"
     const val ACTION_SKIP = "app.sprout.habits.action.REMINDER_SKIP"
     const val ACTION_SNOOZE = "app.sprout.habits.action.REMINDER_SNOOZE"
-    /** Stops an alarm without logging anything. */
+    /** Stops an alarm, or clears a notification reminder, without logging anything. */
     const val ACTION_DISMISS = "app.sprout.habits.action.ALARM_DISMISS"
 
     /** How long Snooze waits before the reminder comes back. */
     const val SNOOZE_MINUTES = 10
 
-    /** The buttons for a habit's own reminder: check-off habits get two, measured ones three. */
+    /**
+     * The buttons for a habit's notification reminder: Done, +step for a measured habit, Dismiss.
+     * No Snooze: a notification stays in the shade until it's answered (user, 2026-11-08); only
+     * alarms snooze ([forAlarm]).
+     */
     fun forReminder(context: Context, habit: Habit): List<NotificationCompat.Action> = buildList {
         add(action(context, ACTION_DONE, habit.id, context.getString(R.string.outcome_done)))
-        if (habit.trackType == TrackType.CHECK) {
-            add(action(context, ACTION_SNOOZE, habit.id, context.getString(R.string.notify_snooze_minutes, SNOOZE_MINUTES)))
-        } else {
+        if (habit.trackType != TrackType.CHECK) {
             add(action(context, ACTION_ADD_STEP, habit.id, context.getString(R.string.notify_add_step, habit.measure(habit.step()))))
-            add(action(context, ACTION_SNOOZE, habit.id, context.getString(R.string.notify_snooze)))
         }
+        add(action(context, ACTION_DISMISS, habit.id, context.getString(R.string.alarm_dismiss)))
     }
 
     /**

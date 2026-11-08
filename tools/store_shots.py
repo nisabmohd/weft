@@ -1,51 +1,52 @@
-"""Builds the Play Store shots in release/phone-screenshots/ (1080 x 1920). Plain style (2026-11-01):
-the logo's rose-brown (#77453F) as a flat page, a two-line caption in the logo's pale pink (#FFDAD4),
-and a plain phone (2026-11-08; it was navy and white).
-The status bar is redrawn lower and pulled in from the edges so the frame's rounded corners never cut
-the clock or the battery.
+"""Builds the Play Store shots in release/phone-screenshots/ (1080 x 1920) and copies them to fastlane.
+
+The same look as Burrow's store shots (tools/store_shots.py there; both apps are by mid apps and sit
+side by side on Play, user 2026-11-08): a title and a one-line subtitle, then a phone frame with a soft
+shadow, sized to fit under the tallest caption with 72 px left below it, so the navigation bar and
+the bezel are never cut. The last shot (dark theme) sits on a dark page. Weft's colours: a rose-brown
+page #77453F with pale pink text (user, 2026-11-08).
 
 usage: python3 tools/store_shots.py <folder with the raw shots> [out folder]
-       python3 tools/store_shots.py --reframe [out folder]
-         (takes each phone screen from the existing release/phone-screenshots as it is and draws the
-         page, text and frame again; for a style change without new raw shots)
 Raw shots are 1080 x 2400, named today.png, amount-sheet.png, habits-week.png, habit-detail.png,
-journal.png, insights.png, w-week.png (home screen with the This week widget) and today-dark.png.
+journal.png, insights.png, w-week.png (all four widgets, WidgetBoardActivity) and today-dark.png;
+made by `python3 tools/verify/capture_docs.py store <folder>`. A missing one is skipped.
 Needs Pillow."""
 import os
+import shutil
 import sys
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REFRAME = sys.argv[1] == "--reframe"
-RAW = None if REFRAME else sys.argv[1]
+RAW = sys.argv[1]
 OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "release", "phone-screenshots")
+FASTLANE = os.path.join(ROOT, "fastlane", "metadata", "android", "en-US", "images", "phoneScreenshots")
+os.makedirs(OUT, exist_ok=True)
 FONT = os.path.join(ROOT, "app", "src", "main", "res", "font", "lexend.ttf")
 
-# raw name, out file, caption (two lines)
+# raw name, out file, title, subtitle, dark page
 shots = [
-    ("today", "01-today.png", ("Check off habits", "with a swipe")),
-    ("amount-sheet", "02-log-amount.png", ("Log part of a habit,", "like 15 of 20 pages")),
-    ("habits-week", "03-habits-week.png", ("See your week", "at a glance")),
-    ("habit-detail", "04-habit-detail.png", ("Streaks and a calendar", "for every habit")),
-    ("journal", "05-journal.png", ("Write a note", "for any day")),
-    ("insights", "06-insights.png", ("See which habits", "are working")),
-    ("w-week", "07-widgets.png", ("Widgets for your", "home screen")),
-    ("today-dark", "08-today-dark.png", ("Light and dark themes,", "your font and colors")),
+    ("today", "01-today.png", "Check off with a swipe", "Swipe, tap or hold. Every habit on one calm list.", False),
+    ("amount-sheet", "02-log-amount.png", "Log part of a habit", "15 of 20 pages still counts.", False),
+    ("habits-week", "03-habits-week.png", "See your week at a glance", "Every habit, every day, in one look.", False),
+    ("habit-detail", "04-habit-detail.png", "Streaks and a calendar", "Every habit has its own page.", False),
+    ("journal", "05-journal.png", "Write a note for any day", "Say how it went, or what got in the way.", False),
+    ("insights", "06-insights.png", "See what's working", "Your best day, and the habit that needs focus.", False),
+    ("w-week", "07-widgets.png", "Home screen widgets", "Today, your week and your streak at a glance.", False),
+    ("today-dark", "08-today-dark.png", "Private. Yours.", "No ads, no tracking. Free and open source.", True),
 ]
 
 W, H = 1080, 1920
-FW, FH, BEZEL = 650, 1444, 14                       # phone frame
-FX, FY = (W - FW) // 2, 452
-SX, SY, SW, SH = FX + BEZEL, FY + BEZEL, FW - 2 * BEZEL, FH - 2 * BEZEL
-OUTER_R, INNER_R = 64, 50
-K = SW / 1080                                       # raw -> screen scale
+TOP, GAP, BOTTOM = 150, 56, 72                        # caption top; caption → phone; phone → edge
+BEZEL, OUTER_R, INNER_R = 14, 62, 48
+RAW_W, RAW_H = 1080, 2400                             # emulator screenshot size
+TITLE_SIZE, TITLE_LINE, SUB_SIZE, SUB_LINE = 68, 82, 36, 48
 
-PAGE = (0x77, 0x45, 0x3F)                           # the logo's tile, #77453F, flat
-INK = (0xFF, 0xDA, 0xD4)                            # pale pink captions on the rose-brown page
-
-# Where the screen sat in the first 1.5.0 shots (phone lower, flat page), for --reframe of those.
-OLD_SX, OLD_SY = 229, 484
+PAGE = (0x77, 0x45, 0x3F)                             # rose-brown, as the shots before (2026-11-08)
+PAGE_DARK = (0x2A, 0x18, 0x16)                        # the same hue, dark, for the dark-theme shot
+TITLE = (0xFF, 0xDA, 0xD4)                            # pale pink
+SUB = (0xE2, 0xBC, 0xB6)                              # pale pink, quieter
+SHADOW = (0x2A, 0x10, 0x0E)
 
 
 def font(size, weight):
@@ -54,68 +55,90 @@ def font(size, weight):
     return f
 
 
-def tracked(draw, xy, text, f, fill, tracking):
-    """Centred text with letter spacing (kerning kept: each glyph goes where the prefix ends)."""
-    widths = [draw.textlength(text[:i], font=f) + tracking * i for i in range(len(text) + 1)]
-    x0 = xy[0] - (widths[-1] - tracking) / 2
-    for i, ch in enumerate(text):
-        draw.text((x0 + widths[i], xy[1]), ch, font=f, fill=fill, anchor="ls")
+def wrap(draw, text, f, width):
+    lines, cur = [], ""
+    for word in text.split():
+        t = (cur + " " + word).strip()
+        if draw.textlength(t, font=f) <= width or not cur:
+            cur = t
+        else:
+            lines.append(cur)
+            cur = word
+    return lines + [cur]
 
 
-# The raw shot's status bar band (clock and icons); its text sits at about y 47-80 on the
-# 1080 x 2400 emulator used since 2026-11-08 (Sprout_API_35), so 110 px holds all of it.
-BAR = 110
-
-
-def screen(raw):
+def screen(raw, sw, sh):
+    """The raw shot at screen size, status bar pulled in from the corners so they never cut it."""
     s = Image.open(raw).convert("RGB")
-    bar_bg = s.getpixel((540, 4))
-    body = s.crop((0, BAR, 1080, 2400)).resize((SW, round((2400 - BAR) * K)), Image.LANCZOS)
-    out = Image.new("RGB", (SW, SH), bar_bg)
-    out.paste(body, (0, SH - body.height))
-    clock = s.crop((20, 0, 300, BAR)).resize((round(280 * K), round(BAR * K)), Image.LANCZOS)
-    icons = s.crop((820, 0, 1060, BAR)).resize((round(240 * K), round(BAR * K)), Image.LANCZOS)
-    top = SH - body.height - round(BAR * K) + 6
-    out.paste(clock, (30, top))
-    out.paste(icons, (SW - icons.width - 30, top))
+    k = sw / RAW_W
+    out = s.resize((sw, sh), Image.LANCZOS)
+    bar = round(110 * k)                                   # status bar, tall enough for the clock
+    clock = s.crop((0, 0, 360, 110)).resize((round(360 * k), bar), Image.LANCZOS)
+    icons = s.crop((720, 0, RAW_W, 110)).resize((round(360 * k), bar), Image.LANCZOS)
+    # Over the app the bar is one colour: fill it and pull the clock and icons in. Over a wallpaper
+    # (the widgets shot) leave it as it is, so no flat band shows.
+    flat = len({s.getpixel((x, y)) for x in range(400, 680, 20) for y in range(8, 110, 10)}) == 1
+    if flat:
+        ImageDraw.Draw(out).rectangle((0, 0, sw, bar), fill=s.getpixel((540, 8)))
+        inset, drop = 14, 8
+        out.paste(clock, (inset, drop))
+        out.paste(icons, (sw - icons.width - inset, drop))
     return out
 
 
-def rounded_mask(w, h, r, k=4):
-    m = Image.new("L", (w * k, h * k), 0)
-    ImageDraw.Draw(m).rounded_rectangle((0, 0, w * k - 1, h * k - 1), r * k, fill=255)
-    return m.resize((w, h), Image.LANCZOS)
+def caption(d, title, sub, tf, sf, tc, sc, dry=False):
+    """Draws the title and line; returns the y under them."""
+    y = TOP
+    for line in wrap(d, title, tf, 960):
+        if not dry:
+            d.text((W / 2, y), line, font=tf, fill=tc, anchor="mt")
+        y += TITLE_LINE
+    y += 12
+    for line in wrap(d, sub, sf, 920):
+        if not dry:
+            d.text((W / 2, y), line, font=sf, fill=sc, anchor="mt")
+        y += SUB_LINE
+    return y
 
 
-def phone(img, scr):
-    sh = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(sh).rounded_rectangle((FX + 10, FY + 30, FX + FW - 10, FY + FH + 20), OUTER_R, fill=120)
-    img.paste((16, 28, 50), (0, 0), sh.filter(ImageFilter.GaussianBlur(40)))
-    k = 4
-    body = Image.new("RGBA", (FW * k, FH * k), (0, 0, 0, 0))
-    bd = ImageDraw.Draw(body)
-    bd.rounded_rectangle((0, 0, FW * k - 1, FH * k - 1), OUTER_R * k, fill=(84, 92, 108, 255))
-    bd.rounded_rectangle((2 * k, 2 * k, FW * k - 1 - 2 * k, FH * k - 1 - 2 * k), (OUTER_R - 2) * k,
-                         fill=(12, 13, 16, 255))
-    body = body.resize((FW, FH), Image.LANCZOS)
-    img.paste(body, (FX, FY), body)
-    img.paste(scr, (SX, SY), rounded_mask(SW, SH, INNER_R))
+tf, sf = font(TITLE_SIZE, 600), font(SUB_SIZE, 400)
+probe = ImageDraw.Draw(Image.new("RGB", (W, H)))
+# One phone size for every shot: under the tallest caption, with room below for the shadow.
+FY = max(caption(probe, t, s, tf, sf, None, None, dry=True) for _, _, t, s, _ in shots) + GAP
+FH = H - BOTTOM - FY
+SH = FH - 2 * BEZEL
+SW = round(SH * RAW_W / RAW_H)
+FW = SW + 2 * BEZEL
+FX = (W - FW) // 2
+SX, SY = FX + BEZEL, FY + BEZEL
 
-
-for raw, out, (line1, line2) in shots:
-    if REFRAME:
-        old = Image.open(f"{OUT}/{out}").convert("RGB")
-        # the first 1.5.0 shots had the page showing just above where this frame starts
-        ox, oy = (OLD_SX, OLD_SY) if old.getpixel((W // 2, FY + 8))[2] > 60 else (SX, SY)
-        scr = old.crop((ox, oy, ox + SW, oy + SH))
-    else:
-        scr = screen(f"{RAW}/{raw}.png")
-
-    img = Image.new("RGB", (W, H), PAGE)
+for n, (raw, out, title, sub, dark) in enumerate(shots, start=1):
+    if not os.path.exists(os.path.join(RAW, raw + ".png")):
+        print(f"skip {out}: no {raw}.png")
+        continue
+    img = Image.new("RGB", (W, H), PAGE_DARK if dark else PAGE)
     d = ImageDraw.Draw(img)
-    f = font(66, 600)
-    tracked(d, (W / 2, 232), line1, f, INK, -1)
-    tracked(d, (W / 2, 316), line2, f, INK, -1)
-    phone(img, scr)
+    caption(d, title, sub, tf, sf, TITLE, SUB)
+
+    # soft shadow under the phone
+    sh = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(sh).rounded_rectangle((FX, FY + 12, FX + FW, FY + FH + 12), OUTER_R, fill=120 if not dark else 160)
+    sh = sh.filter(ImageFilter.GaussianBlur(28))
+    img.paste((0, 0, 0) if dark else SHADOW, (0, 0), sh)
+
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((FX, FY, FX + FW - 1, FY + FH - 1), OUTER_R, fill=(58, 54, 50) if dark else (22, 20, 18))
+    if dark:  # a thin light rim so the dark phone reads on the dark page
+        d.rounded_rectangle((FX, FY, FX + FW - 1, FY + FH - 1), OUTER_R, outline=(84, 62, 58), width=2)
+        d.rounded_rectangle((FX + 2, FY + 2, FX + FW - 3, FY + FH - 3), OUTER_R - 2, fill=(14, 13, 12))
+
+    scr = screen(f"{RAW}/{raw}.png", SW, SH)
+    k = 4
+    m = Image.new("L", (SW * k, SH * k), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, SW * k - 1, SH * k - 1), INNER_R * k, fill=255)
+    img.paste(scr, (SX, SY), m.resize((SW, SH), Image.LANCZOS))
     img.save(f"{OUT}/{out}", optimize=True)
+    if OUT == os.path.join(ROOT, "release", "phone-screenshots") and os.path.isdir(FASTLANE):
+        shutil.copy(f"{OUT}/{out}", f"{FASTLANE}/{n}.png")
     print(out)
+print(f"phone {FW} x {FH} at y {FY}, {H - FY - FH} px below")

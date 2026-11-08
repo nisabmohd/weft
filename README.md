@@ -17,6 +17,8 @@ More: [welcome](docs/screenshots/01-welcome.png), [filter by habit](docs/screens
 
 ### Widgets
 
+<img src="docs/screenshots/21-widgets.png" alt="All four widgets on one home screen" width="270">
+
 | Today | This week | Today strip | Streak |
 | --- | --- | --- | --- |
 | ![Today widget](docs/screenshots/14-widget-today.png) | ![This week widget](docs/screenshots/15-widget-week.png) | ![Today strip widget](docs/screenshots/16-widget-strip.png) | ![Streak widget](docs/screenshots/17-widget-streak.png) |
@@ -30,7 +32,7 @@ You can also:
 - see each week at a glance, or the last 26 weeks as a heatmap, with scores and streaks
 - keep a Journal of short notes tied to a habit and a day, filtered by habit or by dates
 - look back at any date range in Insights, for all habits or a few, with each habit ranked by score or by streak
-- get a reminder at the time you pick, as a notification with Done / Snooze / +step buttons or as an alarm that rings full screen until you slide it done, and a nudge in the evening to add a note when you skip a habit that asks for one
+- get a reminder at the time you pick, as a notification with Done / +step / Dismiss buttons or as an alarm that rings full screen until you slide it done, and a nudge in the evening to add a note when you skip a habit that asks for one
 - add four home-screen widgets that stay in sync with the app; the Today widget marks habits done from the home screen
 - export everything, including your settings, to a JSON file and import it again, or export a CSV for spreadsheets
 - back up to your own Google Drive, by hand or every night while charging, and restore any of the last 10 backups (Google Play and GitHub builds)
@@ -81,4 +83,4 @@ Weft is made by **mid apps** (Nisab Mohd & contributors). Questions, ideas or pr
 
 ## License
 
-Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the sock in the app icon) is from [Tabler Icons](https://tabler.io/icons), MIT License, and the app's icons are [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, CC BY 4.0; see [`licenses/icons`](licenses/icons).
+Weft is licensed under the [GNU General Public License v3.0](LICENSE). The bundled fonts (Space Grotesk, Outfit, Lexend and Atkinson Hyperlegible Next) use the SIL Open Font License 1.1; see [`licenses/fonts`](licenses/fonts). The Weft mark (the ball of yarn in the app icon) is mid apps' own, and the app's icons are [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, CC BY 4.0; see [`licenses/icons`](licenses/icons).
