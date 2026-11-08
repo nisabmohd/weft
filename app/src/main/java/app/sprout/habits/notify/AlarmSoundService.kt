@@ -67,6 +67,8 @@ class AlarmSoundService : Service() {
         if (player == null) {
             // A sound picked from the phone may be gone or unreadable: Weft's tone plays instead.
             player = listOfNotNull(sound, AlarmSounds.weft(this)).firstNotNullOfOrNull { uri -> loop(this, uri) }
+            // In a call it rings quietly, near in-call volume, so it doesn't blast the ear (design 2026-11-08, 12).
+            if (AlarmScreenFallback.inCall(this)) player?.setVolume(IN_CALL_VOLUME, IN_CALL_VOLUME)
         }
         if (vibrate && vibrator == null) {
             vibrator = (
@@ -106,6 +108,8 @@ class AlarmSoundService : Service() {
         private const val EXTRA_SOUND = "sound"
         private const val EXTRA_VIBRATE = "vibrate"
         private val VIBRATION = longArrayOf(0, 600, 400, 600, 400)
+        /** The player's volume during a call, as a share of the alarm volume. */
+        private const val IN_CALL_VOLUME = 0.2f
         private val ALARM_AUDIO: AudioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)

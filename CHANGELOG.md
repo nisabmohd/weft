@@ -8,10 +8,19 @@ Added:
 - More → Alarms: the same setup ("All set" or "2 things to allow"), Alarm sound and Vibrate.
 - Alarm sound: Weft's own tone (the new default) or a softer one, the phone's alarm sound, or any sound on your phone. Tap one to hear it. Backups keep the choice.
 - On OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei and Honor phones: an optional "Show over other apps" switch, so Weft can open a ringing alarm on the locked screen when the phone doesn't, and shortcuts to the lock screen and battery settings these phones add.
+- More → Notifications: what plain reminders need, in one sheet like Set up alarms (notifications, Alarms & reminders so they come on the minute, battery on some phones, and Android's sound and style page). The row says "All set" or "1 thing to allow".
+
+Changed:
+
+- With "Show over other apps" on, a ringing alarm now fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
 
 Fixed:
 
 - After allowing full-screen alarms, the Reminder sheet still said "Allow full-screen alarms in settings".
+- Alarms still didn't open full screen on some phones (OnePlus) with everything allowed: Weft started the screen before Android counted its "Show over other apps" window as shown. It now waits for it, and tries twice.
+- The second of two alarms at the same time ("2 of 2") opened with its slider already on the right.
+- The next alarm's notification popped up over the ringing screen and hid Open Weft.
+- "Snooze 10 min" was cut off ("Snooze 10 m…") at a large text size: button text now shrinks to fit.
 
 ## 1.6.1
 

@@ -171,7 +171,6 @@
     <string name="default_reminder">標準のリマインダー</string>
     <string name="default_reminder_desc">新しいリマインダーのおすすめ時刻</string>
     <string name="notifications">通知</string>
-    <string name="system_settings">システム設定</string>
     <string name="about_weft">Weft について</string>
     <string name="version_open_source">バージョン %1$s・オープンソース</string>
     <string name="accent">アクセントカラー</string>
@@ -682,4 +681,8 @@
     <plurals name="alarms_to_allow">
         <item quantity="other">許可が必要な項目: %d</item>
     </plurals>
+    <string name="notify_need_notifications_desc">リマインダーを表示するため</string>
+    <string name="notify_need_exact_desc">時間どおりに届くように</string>
+    <string name="notify_style">音とスタイル</string>
+    <string name="notify_style_desc">Android の通知設定</string>
 </resources>

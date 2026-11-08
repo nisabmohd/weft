@@ -179,10 +179,28 @@ private fun RowText(title: String, text: String, modifier: Modifier) {
 }
 
 /** The permission rows of [state], each its own composable so a screen can group them. */
-fun permissionRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> =
+fun permissionRows(
+    state: AlarmSetupState,
+    padding: PaddingValues,
+    text: @Composable (AlarmNeed) -> String = { alarmNeedText(it) },
+): List<@Composable () -> Unit> =
     state.needs.map { need ->
-        @Composable { SetupSwitchRow(alarmNeedTitle(need), alarmNeedText(need), need !in state.missing, padding) { state.open(need) } }
+        @Composable { SetupSwitchRow(alarmNeedTitle(need), text(need), need !in state.missing, padding) { state.open(need) } }
     }
+
+/** What notification reminders need: the alarm needs without full screen (Notifications, Alarms & reminders). */
+fun AlarmSetupState.forNotifications(): AlarmSetupState {
+    val keep = setOf(AlarmNeed.NOTIFICATIONS, AlarmNeed.EXACT_ALARMS)
+    return AlarmSetupState(needs.filter { it in keep }, missing.filter { it in keep }, showOverApps, open, openShowOverApps, openPhoneSettings)
+}
+
+@Composable
+private fun notificationNeedText(need: AlarmNeed): String = stringResource(
+    when (need) {
+        AlarmNeed.EXACT_ALARMS -> R.string.notify_need_exact_desc
+        else -> R.string.notify_need_notifications_desc
+    },
+)
 
 /** Show over other apps and the phone-maker rows; empty on phones that don't need them (Pixel). */
 fun phoneRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> = buildList {
@@ -225,3 +243,33 @@ fun AlarmSetupSheet(onDismiss: () -> Unit, onUseNotification: (() -> Unit)? = nu
         (permissionRows(state, SheetRowPadding) + phoneRows(state, SheetRowPadding)).forEach { it() }
     }
 }
+
+/**
+ * More → General → Notifications (user, 2026-11-08; no design yet, see TODO.md): what notification
+ * reminders need, built from Set up alarms' rows: Notifications and Alarms & reminders with the
+ * real state, Battery on the phones that need it, then Android's own page for sound and style.
+ */
+@Composable
+fun NotificationSetupSheet(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val state = rememberAlarmSetup().forNotifications()
+    ChoiceSheet(
+        title = stringResource(R.string.notifications),
+        onDismiss = onDismiss,
+        footer = {
+            WeftButton(
+                stringResource(R.string.action_done),
+                ButtonRole.Primary,
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = SheetActionGap).sheetBottomPadding(),
+            )
+        },
+    ) {
+        permissionRows(state, SheetRowPadding) { notificationNeedText(it) }.forEach { it() }
+        if (AlarmSetup.showBatteryRow) {
+            SetupLinkRow(stringResource(R.string.alarm_battery), stringResource(R.string.alarm_battery_desc), SheetRowPadding, state.openPhoneSettings)
+        }
+        SetupLinkRow(stringResource(R.string.notify_style), stringResource(R.string.notify_style_desc), SheetRowPadding) { Notifications.openSettings(context) }
+    }
+}
+

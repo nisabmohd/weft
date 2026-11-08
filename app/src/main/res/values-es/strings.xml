@@ -171,7 +171,6 @@
     <string name="default_reminder">Recordatorio predeterminado</string>
     <string name="default_reminder_desc">Hora sugerida para nuevos recordatorios</string>
     <string name="notifications">Notificaciones</string>
-    <string name="system_settings">Ajustes del sistema</string>
     <string name="about_weft">Acerca de Weft</string>
     <string name="version_open_source">Versión %1$s · código abierto</string>
     <string name="accent">Color de acento</string>
@@ -717,4 +716,8 @@
         <item quantity="one">%d permiso por dar</item>
         <item quantity="other">%d permisos por dar</item>
     </plurals>
+    <string name="notify_need_notifications_desc">Para que se vean los recordatorios</string>
+    <string name="notify_need_exact_desc">Para que lleguen al minuto</string>
+    <string name="notify_style">Sonido y estilo</string>
+    <string name="notify_style_desc">Ajustes de notificaciones de Android</string>
 </resources>

@@ -175,7 +175,6 @@
     <string name="default_reminder">Default reminder</string>
     <string name="default_reminder_desc">Suggested time for new reminders</string>
     <string name="notifications">Notifications</string>
-    <string name="system_settings">System settings</string>
     <string name="about_weft">About Weft</string>
     <string name="version_open_source">Version %1$s · open source</string>
     <string name="accent">Accent</string>
@@ -710,4 +709,9 @@
         <item quantity="one">%d thing to allow</item>
         <item quantity="other">%d things to allow</item>
     </plurals>
+    <!-- 1.6.2: More → Notifications sheet -->
+    <string name="notify_need_notifications_desc">So reminders can show</string>
+    <string name="notify_need_exact_desc">So reminders come on the minute</string>
+    <string name="notify_style">Sound and style</string>
+    <string name="notify_style_desc">Android’s notification settings</string>
 </resources>

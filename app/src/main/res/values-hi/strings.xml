@@ -171,7 +171,6 @@
     <string name="default_reminder">डिफ़ॉल्ट रिमाइंडर</string>
     <string name="default_reminder_desc">नए रिमाइंडर के लिए सुझाया गया समय</string>
     <string name="notifications">सूचनाएं</string>
-    <string name="system_settings">सिस्टम सेटिंग</string>
     <string name="about_weft">Weft के बारे में</string>
     <string name="version_open_source">वर्शन %1$s · ओपन सोर्स</string>
     <string name="accent">मुख्य रंग</string>
@@ -702,4 +701,8 @@
         <item quantity="one">अनुमति के लिए %d चीज़</item>
         <item quantity="other">अनुमति के लिए %d चीज़ें</item>
     </plurals>
+    <string name="notify_need_notifications_desc">ताकि रिमाइंडर दिख सकें</string>
+    <string name="notify_need_exact_desc">ताकि रिमाइंडर ठीक समय पर आएँ</string>
+    <string name="notify_style">आवाज़ और स्टाइल</string>
+    <string name="notify_style_desc">Android की सूचना सेटिंग</string>
 </resources>

@@ -2,6 +2,8 @@ package app.sprout.habits.ui.more
 
 import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.alarm.rememberAlarmSetup
+import app.sprout.habits.ui.alarm.forNotifications
+import app.sprout.habits.ui.alarm.NotificationSetupSheet
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -56,7 +58,6 @@ import app.sprout.habits.ui.components.TabHeader
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.data.Settings
 import app.sprout.habits.data.SettingsRepository
-import app.sprout.habits.notify.Notifications
 import app.sprout.habits.ui.components.ColorSwatchRow
 import app.sprout.habits.ui.components.Swatch
 import app.sprout.habits.ui.theme.ThemeMode
@@ -94,6 +95,7 @@ fun MoreScreen(
     val theme = settings.theme
     var pickingWeekStart by remember { mutableStateOf(false) }
     var pickingReminder by remember { mutableStateOf(false) }
+    var settingUpNotifications by remember { mutableStateOf(false) }
     var pickingLanguage by remember { mutableStateOf(false) }
     var pickingFont by remember { mutableStateOf(false) }
     fun save(block: suspend SettingsRepository.() -> Unit) { scope.launch { repository.block() } }
@@ -201,7 +203,16 @@ fun MoreScreen(
                             subtitleColor = if (alarms.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
                         ) { Chevron() }
                     },
-                    { SettingsRow(stringResource(R.string.notifications), onClick = { Notifications.openSettings(context) }) { TrailingValue(stringResource(R.string.system_settings)) } },
+                    {
+                        // Notifications: what notification reminders need, like the Alarms row.
+                        val needs = rememberAlarmSetup().forNotifications()
+                        SettingsRow(
+                            stringResource(R.string.notifications),
+                            alarmsLine(needs),
+                            onClick = { settingUpNotifications = true },
+                            subtitleColor = if (needs.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
+                        ) { Chevron() }
+                    },
                 )
             }
 
@@ -278,6 +289,9 @@ fun MoreScreen(
         }
     }
 
+    if (settingUpNotifications) {
+        NotificationSetupSheet(onDismiss = { settingUpNotifications = false })
+    }
     if (pickingReminder) {
         TimePickerSheet(
             title = stringResource(R.string.default_reminder),

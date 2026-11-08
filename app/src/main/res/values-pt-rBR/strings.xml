@@ -171,7 +171,6 @@
     <string name="default_reminder">Lembrete padrão</string>
     <string name="default_reminder_desc">Horário sugerido para novos lembretes</string>
     <string name="notifications">Notificações</string>
-    <string name="system_settings">Configurações do sistema</string>
     <string name="about_weft">Sobre o Weft</string>
     <string name="version_open_source">Versão %1$s · código aberto</string>
     <string name="accent">Cor de destaque</string>
@@ -718,4 +717,8 @@
         <item quantity="one">%d permissão para dar</item>
         <item quantity="other">%d permissões para dar</item>
     </plurals>
+    <string name="notify_need_notifications_desc">Para os lembretes aparecerem</string>
+    <string name="notify_need_exact_desc">Para chegarem na hora certa</string>
+    <string name="notify_style">Som e estilo</string>
+    <string name="notify_style_desc">Configurações de notificação do Android</string>
 </resources>

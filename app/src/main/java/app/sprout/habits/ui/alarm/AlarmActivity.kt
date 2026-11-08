@@ -17,7 +17,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -115,8 +117,13 @@ class AlarmActivity : ComponentActivity() {
         drawEdgeToEdge(dark = false)
         habitId = intent.getLongExtra(EXTRA_HABIT_ID, 0L)
         val container = (application as WeftApp).container
-        // Back doesn't close a ringing alarm; one of its three answers does.
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) { override fun handleOnBackPressed() = Unit })
+        // On the lock screen Back does nothing (a pocket press mustn't silence it). Opened over an
+        // app on an unlocked phone, Back is Dismiss and returns to that app (design 2026-11-08, 12).
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!getSystemService(KeyguardManager::class.java).isKeyguardLocked) answer(ReminderActions.ACTION_DISMISS)
+            }
+        })
         registerReceiver(screenOff, IntentFilter(Intent.ACTION_SCREEN_OFF))
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle(null)
@@ -349,7 +356,10 @@ private fun AlarmScreen(
             Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 8.dp))
         }
         Spacer(Modifier.weight(2f))
-        SlideToDone(track = hc.mid, thumb = hc.solid, label = stringResource(R.string.alarm_slide), labelColor = hc.ink, onDone = onDone)
+        // Keyed by habit: when the next alarm takes the screen ("2 of 2") its slider starts at the left.
+        key(habit.id) {
+            SlideToDone(track = hc.mid, thumb = hc.solid, label = stringResource(R.string.alarm_slide), labelColor = hc.ink, onDone = onDone)
+        }
         // Log amount (measured) or Skip today (check-off), between the slide bar and the pair.
         TextButton(
             onClick = if (measured) onLogAmount else onSkip,
@@ -371,17 +381,20 @@ private fun AlarmScreen(
 @Composable
 private fun SlideToDone(track: Color, thumb: Color, label: String, labelColor: Color, onDone: () -> Unit) {
     val density = LocalDensity.current
-    BoxWithConstraints(
+    // The track's width, measured: the thumb travels from the left inset to the right one.
+    var width by remember { mutableIntStateOf(0) }
+    Box(
         Modifier
             .fillMaxWidth()
             .height(SlideHeight)
+            .onSizeChanged { width = it.width }
             .background(track, CircleShape)
             // TalkBack: a double tap marks it done, as sliding does.
             .semantics { contentDescription = label; onClick(label) { onDone(); true } },
         contentAlignment = Alignment.CenterStart,
     ) {
         val thumbSize = SlideHeight - SlideInset * 2
-        val max = with(density) { (maxWidth - thumbSize - SlideInset * 2).toPx() }
+        val max = (width - with(density) { (thumbSize + SlideInset * 2).toPx() }).coerceAtLeast(0f)
         var offset by remember { mutableFloatStateOf(0f) }
         var done by remember { mutableStateOf(false) }
         Text(label, style = WeftType.cardTitle, color = labelColor, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(start = thumbSize))

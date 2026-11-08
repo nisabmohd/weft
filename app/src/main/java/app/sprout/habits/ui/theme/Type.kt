@@ -151,6 +151,9 @@ val NavLabelMinSize = 9.sp
 /** The smallest a habit detail stat value ("11 days") may shrink to when its card is too narrow for it. */
 val StatValueMinSize = 16.sp
 
+/** The smallest a button label may shrink to when its button is too narrow ("Snooze 10 min" at a large text size). */
+val ButtonLabelMinSize = 12.sp
+
 /** Sizes for the Glance widgets, which can't use Compose text styles. Same scale as [WeftType]. */
 object WidgetType {
     val display = 40.sp

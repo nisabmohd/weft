@@ -171,7 +171,6 @@
     <string name="default_reminder">Rappel par défaut</string>
     <string name="default_reminder_desc">Heure proposée pour les nouveaux rappels</string>
     <string name="notifications">Notifications</string>
-    <string name="system_settings">Paramètres du système</string>
     <string name="about_weft">À propos de Weft</string>
     <string name="version_open_source">Version %1$s · open source</string>
     <string name="accent">Couleur d\'accent</string>
@@ -718,4 +717,8 @@
         <item quantity="one">%d autorisation à donner</item>
         <item quantity="other">%d autorisations à donner</item>
     </plurals>
+    <string name="notify_need_notifications_desc">Pour que les rappels s’affichent</string>
+    <string name="notify_need_exact_desc">Pour qu’ils arrivent à la minute</string>
+    <string name="notify_style">Son et style</string>
+    <string name="notify_style_desc">Réglages des notifications Android</string>
 </resources>

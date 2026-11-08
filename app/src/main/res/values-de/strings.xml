@@ -171,7 +171,6 @@
     <string name="default_reminder">Standard-Erinnerung</string>
     <string name="default_reminder_desc">Vorgeschlagene Zeit für neue Erinnerungen</string>
     <string name="notifications">Benachrichtigungen</string>
-    <string name="system_settings">Systemeinstellungen</string>
     <string name="about_weft">Über Weft</string>
     <string name="version_open_source">Version %1$s · quelloffen</string>
     <string name="accent">Akzentfarbe</string>
@@ -701,4 +700,8 @@
         <item quantity="one">%d Sache zu erlauben</item>
         <item quantity="other">%d Sachen zu erlauben</item>
     </plurals>
+    <string name="notify_need_notifications_desc">Damit Erinnerungen erscheinen</string>
+    <string name="notify_need_exact_desc">Damit sie pünktlich kommen</string>
+    <string name="notify_style">Ton und Stil</string>
+    <string name="notify_style_desc">Android-Benachrichtigungseinstellungen</string>
 </resources>

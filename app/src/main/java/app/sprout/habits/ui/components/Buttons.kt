@@ -13,12 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.ui.theme.WeftType
+import app.sprout.habits.ui.theme.ButtonLabelMinSize
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.ui.unit.sp
 
 /** What a [WeftButton] does, which sets its colours (docs/DESIGN-RULES.md → 6). */
 enum class ButtonRole {
@@ -68,7 +72,15 @@ fun WeftButton(
             loading -> CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.5.dp, color = content)
             else -> {
                 if (icon != null) Icon(painterResource(icon), contentDescription = null, modifier = Modifier.padding(end = 8.dp).size(18.dp))
-                Text(label, style = WeftType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                // A long label ("Snooze 10 min" at a large text size) shrinks to fit instead of being cut off.
+                val style = WeftType.cardTitle
+                BasicText(
+                    label,
+                    style = style.copy(color = LocalContentColor.current),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    autoSize = TextAutoSize.StepBased(minFontSize = ButtonLabelMinSize, maxFontSize = style.fontSize, stepSize = 0.5.sp),
+                )
             }
         }
     }

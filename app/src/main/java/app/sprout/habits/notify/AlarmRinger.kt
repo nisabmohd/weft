@@ -226,6 +226,9 @@ class AlarmRinger(
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setOnlyAlertOnce(!loud)
+            // The next alarm's card while the ringing screen already shows it ("2 of 2"): no pop-up
+            // banner over that screen (it hid Open Weft); it waits in the shade.
+            .setSilent(!loud && AlarmActivity.showing)
             .setContentIntent(screen)
         if (loud) builder.setFullScreenIntent(screen, true)
         val notification = builder.build()

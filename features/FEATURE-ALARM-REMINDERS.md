@@ -100,6 +100,25 @@ One sheet lists everything an alarm needs on this phone. It's built like the app
   - **Sound**: "Alarm sound" with the value "Weft" and a chevron (opens the sound sheet), and "Vibrate" ("Along with the sound") with a switch, on by default
 - The row and screen always show, even with no alarm habits, so people can set things up ahead of time.
 
+## 11. More → Notifications (`more-notifications-row.png`, `notifications-setup-sheet.png`)
+- The General row "Notifications" now works like "Alarms": a subtitle of "All set" (muted) or "1 thing to allow" (error colour), and a chevron. The old trailing value "System settings" is gone.
+- It opens `NotificationSetupSheet`, the same pieces as Set up alarms:
+  - title "Notifications"
+  - **Notifications** switch ("So reminders can show")
+  - **Alarms & reminders** switch ("So reminders come on the minute"). Both show the real state and update on return.
+  - **Battery** ↗ ("Check "Don't restrict" once"), only on phone makers that need it
+  - **Sound and style** ↗ ("Android's notification settings", opens `ACTION_APP_NOTIFICATION_SETTINGS`)
+  - primary **Done**
+- "N things to allow" counts only the two switches.
+
+## 12. Ringing while the phone is in use (decision)
+- Keep the **same full ringing screen** when it opens over another app (Show over other apps on). Don't make a smaller version: the user picked Alarm for this habit precisely so it can't be missed, and one screen keeps the behaviour predictable. A compact card would just repeat the heads-up notification, which the Notification type already gives.
+- Two small differences when the phone is unlocked:
+  - **Open Weft** opens the habit straight away, with no unlock step.
+  - **Dismiss**, **Snooze**, sliding to done and Back return to the app the person was in, not the home screen.
+- If the person is in a call, don't open the screen. Show the heads-up notification with its actions instead, and ring at in-call volume.
+- Built (2026-11-08): the screen is its own task, so closing it returns to the app underneath. Back is Dismiss only while the phone is unlocked; on the lock screen it still does nothing. In a call (or while one rings in), the Show over other apps fallback doesn't open the screen and the sound plays at 20 % (`IN_CALL_VOLUME`).
+
 ## Platform notes
 - Use `AlarmManager.setAlarmClock()` (exact, shown in the status bar). On Android 12+ this needs `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`. If it isn't granted, picking Alarm opens Set up alarms (section 7).
 - Android 14+: `USE_FULL_SCREEN_INTENT` must be granted. Otherwise, fall back to a heads-up notification with the same actions.

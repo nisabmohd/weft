@@ -112,7 +112,7 @@ def welcome():
 def more():
     d.nav("More")
     d.scroll_to_top()
-    save_full_length("more", 3582)
+    save_full_length("more", 3800)
 
 
 @screen
@@ -362,7 +362,7 @@ def more_alarms():
     alarm_permissions(True, False, False)
     d.nav("More")
     d.scroll_to_top()
-    save_full_length("more-alarms-row", 3582)
+    save_full_length("more-alarms-row", 3800)
     d.scroll_to("Alarms")
     d.tap("Alarms")
     assert d.exists("2 things to allow", timeout=5)
@@ -373,6 +373,21 @@ def more_alarms():
     save("alarm-11-sound-sheet")
     d.back()
     d.back()
+    alarm_permissions_reset()
+
+
+@screen
+def more_notifications():
+    """More with its Notifications row (1 thing to allow: exact alarms off) and the Notifications sheet (1.6.2)."""
+    alarm_permissions(True, False, True)
+    d.nav("More")
+    d.scroll_to_top()
+    save_full_length("more-notifications-row", 3800)
+    d.scroll_to("Notifications")
+    d.tap("Notifications")
+    assert d.exists("Sound and style", timeout=5)
+    save("notifications-setup-sheet")
+    d.tap("Done")
     alarm_permissions_reset()
 
 
