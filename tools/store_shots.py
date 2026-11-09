@@ -4,7 +4,7 @@ The same look as Burrow's store shots (tools/store_shots.py there; both apps are
 side by side on Play, user 2026-11-08): a title and a one-line subtitle, then a phone frame with a soft
 shadow, sized to fit under the tallest caption with 72 px left below it, so the navigation bar and
 the bezel are never cut. The last shot (dark theme) sits on a dark page. Weft's colours: a rose-brown
-page #77453F with pale pink text (user, 2026-11-08).
+page #733626 (Rust, the default accent, user 2026-11-09) with pale pink text.
 
 usage: python3 tools/store_shots.py <folder with the raw shots> [out folder]
 Raw shots are 1080 x 2400, named today.png, amount-sheet.png, habits-week.png, habit-detail.png,
@@ -42,8 +42,8 @@ BEZEL, OUTER_R, INNER_R = 14, 62, 48
 RAW_W, RAW_H = 1080, 2400                             # emulator screenshot size
 TITLE_SIZE, TITLE_LINE, SUB_SIZE, SUB_LINE = 68, 82, 36, 48
 
-PAGE = (0x77, 0x45, 0x3F)                             # rose-brown, as the shots before (2026-11-08)
-PAGE_DARK = (0x2A, 0x18, 0x16)                        # the same hue, dark, for the dark-theme shot
+PAGE = (0x73, 0x36, 0x26)                             # Rust, the default accent (2026-11-09; rose-brown #77453F before)
+PAGE_DARK = (0x2B, 0x15, 0x10)                        # the same hue, dark, for the dark-theme shot
 TITLE = (0xFF, 0xDA, 0xD4)                            # pale pink
 SUB = (0xE2, 0xBC, 0xB6)                              # pale pink, quieter
 SHADOW = (0x2A, 0x10, 0x0E)

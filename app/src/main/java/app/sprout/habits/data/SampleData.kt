@@ -41,7 +41,7 @@ object SampleData {
         Habit(name = strings(R.string.sample_wake), icon = "alarm", colorHue = 38),
         Habit(name = strings(R.string.sample_read), icon = "menu_book", colorHue = 215, trackType = TrackType.AMOUNT, target = 20.0, unit = strings(R.string.sample_unit_pages)),
         Habit(name = strings(R.string.sample_water), icon = "water_drop", colorHue = 192, trackType = TrackType.AMOUNT, target = 8.0, unit = strings(R.string.sample_unit_glasses)),
-        Habit(name = strings(R.string.sample_calm), icon = "self_improvement", colorHue = 275, askForNote = true),
+        Habit(name = strings(R.string.sample_no_sugar), icon = "no_sugar", colorHue = 275, askForNote = true),
         Habit(name = strings(R.string.sample_workout), icon = "fitness_center", colorHue = 12, trackType = TrackType.AMOUNT, target = 45.0, unit = "min", step = 5.0),
         Habit(name = strings(R.string.sample_vitamins), icon = "medication", colorHue = 95),
         Habit(name = strings(R.string.sample_walk), icon = "directions_walk", colorHue = 150, daysMask = 0b0011111),
@@ -60,7 +60,7 @@ object SampleData {
             h.copy(createdAt = createdAt, sortOrder = i, reminderMinutes = reminder)
         }
         val ids = habits.map { repository.saveHabit(it) }
-        val (wake, read, water, calm, workout) = ids
+        val (wake, read, water, sugar, workout) = ids
         val journal = ids[7]
         val walk = ids[6]
 
@@ -91,12 +91,12 @@ object SampleData {
         day(0, wake, EntryStatus.DONE, 1.0, time = at(0, 6, 52))
         day(0, read, EntryStatus.PARTIAL, 15.0, time = at(0, 8, 5))
         day(0, water, EntryStatus.PARTIAL, 5.0, time = at(0, 13, 30))
-        day(0, calm, EntryStatus.SKIP, 0.0, note = R.string.sample_note_calm_today, time = at(0, 9, 12))
+        day(0, sugar, EntryStatus.SKIP, 0.0, note = R.string.sample_note_sugar_today, time = at(0, 9, 12))
         // Earlier notes, so the Journal has a few days to scroll through.
         day(1, read, EntryStatus.PARTIAL, 8.0, note = R.string.sample_note_read, time = at(1, 23, 40))
         day(1, workout, EntryStatus.DONE, 45.0, note = R.string.sample_note_workout, time = at(1, 19, 5))
         day(2, journal, EntryStatus.DONE, 1.0, note = R.string.sample_note_journal, time = at(2, 21, 45))
-        day(3, calm, EntryStatus.SKIP, 0.0, note = R.string.sample_note_calm, time = at(3, 22, 5))
+        day(3, sugar, EntryStatus.SKIP, 0.0, note = R.string.sample_note_sugar, time = at(3, 22, 5))
         // Walk outside is weekdays only, so its note goes on the most recent weekday at least 4 days back.
         val walkBack = (4L..7L).first { today.minusDays(it).dayOfWeek.value <= 5 }
         day(walkBack, walk, EntryStatus.DONE, 1.0, note = R.string.sample_note_walk, time = at(walkBack, 18, 20))

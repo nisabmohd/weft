@@ -84,6 +84,13 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
+import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
+import androidx.compose.ui.graphics.toArgb
+import app.sprout.habits.ui.theme.ThemeMode
 
 /**
  * The alarm ringing screen (`design/alarm-3-ringing.png`): opened full screen by an alarm
@@ -104,19 +111,40 @@ class AlarmActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Fade in and out (user, 2026-11-08: the default slide looked like a glitch, most of all
-        // when a notification button answered it and the screen opened and shut at once).
+        // Opens at once, already drawn, and fades out (user, 2026-11-08: the default slide looked
+        // like a glitch). No fade in: over the lock screen Android paints the theme's page colour
+        // behind a fading window, which flashed white before the alarm (2026-11-09).
         if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, android.R.anim.fade_in, android.R.anim.fade_out)
         } else {
             @Suppress("DEPRECATION")
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            overridePendingTransition(0, 0)
         }
         showOverLockScreen()
         drawEdgeToEdge(dark = false)
         habitId = intent.getLongExtra(EXTRA_HABIT_ID, 0L)
         val container = (application as WeftApp).container
+        // Read the settings and the habit before the first frame (a few ms), and paint the window
+        // in the habit's colour, so the screen opens already drawn: no blank or page-coloured flash.
+        val first = runBlocking {
+            withTimeoutOrNull(FIRST_LOAD_MS) { container.settings.settings.first() to container.repository.getHabit(habitId) }
+        }
+        val firstSettings = first?.first
+        val firstHabit = first?.second
+        if (firstSettings != null && firstHabit != null) {
+            val dark = when (firstSettings.theme.mode) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            }
+            window.setBackgroundDrawable(ColorDrawable(habitColors(firstHabit.colorHue.toFloat(), dark).soft.toArgb()))
+        } else {
+            window.setBackgroundDrawableResource(R.color.weft_bg)
+        }
+        // The theme starts see-through on Android 11+ so Android shows no splash screen (values-v30);
+        // make it opaque now, because only an opaque screen covers the lock screen.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTranslucent(false)
         // On the lock screen Back does nothing (a pocket press mustn't silence it). Opened over an
         // app on an unlocked phone, Back is Dismiss and returns to that app (design 2026-11-08, 12).
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -126,11 +154,11 @@ class AlarmActivity : ComponentActivity() {
         })
         registerReceiver(screenOff, IntentFilter(Intent.ACTION_SCREEN_OFF))
         setContent {
-            val settings by container.settings.settings.collectAsStateWithLifecycle(null)
+            val settings by container.settings.settings.collectAsStateWithLifecycle(firstSettings)
             val queue by container.alarmRinger.queue.collectAsStateWithLifecycle()
             val ringing = queue.firstOrNull()
             val answered by container.alarmRinger.answered.collectAsStateWithLifecycle()
-            var habit by remember { mutableStateOf<Habit?>(null) }
+            var habit by remember { mutableStateOf(firstHabit) }
             var seenRinging by remember { mutableStateOf(false) }
             // Always the alarm that is sounding: after one is answered, the next takes the screen.
             // Every alarm stopped (answered, a log anywhere, the 10-minute limit): close.
@@ -139,7 +167,7 @@ class AlarmActivity : ComponentActivity() {
                 if (id != null) {
                     seenRinging = true
                     habitId = id
-                    habit = container.repository.getHabit(id)
+                    if (habit?.id != id) habit = container.repository.getHabit(id)
                 } else if (seenRinging) {
                     finish()
                 }
@@ -196,14 +224,16 @@ class AlarmActivity : ComponentActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onStart() {
-        super.onStart()
+    // "Showing" means in front of the user. A started screen can still sit behind the lock screen,
+    // and then the Show over other apps fallback must still step in.
+    override fun onResume() {
+        super.onResume()
         showing = true
     }
 
-    override fun onStop() {
+    override fun onPause() {
         showing = false
-        super.onStop()
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -278,6 +308,9 @@ class AlarmActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA_HABIT_ID = "habitId"
+
+        /** How long the first frame may wait for the habit; past it the screen draws when it loads. */
+        private const val FIRST_LOAD_MS = 400L
 
         /** True while the ringing screen is on screen: the overlay fallback leaves it alone. */
         @Volatile

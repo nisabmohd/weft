@@ -2,8 +2,6 @@ package app.sprout.habits.ui.more
 
 import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.alarm.rememberAlarmSetup
-import app.sprout.habits.ui.alarm.forNotifications
-import app.sprout.habits.ui.alarm.NotificationSetupSheet
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -61,6 +59,8 @@ import app.sprout.habits.data.SettingsRepository
 import app.sprout.habits.ui.components.ColorSwatchRow
 import app.sprout.habits.ui.components.Swatch
 import app.sprout.habits.ui.theme.ThemeMode
+import app.sprout.habits.ui.theme.DEFAULT_ACCENT_HUE
+import app.sprout.habits.ui.theme.LOGO_HUE
 import app.sprout.habits.ui.theme.seedColorScheme
 import app.sprout.habits.ui.today.TodayViewModel
 import java.time.DayOfWeek
@@ -68,13 +68,15 @@ import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import app.sprout.habits.ui.components.TimePickerSheet
 
-/** Accent choices when dynamic color is off: the original Weft swatches, with Rose in Green's place; Amber (last) is the default. */
-private val ACCENT_HUES = listOf(345f, 192f, 215f, 275f, 330f, 12f, 38f)
+/**
+ * Accent choices when dynamic color is off: Rose, Teal, Blue, Purple, Plum, Rust (the default) and
+ * the logo green, last (design 2026-11-09; it took Amber's place, the second brown).
+ */
+private val ACCENT_HUES = listOf(345f, 192f, 215f, 275f, 330f, DEFAULT_ACCENT_HUE, LOGO_HUE)
 private val ACCENT_NAMES = mapOf(
     345f to R.string.color_rose, 192f to R.string.color_teal, 215f to R.string.color_blue, 275f to R.string.color_purple,
-    330f to R.string.color_pink, 12f to R.string.color_rust, 38f to R.string.color_gold,
+    330f to R.string.color_pink, DEFAULT_ACCENT_HUE to R.string.color_rust, LOGO_HUE to R.string.color_green,
 )
 
 private val TEXT_SCALES = listOf(0.85f to R.string.text_small, 1f to R.string.text_default, 1.15f to R.string.text_large, 1.3f to R.string.text_largest)
@@ -94,8 +96,6 @@ fun MoreScreen(
     val context = LocalContext.current
     val theme = settings.theme
     var pickingWeekStart by remember { mutableStateOf(false) }
-    var pickingReminder by remember { mutableStateOf(false) }
-    var settingUpNotifications by remember { mutableStateOf(false) }
     var pickingLanguage by remember { mutableStateOf(false) }
     var pickingFont by remember { mutableStateOf(false) }
     fun save(block: suspend SettingsRepository.() -> Unit) { scope.launch { repository.block() } }
@@ -189,28 +189,14 @@ fun MoreScreen(
                         }
                     },
                     {
-                        SettingsRow(stringResource(R.string.default_reminder), stringResource(R.string.default_reminder_desc), onClick = { pickingReminder = true }) {
-                            TrailingValue(TodayViewModel.formatTime(settings.defaultReminderMinutes))
-                        }
-                    },
-                    {
-                        // Alarms (more-alarms-row.png): what alarms still need, in the error colour.
+                        // Reminders & alarms (more-reminders-alarms-row.png): what's wrong, in plain
+                        // words and the error colour; everything about reminders is on its screen.
                         val alarms = rememberAlarmSetup()
                         SettingsRow(
-                            stringResource(R.string.alarms),
-                            alarmsLine(alarms),
+                            stringResource(R.string.reminders_alarms),
+                            remindersLine(alarms),
                             onClick = onOpenAlarms,
                             subtitleColor = if (alarms.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
-                        ) { Chevron() }
-                    },
-                    {
-                        // Notifications: what notification reminders need, like the Alarms row.
-                        val needs = rememberAlarmSetup().forNotifications()
-                        SettingsRow(
-                            stringResource(R.string.notifications),
-                            alarmsLine(needs),
-                            onClick = { settingUpNotifications = true },
-                            subtitleColor = if (needs.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
                         ) { Chevron() }
                     },
                 )
@@ -289,18 +275,6 @@ fun MoreScreen(
         }
     }
 
-    if (settingUpNotifications) {
-        NotificationSetupSheet(onDismiss = { settingUpNotifications = false })
-    }
-    if (pickingReminder) {
-        TimePickerSheet(
-            title = stringResource(R.string.default_reminder),
-            initialMinutes = settings.defaultReminderMinutes,
-            onApply = { minutes -> save { setDefaultReminderMinutes(minutes) }; pickingReminder = false },
-            onDismiss = { pickingReminder = false },
-            line = stringResource(R.string.default_reminder_desc),
-        )
-    }
 }
 
 @Composable

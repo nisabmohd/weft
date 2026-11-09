@@ -18,8 +18,14 @@ data class ThemeSettings(
     val textScale: Float = 1f,
 )
 
-/** Amber, the last swatch (user, 2026-11-02). Installs keep the hue they saved. */
-const val DEFAULT_ACCENT_HUE = 38f
+/**
+ * Rust, the default accent (user, 2026-11-09; Amber 38 was the default from 2026-11-02 until its
+ * swatch was dropped as the second brown). Installs keep the hue they saved.
+ */
+const val DEFAULT_ACCENT_HUE = 12f
+
+/** Amber, a swatch and the default until 1.6.2: read as [DEFAULT_ACCENT_HUE] (Rust) now. */
+const val OLD_AMBER_HUE = 38f
 
 /**
  * The logo's hue: its green tile #2A6F52 (weft-icon.zip, 2026-11-08; navy, hue 215, before). Used

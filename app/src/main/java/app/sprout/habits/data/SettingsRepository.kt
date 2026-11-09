@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.sprout.habits.ui.theme.BodyFont
 import app.sprout.habits.ui.theme.DEFAULT_ACCENT_HUE
+import app.sprout.habits.ui.theme.OLD_AMBER_HUE
 import app.sprout.habits.ui.theme.ThemeMode
 import app.sprout.habits.ui.theme.ThemeSettings
 import java.time.DayOfWeek
@@ -149,7 +150,7 @@ class SettingsRepository(context: Context) {
     }
     /**
      * Also keeps the look of installs from before 1.2: they followed the wallpaper with a green
-     * fallback by default, and the new defaults (amber, dynamic color off) are for new installs.
+     * fallback by default, and the new defaults (rust, dynamic color off) are for new installs.
      */
     suspend fun markFirstOpen(now: Long = System.currentTimeMillis()) = store.edit {
         if (it[FIRST_OPEN_AT] == null) {
@@ -193,7 +194,7 @@ class SettingsRepository(context: Context) {
                 mode = enumOrDefault(this[THEME], theme.mode),
                 dynamicColor = this[DYNAMIC_COLOR] ?: theme.dynamicColor,
                 // Green (150) is no longer a swatch; Rose took its place (user, 2026-11-02).
-                accentHue = (this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE).let { if (it == 150f) 345f else it },
+                accentHue = (this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE).let { if (it == 150f) 345f else if (it == OLD_AMBER_HUE) DEFAULT_ACCENT_HUE else it },
                 font = enumOrDefault(this[FONT], theme.font),
                 textScale = this[TEXT_SCALE] ?: theme.textScale,
             ),

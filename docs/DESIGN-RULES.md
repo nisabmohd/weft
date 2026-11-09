@@ -20,7 +20,7 @@ These come on top of `docs/SPACING.md` and `docs/TYPOGRAPHY.md`. Follow them in 
 ## 3. Action sheets use grouped rows
 - Group the rows with 2dp gaps. The first row has 24dp top corners and 6dp bottom corners, the middle rows 6dp, and the last row 6dp top and 24dp bottom. Don't use dividers.
 - Row: 60dp tall, surfaceContainerHigh, 16dp horizontal padding, 16dp gap. Use 64dp+ when the row has a second line. Actions are one line: a verb, no subtitle.
-- Leading tile: 40dp, 14dp corners, secondaryContainer with a 20dp onSecondaryContainer icon.
+- Leading tile: 40dp, 14dp corners, **primaryContainer** with a 20dp onPrimaryContainer icon, the same tile as "Help translate Weft". Never secondaryContainer or a habit soft colour on a surfaceContainerHigh row; they blend into it.
 - Give the list room: 20dp from the title block to the first row, and clear space above the gesture bar.
 - Label: 16sp Medium. An optional second line is 14sp onSurfaceVariant. Add a trailing chevron only when the row opens something.
 - Destructive: errorContainer tile, error icon and label, always the last row.
@@ -38,7 +38,7 @@ These come on top of `docs/SPACING.md` and `docs/TYPOGRAPHY.md`. Follow them in 
 | Primary button | primary tone(h,55,40) | onPrimary #fff |
 | Secondary button, tonal action | secondaryContainer tone(h,34,87) | onSecondaryContainer tone(h,30,17) |
 | Icon button, −/+ step buttons, tracks | surfaceContainerHigh tone(h,28,91) | onSurface |
-| Selected nav pill | primaryContainer tone(h,88,91) | onPrimaryContainer tone(h,62,19) |
+| Selected nav pill, icon tiles on tinted rows | primaryContainer tone(h,88,91) | onPrimaryContainer tone(h,62,19) |
 | Destructive | errorContainer | error |
 
 Habit colours (`hab()`) are only for a habit's own content: its tile, progress, the Needs-focus tile, the alarm ringing screen's background, tile and slide bar. Buttons always use the roles above, even on a habit-coloured screen.

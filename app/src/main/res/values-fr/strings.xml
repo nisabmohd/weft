@@ -50,8 +50,7 @@
     <string name="insights_lowest">Score le plus bas</string>
     <string name="insights_weekly_rhythm">Rythme de la semaine</string>
     <string name="insights_breakdown">Par habitude</string>
-    <string name="journal_empty_range">Aucune note pour %1$s</string>
-    <string name="journal_empty_habits">Aucune note pour ces habitudes</string>
+    <string name="journal_empty_range">Aucune note du %1$s</string>
     <string name="journal_empty_earlier">Vos notes précédentes sont toujours là.</string>
     <string name="journal_empty_hint">Ajoutez une note depuis une habitude ou touchez Ajouter une note.</string>
     <string name="insights_streak_short">%1$d j</string>
@@ -169,8 +168,7 @@
     <string name="general">Général</string>
     <string name="week_starts_on">La semaine commence le</string>
     <string name="default_reminder">Rappel par défaut</string>
-    <string name="default_reminder_desc">Heure proposée pour les nouveaux rappels</string>
-    <string name="notifications">Notifications</string>
+    <string name="default_reminder_desc">Pour les nouvelles habitudes</string>
     <string name="about_weft">À propos de Weft</string>
     <string name="version_open_source">Version %1$s · open source</string>
     <string name="accent">Couleur d\'accent</string>
@@ -503,18 +501,18 @@
     <string name="sample_wake">Se lever à 7 h</string>
     <string name="sample_read">Lire</string>
     <string name="sample_water">Boire de l\'eau</string>
-    <string name="sample_calm">Rester calme</string>
+    <string name="sample_no_sugar">Sans sucre</string>
     <string name="sample_workout">Sport</string>
     <string name="sample_vitamins">Vitamines</string>
     <string name="sample_walk">Marcher dehors</string>
     <string name="sample_journal">Journal du soir</string>
     <string name="sample_unit_pages">pages</string>
     <string name="sample_unit_glasses">verres</string>
-    <string name="sample_note_calm_today">Matinée difficile, mais je l\'ai remarqué plus tôt que d\'habitude.</string>
+    <string name="sample_note_sugar_today">Gâteau d’anniversaire au bureau. Une petite part, et je me suis arrêté là.</string>
     <string name="sample_note_read">Seulement 8 pages, je me suis endormi. Commencer avant 22 h.</string>
     <string name="sample_note_workout">Jambes. Je me sentais fort, 5 kg de plus au squat.</string>
     <string name="sample_note_journal">Une page entière sur la semaine. Plus calme que prévu.</string>
-    <string name="sample_note_calm">J\'ai été sec avec un collègue quand le déploiement a échoué. J\'étais fatigué et à jeun.</string>
+    <string name="sample_note_sugar">Longue journée, chocolat acheté en rentrant. Je n’avais pas déjeuné.</string>
     <string name="sample_note_walk">Longue marche au bord du lac après le travail. Le téléphone est resté dans ma poche.</string>
     <string name="sample_note_water">Journée chargée, gourde oubliée à la maison.</string>
     <string name="sample_card_title">Ce sont des habitudes d\'exemple</string>
@@ -675,31 +673,21 @@
     <string name="alarm_position">%1$d sur %2$d</string>
 
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
-    <string name="alarms">Alarmes</string>
-    <string name="alarms_all_set">Tout est prêt</string>
-    <string name="alarms_all_set_desc">Les alarmes sonneront à l\'heure</string>
-    <string name="alarms_may_not_ring">Les alarmes risquent de ne pas sonner à l\'heure</string>
     <string name="action_done">Terminé</string>
     <string name="set_up_alarms">Configurer les alarmes</string>
-    <string name="alarm_need_notifications">Notifications</string>
-    <string name="alarm_need_notifications_desc">Pour que l\'alarme puisse s\'afficher</string>
-    <string name="alarm_need_exact">Alarmes et rappels</string>
-    <string name="alarm_need_exact_desc">Pour qu\'elle sonne à la minute près</string>
-    <string name="alarm_need_full_screen">Alarmes en plein écran</string>
-    <string name="alarm_need_full_screen_desc">Pour qu\'elle remplisse l\'écran verrouillé</string>
+    <string name="alarm_need_notifications">Afficher les rappels</string>
+    <string name="alarm_need_exact">Sonner à la minute près</string>
+    <string name="alarm_need_full_screen">Sonner en plein écran verrouillé</string>
     <string name="alarm_overlay">Afficher par-dessus les autres apps</string>
-    <string name="alarm_overlay_desc">Facultatif · utile sur certains téléphones</string>
+    <string name="alarm_overlay_desc">Facultatif · aide l’alarme à s’ouvrir</string>
     <string name="alarm_lock_screen">Écran verrouillé et pop-ups</string>
-    <string name="alarm_lock_screen_desc">À vérifier une fois dans les réglages</string>
+    <string name="alarm_lock_screen_desc">Activez les deux</string>
     <string name="alarm_battery">Batterie</string>
-    <string name="alarm_battery_desc">Choisissez « Sans restriction » une fois</string>
+    <string name="alarm_battery_desc">Choisissez « Aucune restriction »</string>
     <string name="alarm_use_notification">Utiliser une notification</string>
-    <string name="alarms_needed">Nécessaire</string>
-    <string name="alarms_some_phones">Sur certains téléphones</string>
     <string name="alarms_sound_section">Son</string>
     <string name="alarm_sound">Son de l\'alarme</string>
     <string name="alarm_vibrate">Vibreur</string>
-    <string name="alarm_vibrate_desc">En plus du son</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">Par défaut</string>
     <string name="alarm_sound_weft_soft">Weft · Doux</string>
@@ -713,12 +701,37 @@
     <string name="reminder_fix_notifications">les notifications sont désactivées</string>
     <string name="reminder_fix_exact">peut sonner en retard</string>
     <string name="reminder_fix_full_screen">ne peut pas sonner en plein écran</string>
-    <plurals name="alarms_to_allow">
-        <item quantity="one">%d autorisation à donner</item>
-        <item quantity="other">%d autorisations à donner</item>
+    <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
+    <string name="reminders_alarms">Rappels et alarmes</string>
+    <string name="reminders_section">Rappels</string>
+    <string name="allow_weft_to">Autoriser Weft à</string>
+    <string name="extra_phone_settings">Réglages du téléphone en plus</string>
+    <string name="extra_phone_settings_desc">Nécessaire sur certains téléphones</string>
+    <string name="extra_phone_settings_text">Certains téléphones arrêtent les alarmes d’eux-mêmes. Android ne nous dit pas si ces réglages sont activés : vérifiez-les une fois.</string>
+    <string name="notification_sound">Son des notifications</string>
+    <string name="reminders_all_allowed">Notifications et alarmes autorisées</string>
+    <string name="reminders_off_notifications">Les notifications sont désactivées</string>
+    <string name="reminders_off_exact">Les alarmes peuvent sonner en retard</string>
+    <string name="reminders_off_full_screen">Les alarmes ne peuvent pas sonner en plein écran</string>
+    <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
+    <string name="filter_helper_journal">Touchez des habitudes pour ne voir que leurs notes.</string>
+    <string name="filter_helper_insights">Touchez des habitudes pour ne voir que leurs scores.</string>
+    <string name="journal_empty_one_habit">Pas encore de notes pour %1$s</string>
+    <string name="journal_empty_one_habit_text">Les notes ajoutées en enregistrant %1$s apparaîtront ici.</string>
+    <string name="journal_empty_filters">Aucune note pour ces filtres</string>
+    <plurals name="journal_empty_n_habits">
+        <item quantity="one">Aucune note pour %d habitude</item>
+        <item quantity="other">Aucune note pour %d habitudes</item>
     </plurals>
-    <string name="notify_need_notifications_desc">Pour que les rappels s’affichent</string>
-    <string name="notify_need_exact_desc">Pour qu’ils arrivent à la minute</string>
-    <string name="notify_style">Son et style</string>
-    <string name="notify_style_desc">Réglages des notifications Android</string>
+    <!-- 1.6.2: new habit icons -->
+    <string name="icon_breathe">Respirer</string>
+    <string name="icon_gratitude">Gratitude</string>
+    <string name="icon_focus">Concentration</string>
+    <string name="icon_less_social_media">Moins de réseaux sociaux</string>
+    <string name="icon_less_coffee">Moins de café</string>
+    <string name="icon_no_sugar">Sans sucre</string>
+    <string name="icon_sunlight">Lumière du soleil</string>
+    <string name="icon_speak">Parler</string>
+    <string name="icon_weekly_review">Bilan de la semaine</string>
+    <string name="icon_scripture">Écritures</string>
 </resources>

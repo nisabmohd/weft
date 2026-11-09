@@ -151,6 +151,7 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
         HabitFilterSheet(
             options = ui.options,
             selected = ui.filter,
+            helper = stringResource(R.string.filter_helper_insights),
             applyLabel = { n -> if (n == 0) res.getString(R.string.show_all_habits) else res.getQuantityString(R.plurals.show_habits, n, n) },
             onApply = { ids -> viewModel.setFilter(ids); filtering = false },
             onDismiss = { filtering = false },

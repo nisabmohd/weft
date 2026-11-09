@@ -12,8 +12,6 @@ import androidx.compose.ui.semantics.semantics
 import app.sprout.habits.ui.components.NoteCard
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.foundation.background
 import androidx.compose.ui.text.style.TextAlign
 import app.sprout.habits.ui.components.CustomRangeChip
@@ -69,6 +67,16 @@ import app.sprout.habits.ui.components.groupedShape
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.ui.res.pluralStringResource
 import app.sprout.habits.ui.components.HabitFilterSheet
+import app.sprout.habits.ui.theme.habitColors
+import app.sprout.habits.ui.components.HabitFilterOption
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.WeftButton
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.widthIn
 import app.sprout.habits.ui.components.HeaderIconButton
 
 @Composable
@@ -138,32 +146,36 @@ fun JournalScreen(
                 }
             
         }
-        LazyColumn(
+        val shown = state
+        if (shown != null && shown.days.isEmpty()) {
+            // Nothing to list: centred in the space between the chips and Add note (journal-empty.png).
+            Box(Modifier.weight(1f).fillMaxWidth().padding(bottom = 88.dp), contentAlignment = Alignment.Center) {
+                if (shown.hasNotes) {
+                    val picked = shown.options.filter { it.habitId in shown.filter }
+                    val one = picked.singleOrNull()
+                    EmptyJournal(
+                        habit = one,
+                        title = when {
+                            shown.from != null && picked.isNotEmpty() -> stringResource(R.string.journal_empty_filters)
+                            shown.from != null -> stringResource(R.string.journal_empty_range, shown.dateLabel)
+                            one != null -> stringResource(R.string.journal_empty_one_habit, one.name)
+                            else -> pluralStringResource(R.plurals.journal_empty_n_habits, picked.size, picked.size)
+                        },
+                        text = if (one != null && shown.from == null) stringResource(R.string.journal_empty_one_habit_text, one.name)
+                            else stringResource(R.string.journal_empty_earlier),
+                        action = stringResource(R.string.journal_show_all),
+                        onAction = viewModel::showAllNotes,
+                    )
+                } else {
+                    EmptyJournal(null, stringResource(R.string.journal_empty), stringResource(R.string.journal_empty_hint), action = null, onAction = {})
+                }
+            }
+        } else LazyColumn(
             Modifier.weight(1f).fillMaxWidth(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 104.dp),
             verticalArrangement = Arrangement.spacedBy(GroupGap),
         ) {
             val list = state?.days
-            val shown = state
-            if (shown != null && shown.days.isEmpty() && shown.hasNotes) {
-                // The filters hide every note: say which ones, and offer the way back.
-                item(key = "empty-filter") {
-                    EmptyJournal(
-                        title = if (shown.from != null) {
-                            stringResource(R.string.journal_empty_range, shown.dateLabel)
-                        } else {
-                            stringResource(R.string.journal_empty_habits)
-                        },
-                        text = stringResource(R.string.journal_empty_earlier),
-                        action = stringResource(R.string.journal_show_all),
-                        onAction = viewModel::showAllNotes,
-                    )
-                }
-            } else if (shown != null && shown.days.isEmpty()) {
-                item(key = "empty") {
-                    EmptyJournal(stringResource(R.string.journal_empty), stringResource(R.string.journal_empty_hint), action = null, onAction = {})
-                }
-            }
             list.orEmpty().forEachIndexed { index, day ->
                 item(key = "d${day.day}") {
                     // The day on the left, how many notes it has on the right. The list's own 2 dp
@@ -224,6 +236,7 @@ fun JournalScreen(
         HabitFilterSheet(
             options = ui.options,
             selected = ui.filter,
+            helper = stringResource(R.string.filter_helper_journal),
             applyLabel = { n -> if (n == 0) res.getString(R.string.journal_show_all) else res.getQuantityString(R.plurals.journal_show_for_habits, n, n) },
             onApply = { ids -> viewModel.setFilter(ids); choosing = false },
             onDismiss = { choosing = false },
@@ -232,27 +245,62 @@ fun JournalScreen(
 }
 
 /**
- * Nothing to list: the note icon on a secondaryContainer tile, what is missing and why, and with [action] a tonal button that
- * brings every note back.
+ * Nothing to list (journal-empty.png): two note cards (the front one with [habit]'s tile, or the
+ * note icon), what is missing and why, and with [action] a secondary button that brings every
+ * note back.
  */
 @Composable
-private fun EmptyJournal(title: String, text: String, action: String?, onAction: () -> Unit) {
+private fun EmptyJournal(habit: HabitFilterOption?, title: String, text: String, action: String?, onAction: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    Column(Modifier.fillMaxWidth().padding(top = 72.dp, start = 16.dp, end = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        // The app's own note icon (edit_note, as on the Evening journal habit) on an accent tile.
-        Box(Modifier.size(72.dp).background(colors.secondaryContainer, RoundedCornerShape(24.dp)), contentAlignment = Alignment.Center) {
-            Icon(painterResource(R.drawable.ic_sym_edit_note), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.size(32.dp))
-        }
-        Text(title, style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
+    // About as wide as the mockup's text block, so lines break evenly on wide phones too.
+    Column(Modifier.widthIn(max = EmptyTextWidth).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        EmptyNotesPicture(habit)
+        Text(title, style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 32.dp))
         Text(text, style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
         if (action != null) {
-            FilledTonalButton(
-                onClick = onAction,
-                colors = ButtonDefaults.filledTonalButtonColors(containerColor = colors.secondaryContainer, contentColor = colors.onSecondaryContainer),
-                modifier = Modifier.padding(top = 20.dp).heightIn(min = 40.dp),
-            ) {
-                Text(action, style = WeftType.label)
+            WeftButton(action, ButtonRole.Secondary, onClick = onAction, modifier = Modifier.padding(top = 24.dp))
+        }
+    }
+}
+
+/** The empty state's text column, at most this wide. */
+private val EmptyTextWidth = 300.dp
+
+/** Size of the front note card in the empty state picture. */
+private val EmptyCardWidth = 156.dp
+private val EmptyCardHeight = 112.dp
+
+/** Two tilted note cards: a faded one behind, and in front one with the habit's tile and text lines. */
+@Composable
+private fun EmptyNotesPicture(habit: HabitFilterOption?) {
+    val colors = MaterialTheme.colorScheme
+    val card = colors.surfaceContainerLowest
+    val line = colors.surfaceContainerHigh
+    Box(Modifier.size(width = 200.dp, height = 136.dp)) {
+        // Back card: faded, tilted the other way, peeking out on the left.
+        Column(
+            Modifier.align(Alignment.CenterStart).offset(y = 8.dp).rotate(-5f).alpha(0.6f)
+                .size(width = 120.dp, height = 72.dp).background(card, RoundedCornerShape(16.dp)).padding(start = 14.dp, top = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            listOf(28.dp, 36.dp, 24.dp).forEach { Box(Modifier.size(width = it, height = 7.dp).background(line, CircleShape)) }
+        }
+        // Front card.
+        Column(
+            Modifier.align(Alignment.CenterEnd).rotate(4f)
+                .shadow(6.dp, RoundedCornerShape(18.dp), ambientColor = colors.onSurface.copy(alpha = 0.2f), spotColor = colors.onSurface.copy(alpha = 0.2f))
+                .size(EmptyCardWidth, EmptyCardHeight).background(card, RoundedCornerShape(18.dp)).padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val (soft, ink) = habit?.let { habitColors(it.hue).let { hc -> hc.soft to hc.ink } } ?: (colors.secondaryContainer to colors.onSecondaryContainer)
+                Box(Modifier.size(24.dp).background(soft, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(habit?.icon ?: R.drawable.ic_sym_edit_note), contentDescription = null, tint = ink, modifier = Modifier.size(15.dp))
+                }
+                Box(Modifier.padding(start = 10.dp).size(width = 60.dp, height = 8.dp).background(line, CircleShape))
             }
+            Spacer(Modifier.size(2.dp))
+            listOf(84.dp, 108.dp, 64.dp).forEach { Box(Modifier.size(width = it, height = 8.dp).background(line, CircleShape)) }
         }
     }
 }

@@ -2,13 +2,13 @@
 """Recaptures the README shots (docs/screenshots/) and the raw shots for the store images.
 
     ./gradlew :app:assemblePlayDebug
-    python3 tools/verify/capture_docs.py docs            # docs/screenshots/*.png (Amber, the default)
+    python3 tools/verify/capture_docs.py docs            # docs/screenshots/*.png (Rust, the default)
     python3 tools/verify/capture_docs.py store <dir>     # raw shots for tools/store_shots.py and
                                                          # tools/feature_graphic.py, in the store colours
 
 Same set-up as tools/verify/capture.py: a rootable emulator (Sprout_API_35), sample data on Sunday
-27 Sep, the status bar at 9:30. The store set turns on Dynamic color with the system palette seeded
-from the store page's rose-brown (#77453F), so the app shows that accent (user, 2026-11-08). The
+27 Sep, the status bar at 9:30. The store set uses the app's default accent, Rust, like the store
+page around it (user, 2026-11-09; before, Dynamic color seeded from the rose-brown #77453F). The
 widget shots are cut out of the home screen by the widget's own bounds; this clears the launcher.
 """
 import os
@@ -20,7 +20,6 @@ import capture as c  # noqa: E402
 import device as d  # noqa: E402
 
 ROOT = c.ROOT
-STORE_SEED = "77453F"
 
 
 def shot(path):
@@ -86,7 +85,7 @@ def widget_board(full_path, crops=None):
     q = lambda sql: d.shell(f'sqlite3 {db} "{sql}"')  # noqa: E731
     day = int(d.shell("date +%s").strip()) // 86400
     d.shell(f"am force-stop {d.PACKAGE}")
-    q("update habit set archived=1 where name in ('Stay calm','Walk outside')")
+    q("update habit set archived=1 where name in ('No sugar','Walk outside')")
     # Wake up at 7 again too: the alarm capture clears its day.
     for name, amount in (("Wake up at 7", 1), ("Workout", 45), ("Vitamins", 1)):
         q(f"insert or replace into entry(habitId, date, status, amount, loggedAt) "
@@ -162,16 +161,8 @@ def store(out):
         d.tap_xy(int(w * 0.86), n.center[1])
         time.sleep(1.5)
     assert not d.exists("These are sample habits", timeout=1), "the sample banner is still there"
-    # The system palette from the store's rose-brown, then Dynamic color on in the app.
-    d.shell("settings put secure theme_customization_overlay_packages "
-            f"'{{\"android.theme.customization.system_palette\":\"{STORE_SEED}\","
-            f"\"android.theme.customization.accent_color\":\"{STORE_SEED}\","
-            "\"android.theme.customization.theme_style\":\"TONAL_SPOT\","
-            "\"android.theme.customization.color_source\":\"preset\"}'")
-    time.sleep(4)
-    front(); d.nav("More"); d.scroll_to_top()
-    d.tap("Dynamic color")
-    time.sleep(2)
+    # The app in its default accent, Rust (user, 2026-11-09), like the page around it.
+    front()
     d.nav("Today"); d.scroll_to_top(); shot(p("today"))
     long_press_read(); shot(p("amount-sheet")); d.back()
     d.nav("Habits"); d.tap("Week"); shot(p("habits-week"))

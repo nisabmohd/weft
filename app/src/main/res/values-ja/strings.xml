@@ -50,8 +50,7 @@
     <string name="insights_lowest">最も低いスコア</string>
     <string name="insights_weekly_rhythm">週のリズム</string>
     <string name="insights_breakdown">習慣ごと</string>
-    <string name="journal_empty_range">%1$sのメモはありません</string>
-    <string name="journal_empty_habits">これらの習慣のメモはありません</string>
+    <string name="journal_empty_range">%1$s のメモはありません</string>
     <string name="journal_empty_earlier">以前のメモは残っています。</string>
     <string name="journal_empty_hint">習慣からメモを追加するか、「メモを追加」をタップしてください。</string>
     <string name="insights_streak_short">%1$d日</string>
@@ -169,8 +168,7 @@
     <string name="general">一般</string>
     <string name="week_starts_on">週の始まり</string>
     <string name="default_reminder">標準のリマインダー</string>
-    <string name="default_reminder_desc">新しいリマインダーのおすすめ時刻</string>
-    <string name="notifications">通知</string>
+    <string name="default_reminder_desc">新しい習慣用</string>
     <string name="about_weft">Weft について</string>
     <string name="version_open_source">バージョン %1$s・オープンソース</string>
     <string name="accent">アクセントカラー</string>
@@ -476,18 +474,18 @@
     <string name="sample_wake">7時に起きる</string>
     <string name="sample_read">読書</string>
     <string name="sample_water">水を飲む</string>
-    <string name="sample_calm">落ち着く</string>
+    <string name="sample_no_sugar">砂糖なし</string>
     <string name="sample_workout">運動</string>
     <string name="sample_vitamins">ビタミン</string>
     <string name="sample_walk">外を歩く</string>
     <string name="sample_journal">夜の日記</string>
     <string name="sample_unit_pages">ページ</string>
     <string name="sample_unit_glasses">杯</string>
-    <string name="sample_note_calm_today">つらい朝だったけど、いつもより早く気づけた。</string>
+    <string name="sample_note_sugar_today">職場の誕生日ケーキ。小さく一切れだけにした。</string>
     <string name="sample_note_read">8ページだけ。寝落ちした。22時前に始める。</string>
     <string name="sample_note_workout">脚の日。調子が良く、スクワットを5kg増やした。</string>
     <string name="sample_note_journal">今週のことを1ページ書いた。思ったより落ち着いている。</string>
-    <string name="sample_note_calm">デプロイが失敗して同僚にきつく当たった。疲れていて何も食べていなかった。</string>
+    <string name="sample_note_sugar">長い一日で、帰り道にチョコを買った。昼ごはんを食べていなかった。</string>
     <string name="sample_note_walk">仕事のあと湖のほとりを長く散歩。スマホはポケットのまま。</string>
     <string name="sample_note_water">忙しい日で、ボトルを家に忘れた。</string>
     <string name="sample_card_title">これはサンプルの習慣です</string>
@@ -640,31 +638,21 @@
     <string name="alarm_position">%1$d / %2$d</string>
 
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
-    <string name="alarms">アラーム</string>
-    <string name="alarms_all_set">準備完了</string>
-    <string name="alarms_all_set_desc">アラームは時間どおりに鳴ります</string>
-    <string name="alarms_may_not_ring">アラームが時間どおりに鳴らないことがあります</string>
     <string name="action_done">完了</string>
     <string name="set_up_alarms">アラームの設定</string>
-    <string name="alarm_need_notifications">通知</string>
-    <string name="alarm_need_notifications_desc">アラームを表示するため</string>
-    <string name="alarm_need_exact">アラームとリマインダー</string>
-    <string name="alarm_need_exact_desc">時間ぴったりに鳴らすため</string>
-    <string name="alarm_need_full_screen">全画面アラーム</string>
-    <string name="alarm_need_full_screen_desc">ロック中に全画面で表示するため</string>
+    <string name="alarm_need_notifications">リマインダーを表示</string>
+    <string name="alarm_need_exact">時刻ちょうどに鳴らす</string>
+    <string name="alarm_need_full_screen">ロック中は全画面で鳴らす</string>
     <string name="alarm_overlay">他のアプリの上に表示</string>
-    <string name="alarm_overlay_desc">任意 · 一部のスマートフォンで役立ちます</string>
+    <string name="alarm_overlay_desc">任意 · アラームを開きやすくします</string>
     <string name="alarm_lock_screen">ロック画面とポップアップ</string>
-    <string name="alarm_lock_screen_desc">設定で一度確認してください</string>
+    <string name="alarm_lock_screen_desc">両方をオンに</string>
     <string name="alarm_battery">バッテリー</string>
-    <string name="alarm_battery_desc">一度「制限しない」を選んでください</string>
+    <string name="alarm_battery_desc">「制限しない」に設定</string>
     <string name="alarm_use_notification">代わりに通知を使う</string>
-    <string name="alarms_needed">必要</string>
-    <string name="alarms_some_phones">一部のスマートフォン</string>
     <string name="alarms_sound_section">サウンド</string>
     <string name="alarm_sound">アラーム音</string>
     <string name="alarm_vibrate">バイブレーション</string>
-    <string name="alarm_vibrate_desc">音と一緒に</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">デフォルト</string>
     <string name="alarm_sound_weft_soft">Weft · ソフト</string>
@@ -678,11 +666,36 @@
     <string name="reminder_fix_notifications">通知がオフです</string>
     <string name="reminder_fix_exact">遅れて鳴ることがあります</string>
     <string name="reminder_fix_full_screen">全画面で鳴らせません</string>
-    <plurals name="alarms_to_allow">
-        <item quantity="other">許可が必要な項目: %d</item>
+    <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
+    <string name="reminders_alarms">リマインダーとアラーム</string>
+    <string name="reminders_section">リマインダー</string>
+    <string name="allow_weft_to">Weft に許可すること</string>
+    <string name="extra_phone_settings">端末の追加設定</string>
+    <string name="extra_phone_settings_desc">一部の端末でのみ必要</string>
+    <string name="extra_phone_settings_text">端末によってはアラームを勝手に止めることがあります。Android からはこれらがオンか分からないので、一度確認してください。</string>
+    <string name="notification_sound">通知音</string>
+    <string name="reminders_all_allowed">通知とアラームは許可済み</string>
+    <string name="reminders_off_notifications">通知がオフです</string>
+    <string name="reminders_off_exact">アラームが遅れて鳴ることがあります</string>
+    <string name="reminders_off_full_screen">アラームを全画面で鳴らせません</string>
+    <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
+    <string name="filter_helper_journal">習慣をタップすると、そのメモだけを表示します。</string>
+    <string name="filter_helper_insights">習慣をタップすると、そのスコアだけを表示します。</string>
+    <string name="journal_empty_one_habit">%1$s のメモはまだありません</string>
+    <string name="journal_empty_one_habit_text">%1$s を記録するときに書いたメモがここに表示されます。</string>
+    <string name="journal_empty_filters">この条件のメモはありません</string>
+    <plurals name="journal_empty_n_habits">
+        <item quantity="other">%d 件の習慣のメモはありません</item>
     </plurals>
-    <string name="notify_need_notifications_desc">リマインダーを表示するため</string>
-    <string name="notify_need_exact_desc">時間どおりに届くように</string>
-    <string name="notify_style">音とスタイル</string>
-    <string name="notify_style_desc">Android の通知設定</string>
+    <!-- 1.6.2: new habit icons -->
+    <string name="icon_breathe">呼吸</string>
+    <string name="icon_gratitude">感謝</string>
+    <string name="icon_focus">集中</string>
+    <string name="icon_less_social_media">SNS を控える</string>
+    <string name="icon_less_coffee">コーヒーを控える</string>
+    <string name="icon_no_sugar">砂糖なし</string>
+    <string name="icon_sunlight">日光</string>
+    <string name="icon_speak">話す</string>
+    <string name="icon_weekly_review">週の振り返り</string>
+    <string name="icon_scripture">聖典</string>
 </resources>

@@ -239,12 +239,13 @@ internal fun Pitch() {
                     Text(wake.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(stringResource(R.string.done_at, TodayViewModel.formatTime(6 * 60 + 52)), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                val calm = SampleData.habits(strings)[3]
+                // The streak card is Vitamins (user, 2026-11-09).
+                val vitamins = SampleData.habits(strings)[5]
                 PreviewCard(Modifier.weight(1f).rotate(2f), column = true) {
-                    HabitTile(HabitIcon.fromKey(calm.icon).drawable, calm.colorHue.toFloat())
+                    HabitTile(HabitIcon.fromKey(vitamins.icon).drawable, vitamins.colorHue.toFloat())
                     Spacer(Modifier.height(12.dp))
                     Text(pluralStringResource(R.plurals.streak_days, 11, 11), style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(calm.name, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(vitamins.name, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }

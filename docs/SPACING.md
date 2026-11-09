@@ -58,13 +58,15 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 
 | Element | Size |
 | --- | --- |
-| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Journal, Insights, the filter sheet and the habit picker |
+| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Journal, Insights and the habit picker |
 | Habit tile in the habit detail header | 56dp, 18dp corners |
 | Header icon button | 48dp circle, 22dp icon |
 | Touch target | at least 48dp |
 | Card corners | 24dp (habit cards on Today 22dp); grouped rows 24dp outside, 6dp between |
 | Sheet and dialog corners | 28dp |
 | Filter chip | 32dp tall, 8dp corners |
+| Habit chip (Filter by habit sheet) | 40dp tall, 12dp corners, 6dp left / 14dp right padding, a 28dp habit tile (9dp corners, 16dp icon), chips 8dp apart both ways (`HabitChip*` in `HabitFilterSheet.kt`) |
+| Journal empty state | text column at most 300dp wide (24dp inside); front note card 156 × 112dp, 18dp corners; 32dp to the title, 8dp to the line, 24dp to the button |
 | Day mark | 32dp in Week, 16dp next to an outcome line |
 | Progress bar and score segments | 6dp tall |
 

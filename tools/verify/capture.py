@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Recaptures the design PNGs in design/ from the app, the way they have been taken since 2026-10-19.
 
-Sample data on Sunday 27 Sep, the status bar at 9:30 (demo mode), the default Amber accent and Lexend,
+Sample data on Sunday 27 Sep, the status bar at 9:30 (demo mode), the default Rust accent and Lexend,
 1080 x 2400 at 420 dpi. Needs a rootable emulator (a "default" system image, e.g. Sprout_API_35) to set
 the date, and the play debug build (it has the debug-only SheetPreviewActivity and DriveStateActivity).
 
@@ -202,6 +202,18 @@ def filter_sheet():
 
 
 @screen
+def journal_empty():
+    """The Journal filtered to Vitamins, which has no notes (design 2026-11-09)."""
+    d.nav("Journal")
+    d.tap("Filter by habit")
+    d.tap("Vitamins")
+    d.tap("Show notes for 1 habit", contains=True)
+    assert d.exists("No Vitamins notes yet", timeout=4)
+    save("journal-empty")
+    d.tap("Show all notes")
+
+
+@screen
 def date_range_sheet():
     d.nav("Journal")
     d.tap("Filter by date")
@@ -212,9 +224,11 @@ def date_range_sheet():
 @screen
 def reminder_time_sheet():
     d.nav("More")
-    d.scroll_to("Default reminder")
+    d.scroll_to("Reminders & alarms")
+    d.tap("Reminders & alarms")
     d.tap("Default reminder")
     save("reminder-time-sheet")
+    d.back()
     d.back()
 
 
@@ -357,37 +371,27 @@ def alarm_setup():
 
 
 @screen
-def more_alarms():
-    """More with its Alarms row, the Alarms screen (2 things to allow) and the Alarm sound sheet."""
-    alarm_permissions(True, False, False)
+def more_reminders_alarms():
+    """More with its Reminders & alarms row (full screen can't ring), the screen, the Alarm sound
+    sheet and Extra phone settings (design 2026-11-09), on a phone that passes for a OnePlus."""
+    alarm_permissions(True, True, False)
     d.nav("More")
     d.scroll_to_top()
-    save_full_length("more-alarms-row", 3800)
-    d.scroll_to("Alarms")
-    d.tap("Alarms")
-    assert d.exists("2 things to allow", timeout=5)
-    save("more-alarms-screen")
+    save_full_length("more-reminders-alarms-row", 3800)
+    d.scroll_to("Reminders & alarms")
+    d.tap("Reminders & alarms")
+    assert d.exists("Allow Weft to", timeout=5)
+    save("more-reminders-alarms-screen")
+    d.tap("Extra phone settings")
+    assert d.exists("Turn both on", timeout=5)
+    save("extra-phone-settings-sheet")
+    d.tap("Done")
     d.scroll_to("Alarm sound")
     d.tap("Alarm sound")
     d.tap("Weft")  # plays it: the row says "Playing"
     save("alarm-11-sound-sheet")
     d.back()
     d.back()
-    alarm_permissions_reset()
-
-
-@screen
-def more_notifications():
-    """More with its Notifications row (1 thing to allow: exact alarms off) and the Notifications sheet (1.6.2)."""
-    alarm_permissions(True, False, True)
-    d.nav("More")
-    d.scroll_to_top()
-    save_full_length("more-notifications-row", 3800)
-    d.scroll_to("Notifications")
-    d.tap("Notifications")
-    assert d.exists("Sound and style", timeout=5)
-    save("notifications-setup-sheet")
-    d.tap("Done")
     alarm_permissions_reset()
 
 

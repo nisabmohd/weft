@@ -1,5 +1,6 @@
-• Set up alarms: one sheet shows what alarms need on your phone and opens the right settings.
-• More → Alarms: alarm sound (Weft's own tone, a softer one, or any sound on your phone) and vibrate.
-• OnePlus, Xiaomi and similar phones: optional "Show over other apps" so alarms open on the lock screen.
-• More → Notifications: what reminders need, in one place.
-• Fixed: alarms not opening full screen on some phones, the second alarm's slider, a cut-off Snooze button.
+• Alarms now show on a locked phone, with no white flash.
+• Set up alarms: three switches show what alarms need and open the right settings.
+• More → Reminders & alarms: default time, permissions, alarm sound and vibrate in one place.
+• Alarm sound: Weft's own tone, a softer one, or any sound on your phone.
+• Filter by habit with chips; ten new habit icons.
+• Green accent; Rust is the new default.

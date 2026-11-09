@@ -136,7 +136,7 @@ object WeftType {
     val alarmTime: TextStyle
         @Composable @ReadOnlyComposable get() = displayNumber.let { it.copy(fontSize = it.fontSize * (88f / 40f), lineHeight = it.fontSize * (88f / 40f)) }
 
-    /** Exception: the value in Insights' Patterns cards ("Tuesday", "Stay calm"), 18 SemiBold (design 2026-11-08). */
+    /** Exception: the value in Insights' Patterns cards ("Tuesday", "No sugar"), 18 SemiBold (design 2026-11-08). */
     val patternValue: TextStyle
         @Composable @ReadOnlyComposable get() = cardTitle.let { it.copy(fontSize = it.fontSize * (18f / 16f), lineHeight = it.fontSize * (18f / 16f) * 1.3f) }
 

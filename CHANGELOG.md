@@ -4,18 +4,24 @@
 
 Added:
 
-- Set up alarms: picking Alarm for a reminder shows everything an alarm needs on your phone in one sheet (notifications, Alarms & reminders, full-screen alarms), each with a switch that shows whether it's allowed and opens the right settings page, instead of sending you to one settings page with no explanation. "Use a notification instead" if you'd rather not. The Reminder card says when an alarm can't ring properly ("Alarm · can't ring full screen · tap to fix").
-- More → Alarms: the same setup ("All set" or "2 things to allow"), Alarm sound and Vibrate.
+- Set up alarms: picking Alarm for a reminder shows what an alarm needs on your phone in one sheet, as three switches that show whether each is allowed and open the right settings page: Show reminders, Ring on the minute, Ring full screen when locked. "Use a notification instead" if you'd rather not. The Reminder card says when an alarm can't ring properly ("Alarm · can't ring full screen · tap to fix").
+- More → Reminders & alarms: one place for everything about reminders: the default reminder time (moved here from More), the same three switches, alarm sound, vibrate and notification sound. The row says in plain words when something is off ("Alarms may ring late").
 - Alarm sound: Weft's own tone (the new default) or a softer one, the phone's alarm sound, or any sound on your phone. Tap one to hear it. Backups keep the choice.
-- On OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei and Honor phones: an optional "Show over other apps" switch, so Weft can open a ringing alarm on the locked screen when the phone doesn't, and shortcuts to the lock screen and battery settings these phones add.
-- More → Notifications: what plain reminders need, in one sheet like Set up alarms (notifications, Alarms & reminders so they come on the minute, battery on some phones, and Android's sound and style page). The row says "All set" or "1 thing to allow".
+- Extra phone settings, on OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei, Honor and Samsung phones: an optional "Show over other apps" switch, so Weft can open a ringing alarm when the phone doesn't, and shortcuts to the lock screen and battery settings these phones add.
+- Ten new habit icons: No sugar, Less coffee, Sunlight, Breathe, Scripture, Gratitude, Speak, Focus, Weekly review and Less social media. Water, Medicine, Fasting and Art have clearer icons.
+- A green accent, the logo's colour, in place of amber. Rust is the new default; if you had amber, you now have rust.
 
 Changed:
 
-- With "Show over other apps" on, a ringing alarm now fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
+- Filter by habit (Journal and Insights): habits are chips you tap, with their icons.
+- When a filter leaves the Journal empty, it says which ("No Vitamins notes yet") and offers Show all notes.
+- With "Show over other apps" on, a ringing alarm fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
+- The sample habits have No sugar in place of Stay calm.
 
 Fixed:
 
+- Alarms didn't show on a locked phone: the ringing screen stayed behind the lock screen. It now covers it.
+- The alarm screen flashed a blank white page before it opened. It now opens already drawn, in the habit's colour.
 - After allowing full-screen alarms, the Reminder sheet still said "Allow full-screen alarms in settings".
 - Alarms still didn't open full screen on some phones (OnePlus) with everything allowed: Weft started the screen before Android counted its "Show over other apps" window as shown. It now waits for it, and tries twice.
 - The second of two alarms at the same time ("2 of 2") opened with its slider already on the right.

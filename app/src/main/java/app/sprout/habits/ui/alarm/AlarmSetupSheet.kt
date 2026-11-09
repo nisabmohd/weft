@@ -117,28 +117,19 @@ fun alarmNeedTitle(need: AlarmNeed): String = stringResource(
     },
 )
 
-@Composable
-private fun alarmNeedText(need: AlarmNeed): String = stringResource(
-    when (need) {
-        AlarmNeed.NOTIFICATIONS -> R.string.alarm_need_notifications_desc
-        AlarmNeed.EXACT_ALARMS -> R.string.alarm_need_exact_desc
-        AlarmNeed.FULL_SCREEN -> R.string.alarm_need_full_screen_desc
-    },
-)
-
-/** Row padding in the sheet: full width, the text at the title inset, like `ChoiceRow`. */
+/** Row padding in a sheet: full width, the text at the title inset, like `ChoiceRow`. */
 private val SheetRowPadding = PaddingValues(horizontal = SheetTitleInset, vertical = 6.dp)
 
-/** Row padding on the Alarms screen: inside a grouped card, like `SettingsRow`. */
+/** Row padding inside a grouped card (Reminders & alarms), like `SettingsRow`. */
 val CardRowPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 
 /**
- * A permission row: title, why, and the app's switch showing whether Android allows it. Tapping it
- * (switch included) opens that settings page; the switch follows the real state when the user comes
- * back, as an app can't turn a permission off itself.
+ * A permission row: one line saying what the person gets, and the app's switch showing whether
+ * Android allows it. Tapping it (switch included) opens that settings page; the switch follows the
+ * real state when the user comes back, as an app can't turn a permission off itself.
  */
 @Composable
-fun SetupSwitchRow(title: String, text: String, allowed: Boolean, padding: PaddingValues, onOpen: () -> Unit) {
+fun SetupSwitchRow(title: String, text: String?, allowed: Boolean, padding: PaddingValues, onOpen: () -> Unit) {
     val haptics = LocalHapticFeedback.current
     Row(
         Modifier
@@ -153,9 +144,9 @@ fun SetupSwitchRow(title: String, text: String, allowed: Boolean, padding: Paddi
     }
 }
 
-/** A phone-maker row: Android can't tell if it's on, so no switch; ↗ opens Weft's page in settings. */
+/** A row that opens a page outside Weft (or Extra phone settings): no switch, a muted ↗. */
 @Composable
-fun SetupLinkRow(title: String, text: String, padding: PaddingValues, onOpen: () -> Unit) {
+fun SetupLinkRow(title: String, text: String?, padding: PaddingValues, onOpen: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onOpen).padding(padding),
         verticalAlignment = Alignment.CenterVertically,
@@ -171,62 +162,36 @@ fun SetupLinkRow(title: String, text: String, padding: PaddingValues, onOpen: ()
 }
 
 @Composable
-private fun RowText(title: String, text: String, modifier: Modifier) {
+private fun RowText(title: String, text: String?, modifier: Modifier) {
     Column(modifier.padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
-        Text(text, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        text?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }
 
-/** The permission rows of [state], each its own composable so a screen can group them. */
-fun permissionRows(
-    state: AlarmSetupState,
-    padding: PaddingValues,
-    text: @Composable (AlarmNeed) -> String = { alarmNeedText(it) },
-): List<@Composable () -> Unit> =
+/** The permission rows of [state] (one line each), each its own composable so a screen can group them. */
+fun permissionRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> =
     state.needs.map { need ->
-        @Composable { SetupSwitchRow(alarmNeedTitle(need), text(need), need !in state.missing, padding) { state.open(need) } }
+        @Composable { SetupSwitchRow(alarmNeedTitle(need), null, need !in state.missing, padding) { state.open(need) } }
     }
 
-/** What notification reminders need: the alarm needs without full screen (Notifications, Alarms & reminders). */
-fun AlarmSetupState.forNotifications(): AlarmSetupState {
-    val keep = setOf(AlarmNeed.NOTIFICATIONS, AlarmNeed.EXACT_ALARMS)
-    return AlarmSetupState(needs.filter { it in keep }, missing.filter { it in keep }, showOverApps, open, openShowOverApps, openPhoneSettings)
-}
+/** True on phones whose maker adds its own switches (not on a Pixel): the Extra phone settings row shows. */
+val needsExtraPhoneSettings: Boolean get() = AlarmSetup.showLockScreenRow || AlarmSetup.showBatteryRow
 
+/** "Extra phone settings · Only needed on some phones" ↗: opens [ExtraPhoneSettingsSheet]. */
 @Composable
-private fun notificationNeedText(need: AlarmNeed): String = stringResource(
-    when (need) {
-        AlarmNeed.EXACT_ALARMS -> R.string.notify_need_exact_desc
-        else -> R.string.notify_need_notifications_desc
-    },
-)
-
-/** Show over other apps and the phone-maker rows; empty on phones that don't need them (Pixel). */
-fun phoneRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> = buildList {
-    if (AlarmSetup.showLockScreenRow) {
-        add @Composable {
-            SetupSwitchRow(stringResource(R.string.alarm_overlay), stringResource(R.string.alarm_overlay_desc), state.showOverApps, padding, state.openShowOverApps)
-        }
-        add @Composable {
-            SetupLinkRow(stringResource(R.string.alarm_lock_screen), stringResource(R.string.alarm_lock_screen_desc), padding, state.openPhoneSettings)
-        }
-    }
-    if (AlarmSetup.showBatteryRow) {
-        add @Composable {
-            SetupLinkRow(stringResource(R.string.alarm_battery), stringResource(R.string.alarm_battery_desc), padding, state.openPhoneSettings)
-        }
-    }
-}
+fun ExtraPhoneSettingsRow(padding: PaddingValues, onOpen: () -> Unit) =
+    SetupLinkRow(stringResource(R.string.extra_phone_settings), stringResource(R.string.extra_phone_settings_desc), padding, onOpen)
 
 /**
- * Set up alarms (alarm-9a/b/c-setup-sheet-*.png): everything an alarm needs on this phone as one
- * plain list, then **Use a notification instead** while something required is missing, or **Done**.
- * [onUseNotification] null: the button only closes (opened from More → Alarms).
+ * Set up alarms (alarm-9a/b/c-setup-sheet-*.png): the three switches, Extra phone settings on the
+ * phones that need it, then **Use a notification instead** while a switch is off, or **Done**.
+ * [onUseNotification] null: the button only closes.
  */
 @Composable
 fun AlarmSetupSheet(onDismiss: () -> Unit, onUseNotification: (() -> Unit)? = null) {
     val state = rememberAlarmSetup()
+    var extra by remember { mutableStateOf(false) }
     val useNotification = !state.allSet && onUseNotification != null
     ChoiceSheet(
         title = stringResource(R.string.set_up_alarms),
@@ -240,21 +205,22 @@ fun AlarmSetupSheet(onDismiss: () -> Unit, onUseNotification: (() -> Unit)? = nu
             )
         },
     ) {
-        (permissionRows(state, SheetRowPadding) + phoneRows(state, SheetRowPadding)).forEach { it() }
+        permissionRows(state, SheetRowPadding).forEach { it() }
+        if (needsExtraPhoneSettings) ExtraPhoneSettingsRow(SheetRowPadding) { extra = true }
     }
+    if (extra) ExtraPhoneSettingsSheet(state, onDismiss = { extra = false })
 }
 
 /**
- * More → General → Notifications (user, 2026-11-08; no design yet, see TODO.md): what notification
- * reminders need, built from Set up alarms' rows: Notifications and Alarms & reminders with the
- * real state, Battery on the phones that need it, then Android's own page for sound and style.
+ * Extra phone settings (extra-phone-settings-sheet.png): what some phone makers add on top of
+ * Android. Show over other apps is a switch (Android reports it; optional, never counted); Lock
+ * screen & pop-ups and Battery open Weft's page in settings, as Android can't tell if they're on.
  */
 @Composable
-fun NotificationSetupSheet(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val state = rememberAlarmSetup().forNotifications()
+fun ExtraPhoneSettingsSheet(state: AlarmSetupState, onDismiss: () -> Unit) {
     ChoiceSheet(
-        title = stringResource(R.string.notifications),
+        title = stringResource(R.string.extra_phone_settings),
+        subtitle = stringResource(R.string.extra_phone_settings_text),
         onDismiss = onDismiss,
         footer = {
             WeftButton(
@@ -265,11 +231,12 @@ fun NotificationSetupSheet(onDismiss: () -> Unit) {
             )
         },
     ) {
-        permissionRows(state, SheetRowPadding) { notificationNeedText(it) }.forEach { it() }
+        if (AlarmSetup.showLockScreenRow) {
+            SetupSwitchRow(stringResource(R.string.alarm_overlay), stringResource(R.string.alarm_overlay_desc), state.showOverApps, SheetRowPadding, state.openShowOverApps)
+            SetupLinkRow(stringResource(R.string.alarm_lock_screen), stringResource(R.string.alarm_lock_screen_desc), SheetRowPadding, state.openPhoneSettings)
+        }
         if (AlarmSetup.showBatteryRow) {
             SetupLinkRow(stringResource(R.string.alarm_battery), stringResource(R.string.alarm_battery_desc), SheetRowPadding, state.openPhoneSettings)
         }
-        SetupLinkRow(stringResource(R.string.notify_style), stringResource(R.string.notify_style_desc), SheetRowPadding) { Notifications.openSettings(context) }
     }
 }
-

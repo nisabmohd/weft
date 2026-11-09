@@ -10,6 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,13 +25,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,15 +51,25 @@ import app.sprout.habits.ui.theme.habitColors
 @Immutable
 data class HabitFilterOption(val habitId: Long, val name: String, val icon: Int, val hue: Float)
 
+/** A habit chip in Filter by habit (filter-by-habit-sheet.png): 40 dp tall, 12 dp corners. */
+val HabitChipHeight = 40.dp
+val HabitChipShape = RoundedCornerShape(12.dp)
+/** The small habit tile inside a habit chip: 28 dp, 9 dp corners (about 0.3 × size), 16 dp icon. */
+val HabitChipTileSize = 28.dp
+val HabitChipTileShape = RoundedCornerShape(9.dp)
+val HabitChipIconSize = 16.dp
+
 /**
- * "Filter by habit", shared by Journal and Insights: tick any number of habits, Clear to
- * untick all, then apply. An empty selection means every habit.
+ * "Filter by habit", shared by Journal and Insights (filter-by-habit-sheet.png): every habit as a
+ * chip (tile + name, ✓ when picked), wrapping, then [helper] and one button. Clear unticks all;
+ * an empty selection means every habit. The sheet is only as tall as its chips.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HabitFilterSheet(
     options: List<HabitFilterOption>,
     selected: Set<Long>,
+    helper: String,
     applyLabel: (count: Int) -> String,
     onApply: (Set<Long>) -> Unit,
     onDismiss: () -> Unit,
@@ -71,30 +82,58 @@ fun HabitFilterSheet(
             Text(stringResource(R.string.filter_by_habit), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
             TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = WeftType.label) }
         }
-        LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
-            items(options, key = { it.habitId }) { o ->
-                val hc = habitColors(o.hue)
+        FlowRow(
+            Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding).padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            options.forEach { o ->
                 val checked = o.habitId in picked
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 60.dp)
-                        .toggleable(checked, role = Role.Checkbox) { on -> haptics.toggle(on); picked = if (on) picked + o.habitId else picked - o.habitId }
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    HabitTile(o.icon, hc.soft, hc.ink)
-                    Text(o.name, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(start = 12.dp))
-                    Checkbox(checked = checked, onCheckedChange = null)
-                }
+                HabitChip(o, checked) { on -> haptics.toggle(on); picked = if (on) picked + o.habitId else picked - o.habitId }
             }
         }
+        Text(
+            helper,
+            style = WeftType.supporting,
+            color = colors.onSurfaceVariant,
+            modifier = Modifier.padding(start = SheetTitleInset, end = SheetTitleInset, top = 16.dp),
+        )
         WeftButton(
             applyLabel(picked.size),
             ButtonRole.Primary,
             onClick = { onApply(picked) },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = SheetActionGap).sheetBottomPadding(),
         )
+    }
+}
+
+/** One habit chip: picked = secondaryContainer with a ✓ after the name; not picked = a 1 dp outline. */
+@Composable
+private fun HabitChip(option: HabitFilterOption, checked: Boolean, onToggle: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val hc = habitColors(option.hue)
+    Row(
+        Modifier
+            .heightIn(min = HabitChipHeight)
+            .clip(HabitChipShape)
+            .then(if (checked) Modifier.background(colors.secondaryContainer) else Modifier.border(1.dp, colors.outlineVariant, HabitChipShape))
+            .toggleable(checked, role = Role.Checkbox, onValueChange = onToggle)
+            .padding(start = 6.dp, end = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        HabitTile(hc.soft, Modifier.size(HabitChipTileSize), HabitChipTileShape) {
+            Icon(painterResource(option.icon), contentDescription = null, tint = hc.ink, modifier = Modifier.size(HabitChipIconSize))
+        }
+        Text(
+            option.name,
+            style = WeftType.label,
+            color = if (checked) colors.onSecondaryContainer else colors.onSurface,
+            maxLines = 1,
+            modifier = Modifier.padding(start = 8.dp),
+        )
+        if (checked) {
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(start = 8.dp).size(18.dp))
+        }
     }
 }
 

@@ -73,7 +73,7 @@ import app.sprout.habits.AppContainer
 import app.sprout.habits.data.Settings
 import app.sprout.habits.ui.more.AboutScreen
 import app.sprout.habits.ui.more.BackupRestoreScreen
-import app.sprout.habits.ui.more.AlarmsScreen
+import app.sprout.habits.ui.more.RemindersAlarmsScreen
 import app.sprout.habits.ui.more.LicencesScreen
 import app.sprout.habits.ui.more.MoreScreen
 import app.sprout.habits.R
@@ -231,7 +231,7 @@ fun WeftNavHost(
                     container.settings,
                     container.drive,
                     onOpenBackup = { navController.navigate(BackupRoute) },
-                    onOpenAlarms = { navController.navigate(AlarmsRoute) },
+                    onOpenAlarms = { navController.navigate(RemindersAlarmsRoute) },
                     onOpenAbout = { navController.navigate(AboutRoute) },
                 )
                 }
@@ -239,8 +239,8 @@ fun WeftNavHost(
             composable<BackupRoute> {
                 BackupRestoreScreen(settings, container.settings, container.backup, container.drive, onBack = { navController.popBackStack() })
             }
-            composable<AlarmsRoute> {
-                AlarmsScreen(settings, container.settings, onBack = { navController.popBackStack() })
+            composable<RemindersAlarmsRoute> {
+                RemindersAlarmsScreen(settings, container.settings, onBack = { navController.popBackStack() })
             }
             composable<AboutRoute> {
                 AboutScreen(container.updates, container.playUpdates, onBack = { navController.popBackStack() }, onOpenLicences = { navController.navigate(LicencesRoute) })

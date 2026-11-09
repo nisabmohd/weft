@@ -79,13 +79,14 @@ fun ActionRow(
             Modifier
                 .size(ActionTileSize)
                 .clip(HabitTileShape)
-                .background(tileColor ?: if (destructive) colors.errorContainer else colors.secondaryContainer),
+                // primaryContainer, like "Help translate Weft": secondaryContainer blended into the row (2026-11-09).
+                .background(tileColor ?: if (destructive) colors.errorContainer else colors.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                tint = iconColor ?: if (destructive) colors.error else colors.onSecondaryContainer,
+                tint = iconColor ?: if (destructive) colors.error else colors.onPrimaryContainer,
                 modifier = Modifier.size(ActionIconSize),
             )
         }

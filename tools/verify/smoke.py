@@ -375,7 +375,7 @@ def note_suggestions():
 @check
 def journal_lists_and_adds_notes():
     d.nav("Journal")
-    assert d.exists("Rough morning", contains=True), "seeded note missing"
+    assert d.exists("Office birthday cake", contains=True), "seeded note missing"
     d.tap("Add note")
     # Add note starts on the habit logged last today, which is Deep work after measure_with_step;
     # journal_filter_by_habit needs Deep work without notes, so write this one on Read (no note today).
@@ -435,7 +435,7 @@ def icon_picker():
 @check
 def journal_long_press_actions():
     d.nav("Journal")
-    d.long_press("Rough morning, but I noticed it sooner than usual.")
+    d.long_press("Office birthday cake. Had a small slice and stopped there.")
     for label in ["Edit note", "Share", "Delete note"]:
         assert d.exists(label), f"long-press sheet missing {label}"
     d.back()
@@ -455,10 +455,10 @@ def journal_filter_by_habit():
     d.nav("Journal")
     d.tap("Filter by habit")
     assert d.exists("Show all notes"), "filter sheet didn't open"
-    d.tap("Stay calm")
+    d.tap("No sugar")
     d.tap("Show notes for 1 habit")
     time.sleep(1)
-    assert d.exists("Rough morning", contains=True), "Stay calm's note missing when filtered"
+    assert d.exists("Office birthday cake", contains=True), "No sugar's note missing when filtered"
     assert not d.exists("Smoke test note", timeout=1), "another habit's note shown under the filter"
     d.tap("Filter by habit")
     d.tap("Clear")
@@ -468,9 +468,9 @@ def journal_filter_by_habit():
     d.tap_xy(*n.center)
     d.tap("Show notes for 1 habit")
     time.sleep(1)
-    assert d.exists("No notes for these habits"), "empty filter message missing"
+    assert d.exists("No Deep work notes yet"), "empty filter message missing (it names the habit, 2026-11-09)"
     d.tap("Show all notes")
-    assert d.exists("Rough morning", contains=True), "filter didn't reset"
+    assert d.exists("Office birthday cake", contains=True), "filter didn't reset"
 
 
 @check
@@ -483,7 +483,7 @@ def journal_filter_by_date():
     d.tap(str(today.day))
     d.tap("Show", contains=True)
     time.sleep(1)
-    assert d.exists("Rough morning", contains=True), "today's note missing under a today-only range"
+    assert d.exists("Office birthday cake", contains=True), "today's note missing under a today-only range"
     assert d.exists(f"{today.day} ", contains=True), "date chip doesn't show the range"
     d.tap("Clear date filter")
     assert not d.exists("Clear date filter", timeout=1.0), "the chip's ✕ didn't clear the range"
@@ -524,7 +524,7 @@ def note_date_in_a_sheet():
 
 @check
 def note_shows_the_saved_one_for_that_day():
-    # The sample data has a Stay calm note for today.
+    # The sample data has a No sugar note for today.
     d.nav("Journal")
     d.tap("Add note")
     time.sleep(1)
@@ -532,8 +532,8 @@ def note_shows_the_saved_one_for_that_day():
         d.back()
     d.tap("Choose habit")
     time.sleep(1)
-    d.tap("Stay calm")
-    assert d.exists("Rough morning", contains=True), "the day's saved note isn't shown in the form"
+    d.tap("No sugar")
+    assert d.exists("Office birthday cake", contains=True), "the day's saved note isn't shown in the form"
     assert d.exists("Edit note"), "the form didn't switch to editing the saved note"
     d.tap("Close")
 
@@ -1588,7 +1588,7 @@ def alarm_without_exact_alarms_opens_setup():
         d.tap("Alarm")
         # 1.6.2: picking Alarm opens Set up alarms with every need, not a settings page.
         assert d.exists("Set up alarms", timeout=3), "picking Alarm without exact alarms doesn't open Set up alarms"
-        assert d.exists("Alarms & reminders"), "Set up alarms has no Alarms & reminders row"
+        assert d.exists("Ring on the minute"), "Set up alarms has no Ring on the minute row"
         assert d.exists("Use a notification instead"), "Set up alarms offers no way out while something is missing"
         d.back()  # keep Alarm: the card warns
         d.tap("Set reminder")
@@ -1603,13 +1603,16 @@ def alarm_without_exact_alarms_opens_setup():
 
 
 @check
-def more_alarms_screen():
+def more_reminders_alarms_screen():
+    """More → Reminders & alarms (design 2026-11-09): one row, then Reminders, Allow Weft to and Sound."""
     d.open_app()
     d.nav("More")
-    assert d.scroll_to("Alarms"), "no Alarms row in More"
-    d.tap("Alarms")
-    for label in ("Needed", "Notifications", "Alarms & reminders", "Full-screen alarms", "Sound", "Alarm sound", "Vibrate"):
-        assert d.scroll_to(label), f"Alarms screen is missing {label!r}"
+    assert not d.exists("Default reminder", timeout=1), "Default reminder is still in More → General"
+    assert d.scroll_to("Reminders & alarms"), "no Reminders & alarms row in More"
+    d.tap("Reminders & alarms")
+    for label in ("Reminders", "Default reminder", "Allow Weft to", "Show reminders", "Ring on the minute",
+                  "Ring full screen when locked", "Sound", "Alarm sound", "Vibrate", "Notification sound"):
+        assert d.scroll_to(label), f"Reminders & alarms is missing {label!r}"
     d.tap("Alarm sound")
     for label in ("Weft", "Weft · Soft", "Phone’s alarm sound", "Choose from phone"):
         assert d.exists(label, timeout=3), f"Alarm sound sheet is missing {label!r}"
