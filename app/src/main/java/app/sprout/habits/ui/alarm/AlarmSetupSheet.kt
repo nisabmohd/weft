@@ -64,6 +64,8 @@ class AlarmSetupState(
     val missing: List<AlarmNeed>,
     /** The optional Show over other apps; never counted in [missing]. */
     val showOverApps: Boolean,
+    /** Banner notifications: how many of Weft's channels show as banners, of how many ("1 of 2 on"). */
+    val bannersOn: Pair<Int, Int>,
     val open: (AlarmNeed) -> Unit,
     val openShowOverApps: () -> Unit,
     val openPhoneSettings: () -> Unit,
@@ -77,10 +79,12 @@ fun rememberAlarmSetup(): AlarmSetupState {
     var needs by remember { mutableStateOf(AlarmSetup.needs(context)) }
     var missing by remember { mutableStateOf(AlarmSetup.missing(context)) }
     var overApps by remember { mutableStateOf(AlarmSetup.canShowOverApps(context)) }
+    var banners by remember { mutableStateOf(Notifications.popUpProgress(context)) }
     fun refresh() {
         needs = AlarmSetup.needs(context)
         missing = AlarmSetup.missing(context)
         overApps = AlarmSetup.canShowOverApps(context)
+        banners = Notifications.popUpProgress(context)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh() }
     var askedAt by remember { mutableLongStateOf(0L) }
@@ -93,6 +97,7 @@ fun rememberAlarmSetup(): AlarmSetupState {
         needs = needs,
         missing = missing,
         showOverApps = overApps,
+        bannersOn = banners,
         open = { need ->
             val askable = need == AlarmNeed.NOTIFICATIONS && Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -112,6 +117,7 @@ fun rememberAlarmSetup(): AlarmSetupState {
 fun alarmNeedTitle(need: AlarmNeed): String = stringResource(
     when (need) {
         AlarmNeed.NOTIFICATIONS -> R.string.alarm_need_notifications
+        AlarmNeed.POP_UP -> R.string.alarm_need_pop_up
         AlarmNeed.EXACT_ALARMS -> R.string.alarm_need_exact
         AlarmNeed.FULL_SCREEN -> R.string.alarm_need_full_screen
     },
@@ -172,7 +178,13 @@ private fun RowText(title: String, text: String?, modifier: Modifier) {
 /** The permission rows of [state] (one line each), each its own composable so a screen can group them. */
 fun permissionRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> =
     state.needs.map { need ->
-        @Composable { SetupSwitchRow(alarmNeedTitle(need), null, need !in state.missing, padding) { state.open(need) } }
+        @Composable {
+            // Banners are one switch per channel in Android: say how far along it is ("1 of 2 on"),
+            // and each tap opens the next one still off.
+            val (on, total) = state.bannersOn
+            val line = if (need == AlarmNeed.POP_UP && on in 1 until total) stringResource(R.string.alarm_need_pop_up_progress, on, total) else null
+            SetupSwitchRow(alarmNeedTitle(need), line, need !in state.missing, padding) { state.open(need) }
+        }
     }
 
 /** True on phones whose maker adds its own switches (not on a Pixel): the Extra phone settings row shows. */
@@ -192,7 +204,9 @@ fun ExtraPhoneSettingsRow(padding: PaddingValues, onOpen: () -> Unit) =
 fun AlarmSetupSheet(onDismiss: () -> Unit, onUseNotification: (() -> Unit)? = null) {
     val state = rememberAlarmSetup()
     var extra by remember { mutableStateOf(false) }
-    val useNotification = !state.allSet && onUseNotification != null
+    // Offered only for what a notification doesn't need (exact time, full screen): without
+    // notifications or pop-ups a notification reminder is no better off.
+    val useNotification = onUseNotification != null && state.missing.any { it == AlarmNeed.EXACT_ALARMS || it == AlarmNeed.FULL_SCREEN }
     ChoiceSheet(
         title = stringResource(R.string.set_up_alarms),
         onDismiss = onDismiss,

@@ -217,8 +217,9 @@ class AlarmActivity : ComponentActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // A volume button only stops the sound; the screen stays to answer it (user, 2026-11-09).
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            silenceAll()
+            if (event?.repeatCount == 0) (application as WeftApp).container.alarmRinger.hush(habitId)
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -279,7 +280,7 @@ class AlarmActivity : ComponentActivity() {
         send(action, id)
     }
 
-    /** The power or a volume button: every ringing alarm stops, like Dismiss on each. */
+    /** The power button: every ringing alarm stops, like Dismiss on each. */
     private fun silenceAll() {
         val ringer = (application as WeftApp).container.alarmRinger
         ringer.queue.value.map { it.habitId }.forEach { id ->

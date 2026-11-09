@@ -383,8 +383,6 @@
     <string name="maybe_later">बाद में</string>
     <string name="channel_reminders">आदत रिमाइंडर</string>
     <string name="channel_reminders_desc">हर आदत के लिए आपके तय समय पर रिमाइंडर।</string>
-    <string name="channel_notes">नोट रिमाइंडर</string>
-    <string name="channel_notes_desc">जब आप कोई ऐसी आदत छोड़ें जो नोट मांगती है, तो शाम को नोट जोड़ने का रिमाइंडर।</string>
     <string name="nudge_title">%1$s · आज कैसा रहा?</string>
     <string name="nudge_text">आज के बारे में नोट जोड़ें।</string>
     <string name="reminder_check">टिक करने का समय हो गया।</string>
@@ -660,6 +658,8 @@
     <string name="action_done">हो गया</string>
     <string name="set_up_alarms">अलार्म सेट करें</string>
     <string name="alarm_need_notifications">रिमाइंडर दिखाना</string>
+    <string name="alarm_need_pop_up">बैनर सूचनाएँ</string>
+    <string name="alarm_need_pop_up_progress">%2$d में से %1$d चालू</string>
     <string name="alarm_need_exact">ठीक समय पर बजना</string>
     <string name="alarm_need_full_screen">लॉक होने पर फ़ुल स्क्रीन बजना</string>
     <string name="alarm_overlay">दूसरे ऐप के ऊपर दिखाएँ</string>
@@ -682,9 +682,11 @@
     <string name="alarm_sound_choose">फ़ोन से चुनें</string>
     <string name="alarm_sound_choose_desc">आपके फ़ोन की कोई भी आवाज़</string>
     <string name="reminder_card_fix">अलार्म · %1$s · ठीक करने के लिए टैप करें</string>
+    <string name="reminder_card_fix_notification">सूचना · %1$s · ठीक करने के लिए टैप करें</string>
     <string name="reminder_fix_notifications">सूचनाएँ बंद हैं</string>
     <string name="reminder_fix_exact">देर से बज सकता है</string>
     <string name="reminder_fix_full_screen">फ़ुल स्क्रीन पर नहीं बज सकता</string>
+    <string name="reminder_fix_pop_up">बैनर बंद हैं</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">रिमाइंडर और अलार्म</string>
     <string name="reminders_section">रिमाइंडर</string>
@@ -695,6 +697,7 @@
     <string name="notification_sound">सूचना की आवाज़</string>
     <string name="reminders_all_allowed">सूचनाएं और अलार्म की अनुमति है</string>
     <string name="reminders_off_notifications">सूचनाएं बंद हैं</string>
+    <string name="reminders_off_pop_up">बैनर सूचनाएँ बंद हैं</string>
     <string name="reminders_off_exact">अलार्म देर से बज सकते हैं</string>
     <string name="reminders_off_full_screen">अलार्म फ़ुल स्क्रीन नहीं बज सकते</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

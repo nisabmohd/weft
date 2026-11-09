@@ -28,7 +28,7 @@ A full-screen activity (`showWhenLocked`, `turnScreenOn`) started by a full-scre
   - Slide: marks the habit Done for today (same as a tap on Today), stops the alarm, and closes the screen.
   - Snooze: stops the alarm and rings again in 10 minutes. Only one snooze is pending at a time.
   - Dismiss: stops the alarm without logging anything.
-  - Power or volume button: silences it, like Dismiss.
+  - Power button: silences it, like Dismiss. A volume button only stops the sound; the screen stays to be answered (user, 2026-11-09).
 - Sound: the default alarm ringtone on the alarm stream, with vibration. It stops by itself after 10 minutes, and a missed-alarm notification is posted ("Wake up at 7 · missed at 6:30").
 - If the habit is already done today, the alarm doesn't ring.
 
@@ -127,9 +127,17 @@ Plain language, short, and built like the app's other sheets.
 - Gradual volume. (Picking the alarm sound is in 1.6.2: section 9.)
 
 ## As built (1.6.0, 2026-11-08)
-- **Power or a volume button** silences every alarm that is ringing, like Dismiss on each (confirmed by the user, 2026-11-08).
+- **The power button** silences every alarm that is ringing, like Dismiss on each (confirmed by the user, 2026-11-08). **A volume button** only stops the sound and keeps the ringing screen (user, 2026-11-09).
 - **Any log of the habit for today** stops its alarm: Done, Skip and Partial, from Today, a widget or a notification. A habit already partly done before the alarm still rings.
 - **Notification reminders** have Done · (+step) · Dismiss, no Snooze; only alarms snooze (see FEATURE-NOTIFICATION-ACTIONS.md).
 - **Opens at once and fades out** (no slide). It starts see-through so Android 12+ shows no splash screen, then turns opaque in onCreate (only an opaque screen covers the lock screen; 1.6.2 stayed see-through and never showed when locked), with the habit's colour painted before the first frame (fixed 2026-11-09).
 - Code: `notify/AlarmRinger.kt` (the queue, `hush` for Log amount, `leave` for Open Weft, the log watcher), `ui/alarm/AlarmActivity.kt`. Every case is a smoke check (`python3 tools/verify/smoke.py alarm`).
 
+
+## 13. Pop-ups and silent channels (2026-11-09, OnePlus 13s, ColorOS 17)
+
+- ColorOS creates every new Weft channel at default importance with no sound and no vibration, whatever Weft asks for. A default-importance alarm never opens full screen (Android needs a pop-up channel), and reminders arrived silently in the shade.
+- Channels are now `reminders_popup` (reminders and the evening note nudge, so one switch less) and `alarms_popup`, both high importance; the old ones are deleted. The alarm channel's own sound is half a second of silence, so no phone files it as Silent; `AlarmSoundService` still plays the alarm.
+- Set up alarms and Reminders & alarms get **Banner notifications** (user's name for it) after Show reminders: always on the phone makers with Extra phone settings, elsewhere only while off. Each tap opens the next channel still off, on its own page; the row says "1 of 2 on" in between. The Reminder card says "banners are off", More says "Banner notifications are off". The fallback buzz is marked as a notification vibration: Android drops a plain one from an app in the background.
+- When a reminder's channel has no sound, Weft plays the phone's notification sound and vibrates itself (`NotificationChime`), except in silent mode (vibrate mode: buzz only), Do Not Disturb, a call, or for a channel the user set Silent or off. A +step update doesn't alert again.
+- ColorOS also stretches a plain exact alarm into a window of up to an hour (measured: 80 s for one 2 minutes away, an hour for one 3 hours away), with battery limits off. On the makers in `AlarmSetup.delaysExactAlarms` notification reminders and the 9 PM note nudge are scheduled as alarm clocks, which stay on the minute; the status bar shows the alarm icon (user's choice, 2026-11-09). Other phones keep plain exact alarms.

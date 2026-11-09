@@ -27,6 +27,12 @@ class ReminderReceiver : BroadcastReceiver() {
                 // and remind about a habit that was already done or skipped.
                 val day = intent.getLongExtra(ReminderScheduler.EXTRA_DAY, ReminderScheduler.NO_DAY)
                 val onTime = day == ReminderScheduler.NO_DAY || day == LocalDate.now().toEpochDay()
+                // A plain exact reminder that came late: this phone holds them back (any maker).
+                // From now on every reminder is an alarm clock, which stays on the minute.
+                val exactAt = intent.getLongExtra(ReminderScheduler.EXTRA_EXACT_AT, ReminderScheduler.NO_TIME)
+                if (exactAt != ReminderScheduler.NO_TIME && AlarmSetup.noteLateness(context, exactAt)) {
+                    container.reminders.rescheduleAll()
+                }
                 when (intent.action) {
                     ReminderScheduler.ACTION_REMINDER -> {
                         val habitId = intent.getLongExtra(ReminderScheduler.EXTRA_HABIT_ID, 0L)

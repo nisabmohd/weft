@@ -383,8 +383,6 @@
     <string name="maybe_later">あとで</string>
     <string name="channel_reminders">習慣のリマインダー</string>
     <string name="channel_reminders_desc">習慣ごとに設定した時刻のリマインダー。</string>
-    <string name="channel_notes">メモのリマインダー</string>
-    <string name="channel_notes_desc">メモを求める習慣をスキップしたとき、夜にメモを促すお知らせ。</string>
     <string name="nudge_title">%1$s・今日はどうでしたか？</string>
     <string name="nudge_text">今日のことをメモしましょう。</string>
     <string name="reminder_check">チェックする時間です。</string>
@@ -641,6 +639,8 @@
     <string name="action_done">完了</string>
     <string name="set_up_alarms">アラームの設定</string>
     <string name="alarm_need_notifications">リマインダーを表示</string>
+    <string name="alarm_need_pop_up">バナー通知</string>
+    <string name="alarm_need_pop_up_progress">%2$d 件中 %1$d 件オン</string>
     <string name="alarm_need_exact">時刻ちょうどに鳴らす</string>
     <string name="alarm_need_full_screen">ロック中は全画面で鳴らす</string>
     <string name="alarm_overlay">他のアプリの上に表示</string>
@@ -663,9 +663,11 @@
     <string name="alarm_sound_choose">スマートフォンから選ぶ</string>
     <string name="alarm_sound_choose_desc">スマートフォンの好きな音</string>
     <string name="reminder_card_fix">アラーム · %1$s · タップして修正</string>
+    <string name="reminder_card_fix_notification">通知 · %1$s · タップして修正</string>
     <string name="reminder_fix_notifications">通知がオフです</string>
     <string name="reminder_fix_exact">遅れて鳴ることがあります</string>
     <string name="reminder_fix_full_screen">全画面で鳴らせません</string>
+    <string name="reminder_fix_pop_up">バナーがオフです</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">リマインダーとアラーム</string>
     <string name="reminders_section">リマインダー</string>
@@ -676,6 +678,7 @@
     <string name="notification_sound">通知音</string>
     <string name="reminders_all_allowed">通知とアラームは許可済み</string>
     <string name="reminders_off_notifications">通知がオフです</string>
+    <string name="reminders_off_pop_up">バナー通知がオフです</string>
     <string name="reminders_off_exact">アラームが遅れて鳴ることがあります</string>
     <string name="reminders_off_full_screen">アラームを全画面で鳴らせません</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

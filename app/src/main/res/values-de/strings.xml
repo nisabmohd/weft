@@ -383,8 +383,6 @@
     <string name="maybe_later">Vielleicht später</string>
     <string name="channel_reminders">Gewohnheits-Erinnerungen</string>
     <string name="channel_reminders_desc">Eine Erinnerung zur eingestellten Zeit für jede Gewohnheit.</string>
-    <string name="channel_notes">Notiz-Erinnerungen</string>
-    <string name="channel_notes_desc">Eine Erinnerung am Abend, eine Notiz hinzuzufügen, wenn du eine Gewohnheit auslässt, die danach fragt.</string>
     <string name="nudge_title">%1$s · wie lief es heute?</string>
     <string name="nudge_text">Füge eine Notiz zu heute hinzu.</string>
     <string name="reminder_check">Zeit zum Abhaken.</string>
@@ -659,6 +657,8 @@
     <string name="action_done">Fertig</string>
     <string name="set_up_alarms">Wecker einrichten</string>
     <string name="alarm_need_notifications">Erinnerungen anzeigen</string>
+    <string name="alarm_need_pop_up">Banner-Benachrichtigungen</string>
+    <string name="alarm_need_pop_up_progress">%1$d von %2$d an</string>
     <string name="alarm_need_exact">Auf die Minute klingeln</string>
     <string name="alarm_need_full_screen">Bei Sperre im Vollbild klingeln</string>
     <string name="alarm_overlay">Über anderen Apps anzeigen</string>
@@ -681,9 +681,11 @@
     <string name="alarm_sound_choose">Vom Handy wählen</string>
     <string name="alarm_sound_choose_desc">Jeder Ton auf deinem Handy</string>
     <string name="reminder_card_fix">Wecker · %1$s · zum Beheben tippen</string>
+    <string name="reminder_card_fix_notification">Benachrichtigung · %1$s · zum Beheben tippen</string>
     <string name="reminder_fix_notifications">Benachrichtigungen sind aus</string>
     <string name="reminder_fix_exact">klingelt evtl. zu spät</string>
     <string name="reminder_fix_full_screen">kein Vollbild möglich</string>
+    <string name="reminder_fix_pop_up">Banner sind aus</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Erinnerungen &amp; Wecker</string>
     <string name="reminders_section">Erinnerungen</string>
@@ -694,6 +696,7 @@
     <string name="notification_sound">Benachrichtigungston</string>
     <string name="reminders_all_allowed">Benachrichtigungen und Wecker erlaubt</string>
     <string name="reminders_off_notifications">Benachrichtigungen sind aus</string>
+    <string name="reminders_off_pop_up">Banner-Benachrichtigungen sind aus</string>
     <string name="reminders_off_exact">Wecker klingeln evtl. zu spät</string>
     <string name="reminders_off_full_screen">Wecker können nicht im Vollbild klingeln</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

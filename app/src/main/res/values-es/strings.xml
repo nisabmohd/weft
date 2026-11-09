@@ -383,8 +383,6 @@
     <string name="maybe_later">Quizá luego</string>
     <string name="channel_reminders">Recordatorios de hábitos</string>
     <string name="channel_reminders_desc">Un recordatorio a la hora que elijas para cada hábito.</string>
-    <string name="channel_notes">Recordatorios de notas</string>
-    <string name="channel_notes_desc">Un recordatorio por la noche para añadir una nota cuando omites un hábito que la pide.</string>
     <string name="nudge_title">%1$s · ¿qué tal ha ido hoy?</string>
     <string name="nudge_text">Añade una nota sobre hoy.</string>
     <string name="reminder_check">Es hora de marcarlo.</string>
@@ -675,6 +673,8 @@
     <string name="action_done">Listo</string>
     <string name="set_up_alarms">Configurar alarmas</string>
     <string name="alarm_need_notifications">Mostrar recordatorios</string>
+    <string name="alarm_need_pop_up">Notificaciones de banner</string>
+    <string name="alarm_need_pop_up_progress">%1$d de %2$d activadas</string>
     <string name="alarm_need_exact">Sonar en el minuto exacto</string>
     <string name="alarm_need_full_screen">Sonar a pantalla completa con bloqueo</string>
     <string name="alarm_overlay">Mostrar sobre otras apps</string>
@@ -697,9 +697,11 @@
     <string name="alarm_sound_choose">Elegir del teléfono</string>
     <string name="alarm_sound_choose_desc">Cualquier sonido de tu teléfono</string>
     <string name="reminder_card_fix">Alarma · %1$s · toca para arreglarlo</string>
+    <string name="reminder_card_fix_notification">Notificación · %1$s · toca para arreglarlo</string>
     <string name="reminder_fix_notifications">las notificaciones están desactivadas</string>
     <string name="reminder_fix_exact">puede sonar tarde</string>
     <string name="reminder_fix_full_screen">no puede sonar a pantalla completa</string>
+    <string name="reminder_fix_pop_up">los banners están desactivados</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Recordatorios y alarmas</string>
     <string name="reminders_section">Recordatorios</string>
@@ -710,6 +712,7 @@
     <string name="notification_sound">Sonido de notificación</string>
     <string name="reminders_all_allowed">Notificaciones y alarmas permitidas</string>
     <string name="reminders_off_notifications">Las notificaciones están desactivadas</string>
+    <string name="reminders_off_pop_up">Las notificaciones de banner están desactivadas</string>
     <string name="reminders_off_exact">Las alarmas pueden sonar tarde</string>
     <string name="reminders_off_full_screen">Las alarmas no pueden sonar a pantalla completa</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

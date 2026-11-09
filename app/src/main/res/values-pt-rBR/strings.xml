@@ -383,8 +383,6 @@
     <string name="maybe_later">Talvez depois</string>
     <string name="channel_reminders">Lembretes de hábitos</string>
     <string name="channel_reminders_desc">Um lembrete no horário escolhido para cada hábito.</string>
-    <string name="channel_notes">Lembretes de notas</string>
-    <string name="channel_notes_desc">Um lembrete à noite para adicionar uma nota quando você pula um hábito que pede uma.</string>
     <string name="nudge_title">%1$s · como foi hoje?</string>
     <string name="nudge_text">Adicione uma nota sobre hoje.</string>
     <string name="reminder_check">Hora de marcar.</string>
@@ -676,6 +674,8 @@
     <string name="action_done">Concluído</string>
     <string name="set_up_alarms">Configurar alarmes</string>
     <string name="alarm_need_notifications">Mostre lembretes</string>
+    <string name="alarm_need_pop_up">Notificações em banner</string>
+    <string name="alarm_need_pop_up_progress">%1$d de %2$d ativadas</string>
     <string name="alarm_need_exact">Toque no minuto certo</string>
     <string name="alarm_need_full_screen">Toque em tela cheia quando bloqueado</string>
     <string name="alarm_overlay">Mostrar sobre outros apps</string>
@@ -698,9 +698,11 @@
     <string name="alarm_sound_choose">Escolher do celular</string>
     <string name="alarm_sound_choose_desc">Qualquer som do seu celular</string>
     <string name="reminder_card_fix">Alarme · %1$s · toque para corrigir</string>
+    <string name="reminder_card_fix_notification">Notificação · %1$s · toque para corrigir</string>
     <string name="reminder_fix_notifications">as notificações estão desativadas</string>
     <string name="reminder_fix_exact">pode tocar atrasado</string>
     <string name="reminder_fix_full_screen">não pode tocar em tela cheia</string>
+    <string name="reminder_fix_pop_up">banners desativados</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Lembretes e alarmes</string>
     <string name="reminders_section">Lembretes</string>
@@ -711,6 +713,7 @@
     <string name="notification_sound">Som de notificação</string>
     <string name="reminders_all_allowed">Notificações e alarmes permitidos</string>
     <string name="reminders_off_notifications">As notificações estão desativadas</string>
+    <string name="reminders_off_pop_up">As notificações em banner estão desativadas</string>
     <string name="reminders_off_exact">Os alarmes podem tocar atrasados</string>
     <string name="reminders_off_full_screen">Os alarmes não podem tocar em tela cheia</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

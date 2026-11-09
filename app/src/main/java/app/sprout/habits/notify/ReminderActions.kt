@@ -146,7 +146,7 @@ class ReminderActionReceiver : BroadcastReceiver() {
                 container.notificationUndo.record(context, habit, previous, next)
                 when (next.status) {
                     // Still short of the goal: the same reminder, with the new progress line.
-                    EntryStatus.PARTIAL -> container.reminderNotifier.showReminder(habit)
+                    EntryStatus.PARTIAL -> container.reminderNotifier.showReminder(habit, alert = false)
                     else -> {
                         manager.cancel(ReminderNotifier.reminderId(habit.id))
                         manager.cancel(ReminderNotifier.noteReminderId(habit.id))

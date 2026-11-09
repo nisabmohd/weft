@@ -77,21 +77,23 @@ class ReminderScheduler(
             return
         }
         val at = nextReminderTime(System.currentTimeMillis(), ZoneId.systemDefault(), NOTE_NUDGE_MINUTES, 0b111_1111, 0L) ?: return
-        val dated = notePendingIntent(dayOf(at))
-        if (canScheduleExact()) {
-            alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, dated)
-        } else {
-            alarms.setWindow(AlarmManager.RTC_WAKEUP, at, WINDOW_MILLIS, dated)
+        val plainExact = canScheduleExact() && !AlarmSetup.delaysExactAlarms(context)
+        val dated = notePendingIntent(dayOf(at), if (plainExact) at else NO_TIME)
+        when {
+            canScheduleExact() && AlarmSetup.delaysExactAlarms(context) -> alarms.setAlarmClock(AlarmManager.AlarmClockInfo(at, openApp()), dated)
+            canScheduleExact() -> alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, dated)
+            else -> alarms.setWindow(AlarmManager.RTC_WAKEUP, at, WINDOW_MILLIS, dated)
         }
     }
 
     private fun dayOf(millis: Long): Long =
         java.time.Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay()
 
-    private fun notePendingIntent(day: Long = NO_DAY): PendingIntent = PendingIntent.getBroadcast(
+    /** [exactAt]: the time a plain exact alarm is meant for, so the receiver can tell if it came late. */
+    private fun notePendingIntent(day: Long = NO_DAY, exactAt: Long = NO_TIME): PendingIntent = PendingIntent.getBroadcast(
         context,
         NOTE_NUDGE_REQUEST_CODE,
-        Intent(context, ReminderReceiver::class.java).setAction(ACTION_NOTE_NUDGE).putExtra(EXTRA_DAY, day),
+        Intent(context, ReminderReceiver::class.java).setAction(ACTION_NOTE_NUDGE).putExtra(EXTRA_DAY, day).putExtra(EXTRA_EXACT_AT, exactAt),
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
 
@@ -104,10 +106,11 @@ class ReminderScheduler(
         val at = nextReminderTime(System.currentTimeMillis(), ZoneId.systemDefault(), minutes, key.daysMask, key.firstDay)
         when {
             at == null -> cancel(key.id)
-            // An alarm reminder is an alarm clock: exact, and shown in the status bar.
-            key.type == ReminderType.ALARM && canScheduleExact() ->
+            // An alarm reminder is an alarm clock: exact, and shown in the status bar. So is a
+            // notification reminder on phones that would otherwise send it up to an hour late.
+            (key.type == ReminderType.ALARM || AlarmSetup.delaysExactAlarms(context)) && canScheduleExact() ->
                 alarms.setAlarmClock(AlarmManager.AlarmClockInfo(at, openApp()), pendingIntent(key.id, dayOf(at)))
-            canScheduleExact() -> alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pendingIntent(key.id, dayOf(at)))
+            canScheduleExact() -> alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pendingIntent(key.id, dayOf(at), exactAt = at))
             else -> alarms.setWindow(AlarmManager.RTC_WAKEUP, at, WINDOW_MILLIS, pendingIntent(key.id, dayOf(at)))
         }
     }
@@ -125,11 +128,15 @@ class ReminderScheduler(
 
     fun cancel(habitId: Long) = alarms.cancel(pendingIntent(habitId))
 
-    /** [day] is the date the alarm is meant for, so one that arrives late can tell. */
-    private fun pendingIntent(habitId: Long, day: Long = NO_DAY): PendingIntent = PendingIntent.getBroadcast(
+    /**
+     * [day] is the date the alarm is meant for, so one that arrives late can tell. [exactAt]: the
+     * time of a plain exact alarm, so the receiver can tell if this phone holds them back.
+     */
+    private fun pendingIntent(habitId: Long, day: Long = NO_DAY, exactAt: Long = NO_TIME): PendingIntent = PendingIntent.getBroadcast(
         context,
         habitId.toInt(),
-        Intent(context, ReminderReceiver::class.java).setAction(ACTION_REMINDER).putExtra(EXTRA_HABIT_ID, habitId).putExtra(EXTRA_DAY, day),
+        Intent(context, ReminderReceiver::class.java).setAction(ACTION_REMINDER).putExtra(EXTRA_HABIT_ID, habitId).putExtra(EXTRA_DAY, day)
+            .putExtra(EXTRA_EXACT_AT, exactAt),
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
 
@@ -143,6 +150,8 @@ class ReminderScheduler(
         const val EXTRA_HABIT_ID = "habitId"
         const val EXTRA_DAY = "day"
         const val NO_DAY = Long.MIN_VALUE
+        const val EXTRA_EXACT_AT = "exactAt"
+        const val NO_TIME = 0L
 
         /** 9:00 PM, as in the reminder design. */
         const val NOTE_NUDGE_MINUTES = 21 * 60

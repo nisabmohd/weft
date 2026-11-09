@@ -126,6 +126,7 @@ fun remindersLine(state: AlarmSetupState): String = stringResource(
     when (state.missing.firstOrNull()) {
         null -> R.string.reminders_all_allowed
         AlarmNeed.NOTIFICATIONS -> R.string.reminders_off_notifications
+        AlarmNeed.POP_UP -> R.string.reminders_off_pop_up
         AlarmNeed.EXACT_ALARMS -> R.string.reminders_off_exact
         AlarmNeed.FULL_SCREEN -> R.string.reminders_off_full_screen
     },

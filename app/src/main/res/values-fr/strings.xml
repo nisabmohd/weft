@@ -383,8 +383,6 @@
     <string name="maybe_later">Plus tard</string>
     <string name="channel_reminders">Rappels d\'habitudes</string>
     <string name="channel_reminders_desc">Un rappel à l\'heure choisie pour chaque habitude.</string>
-    <string name="channel_notes">Rappels de notes</string>
-    <string name="channel_notes_desc">Un rappel le soir pour ajouter une note quand vous passez une habitude qui en demande une.</string>
     <string name="nudge_title">%1$s · comment s\'est passée la journée ?</string>
     <string name="nudge_text">Ajoutez une note sur aujourd\'hui.</string>
     <string name="reminder_check">C\'est le moment de le cocher.</string>
@@ -676,6 +674,8 @@
     <string name="action_done">Terminé</string>
     <string name="set_up_alarms">Configurer les alarmes</string>
     <string name="alarm_need_notifications">Afficher les rappels</string>
+    <string name="alarm_need_pop_up">Notifications en bannière</string>
+    <string name="alarm_need_pop_up_progress">%1$d sur %2$d activées</string>
     <string name="alarm_need_exact">Sonner à la minute près</string>
     <string name="alarm_need_full_screen">Sonner en plein écran verrouillé</string>
     <string name="alarm_overlay">Afficher par-dessus les autres apps</string>
@@ -698,9 +698,11 @@
     <string name="alarm_sound_choose">Choisir sur le téléphone</string>
     <string name="alarm_sound_choose_desc">N\'importe quel son du téléphone</string>
     <string name="reminder_card_fix">Alarme · %1$s · touchez pour corriger</string>
+    <string name="reminder_card_fix_notification">Notification · %1$s · touchez pour corriger</string>
     <string name="reminder_fix_notifications">les notifications sont désactivées</string>
     <string name="reminder_fix_exact">peut sonner en retard</string>
     <string name="reminder_fix_full_screen">ne peut pas sonner en plein écran</string>
+    <string name="reminder_fix_pop_up">bannières désactivées</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Rappels et alarmes</string>
     <string name="reminders_section">Rappels</string>
@@ -711,6 +713,7 @@
     <string name="notification_sound">Son des notifications</string>
     <string name="reminders_all_allowed">Notifications et alarmes autorisées</string>
     <string name="reminders_off_notifications">Les notifications sont désactivées</string>
+    <string name="reminders_off_pop_up">Les notifications en bannière sont désactivées</string>
     <string name="reminders_off_exact">Les alarmes peuvent sonner en retard</string>
     <string name="reminders_off_full_screen">Les alarmes ne peuvent pas sonner en plein écran</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

@@ -326,6 +326,11 @@ private fun EditHabitContent(
 
             // alarm-10-reminder-card-warning.png: the most important thing an alarm still needs.
             val alarmWarning = form.reminderOn && form.reminderType == ReminderType.ALARM && !alarmSetup.allSet
+            // A notification reminder needs only notifications and pop-ups (any phone that turns
+            // pop-ups off for new apps, ColorOS first seen, 2026-11-09); tapping opens that setting.
+            val notificationFix = alarmSetup.missing.firstOrNull { it == AlarmNeed.NOTIFICATIONS || it == AlarmNeed.POP_UP }
+                ?.takeIf { form.reminderOn && form.reminderType == ReminderType.NOTIFICATION }
+            val reminderWarning = alarmWarning || notificationFix != null
             Section(stringResource(R.string.reminder)) {
                 Card {
                     Row(
@@ -334,6 +339,8 @@ private fun EditHabitContent(
                             // An alarm that can't ring properly: the card says so, and tapping fixes it.
                             if (alarmWarning) {
                                 settingUpAlarms = true
+                            } else if (notificationFix != null) {
+                                alarmSetup.open(notificationFix)
                             } else {
                                 type = form.reminderType
                                 pickingTime = true
@@ -347,12 +354,13 @@ private fun EditHabitContent(
                             // 16sp like the titles in the card below; 22sp looked too big next to them.
                             Text(TodayViewModel.formatTime(form.reminderMinutes), style = WeftType.cardTitle, color = colors.onSurface)
                             Text(
-                                if (alarmWarning) {
+                                if (reminderWarning) {
                                     stringResource(
-                                        R.string.reminder_card_fix,
+                                        if (alarmWarning) R.string.reminder_card_fix else R.string.reminder_card_fix_notification,
                                         stringResource(
-                                            when (alarmSetup.missing.first()) {
+                                            when (if (alarmWarning) alarmSetup.missing.first() else notificationFix!!) {
                                                 AlarmNeed.NOTIFICATIONS -> R.string.reminder_fix_notifications
+                                                AlarmNeed.POP_UP -> R.string.reminder_fix_pop_up
                                                 AlarmNeed.EXACT_ALARMS -> R.string.reminder_fix_exact
                                                 AlarmNeed.FULL_SCREEN -> R.string.reminder_fix_full_screen
                                             },
@@ -367,7 +375,7 @@ private fun EditHabitContent(
                                     stringResource(R.string.reminder_card_off)
                                 },
                                 style = WeftType.supporting,
-                                color = if (alarmWarning) colors.error else colors.onSurfaceVariant,
+                                color = if (reminderWarning) colors.error else colors.onSurfaceVariant,
                             )
                         }
                         Switch(checked = form.reminderOn, onCheckedChange = { v -> haptics.toggle(v); needsNotifications(v); edit { it.copy(reminderOn = v) } })

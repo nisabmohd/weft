@@ -1412,6 +1412,10 @@ def ringing():
     return "channel=alarms" in d.shell("dumpsys notification --noredact")
 
 
+def sound_playing():
+    return "AlarmSoundService" in d.shell("dumpsys activity services app.sprout.habits")
+
+
 def top_activity():
     return d.shell("dumpsys activity activities | grep -m1 topResumedActivity")
 
@@ -1519,9 +1523,15 @@ def alarm_volume_and_power_keys_silence():
     screen(False)
     fire(h)
     assert "AlarmActivity" in top_activity()
+    assert sound_playing(), "alarm sound didn't start"
+    # Volume only stops the sound: the ringing screen and its card stay to be answered.
     d.shell("input keyevent KEYCODE_VOLUME_DOWN")
     time.sleep(2)
-    assert not ringing(), "volume key didn't silence the alarm"
+    assert not sound_playing(), "volume key didn't stop the sound"
+    assert "AlarmActivity" in top_activity(), "volume key closed the ringing screen"
+    assert ringing(), "volume key dismissed the alarm"
+    press_action(h, "ALARM_DISMISS")
+    assert not ringing()
     # Also as a heads-up (screen on and unlocked): the power button still silences it.
     screen(True)
     d.home()
@@ -1639,6 +1649,27 @@ def alarm_is_an_alarm_clock_and_survives_reboot():
 
 
 @check
+def late_reminder_switches_phone_to_alarm_clocks():
+    """Any phone that holds back an exact reminder (not only the known makers) gets every reminder
+    as an alarm clock from then on (user, 2026-11-09)."""
+    root()
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/device.xml")
+    sql("update habit set reminderType='NOTIFICATION', reminderMinutes=1200")
+    d.open_app()
+    time.sleep(3)
+    assert f"{d.PACKAGE} startActivity" not in d.shell("dumpsys alarm"), "reminders were alarm clocks before any came late"
+    read = habit_id("Read")
+    late = int(time.time() * 1000) - 5 * 60_000
+    d.shell(f"am broadcast -n {RECEIVER} -a app.sprout.habits.action.REMINDER --el habitId {read} --el exactAt {late}")
+    time.sleep(3)
+    assert f"{d.PACKAGE} startActivity" in d.shell("dumpsys alarm"), "a late reminder didn't switch reminders to alarm clocks"
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/device.xml")
+    d.shell("cmd notification cancel_all 2>/dev/null")
+
+
+@check
 def notification_buttons_log_and_offer_undo():
     root()
     d.shell(f"am force-stop {d.PACKAGE}")
@@ -1688,7 +1719,7 @@ def sound_playing():
 def alarm_cards():
     """How many alarm notifications are posted (alarms ringing together are one card)."""
     out = d.shell("dumpsys notification --noredact")
-    return sum(1 for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=alarms_ring" in l)
+    return sum(1 for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=alarms_popup" in l)
 
 
 def make_alarms(*names):

@@ -15,7 +15,7 @@ import app.sprout.habits.data.AlarmSound
  * What an alarm needs from Android (features/FEATURE-ALARM-REMINDERS.md 7): the rows of Set up
  * alarms and More → Alarms, most important first (the Reminder card names the first one missing).
  */
-enum class AlarmNeed { NOTIFICATIONS, EXACT_ALARMS, FULL_SCREEN }
+enum class AlarmNeed { NOTIFICATIONS, POP_UP, EXACT_ALARMS, FULL_SCREEN }
 
 object AlarmSetup {
     /**
@@ -24,12 +24,16 @@ object AlarmSetup {
      */
     fun needs(context: Context): List<AlarmNeed> = buildList {
         if (Build.VERSION.SDK_INT >= 33 || !Notifications.canPost(context)) add(AlarmNeed.NOTIFICATIONS)
+        // Pop-ups: on the makers that turn them off for new apps (ColorOS did, OnePlus 13s,
+        // 2026-11-09), and anywhere they are off. Without them an alarm can't open full screen.
+        if (Notifications.canPost(context) && (showLockScreenRow || !Notifications.canPopUp(context))) add(AlarmNeed.POP_UP)
         if (Build.VERSION.SDK_INT >= 31) add(AlarmNeed.EXACT_ALARMS)
         if (Build.VERSION.SDK_INT >= 34) add(AlarmNeed.FULL_SCREEN)
     }
 
     fun isAllowed(context: Context, need: AlarmNeed): Boolean = when (need) {
         AlarmNeed.NOTIFICATIONS -> Notifications.canPost(context)
+        AlarmNeed.POP_UP -> Notifications.canPopUp(context)
         AlarmNeed.EXACT_ALARMS -> Build.VERSION.SDK_INT < 31 || context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
         AlarmNeed.FULL_SCREEN -> Notifications.canUseFullScreen(context)
     }
@@ -40,6 +44,7 @@ object AlarmSetup {
     /** Opens the system page for [need]. */
     fun open(context: Context, need: AlarmNeed) = when (need) {
         AlarmNeed.NOTIFICATIONS -> Notifications.openSettings(context)
+        AlarmNeed.POP_UP -> Notifications.openPopUpSettings(context)
         AlarmNeed.EXACT_ALARMS -> Notifications.openExactAlarmSettings(context)
         AlarmNeed.FULL_SCREEN -> Notifications.openFullScreenSettings(context)
     }
@@ -69,6 +74,39 @@ object AlarmSetup {
 
     /** The "Show over other apps" and "Lock screen & pop-ups" rows: only on phones whose maker adds its own switches. */
     val showLockScreenRow: Boolean get() = maker in lockScreenMakers
+
+    /**
+     * Phones that hold back a plain exact alarm: ColorOS stretched them into windows of up to an
+     * hour on a OnePlus 13s (2026-11-09, battery limits off), and any phone can in deep sleep or a
+     * battery saver. Only an alarm clock stays on the minute there, so notification reminders and
+     * the note nudge are scheduled as alarm clocks on these phones (user, 2026-11-09), accepting
+     * the status bar's alarm icon. Known makers start that way; any other phone switches the
+     * first time a reminder arrives late ([noteLateness]).
+     */
+    fun delaysExactAlarms(context: Context): Boolean = maker in lockScreenMakers || device(context).getBoolean(KEY_DELAYS, false)
+
+    /**
+     * A plain exact reminder meant for [at] just arrived. More than [LATE_MS] late (and not so late
+     * that the phone was off or the clock moved): remember that this phone delays them. True when
+     * that is new, so the caller reschedules every reminder as an alarm clock.
+     */
+    fun noteLateness(context: Context, at: Long, now: Long = System.currentTimeMillis()): Boolean {
+        val late = now - at
+        if (late < LATE_MS || late > MAX_LATE_MS || device(context).getBoolean(KEY_DELAYS, false)) return false
+        device(context).edit().putBoolean(KEY_DELAYS, true).apply()
+        return true
+    }
+
+    /**
+     * What Weft learned about this phone: a fact about the device, read while scheduling, so a
+     * plain SharedPreferences, not the settings DataStore (and never in a backup, which may be
+     * restored on another phone).
+     */
+    private fun device(context: Context) = context.getSharedPreferences("device", Context.MODE_PRIVATE)
+
+    private const val KEY_DELAYS = "delaysExactAlarms"
+    private const val LATE_MS = 2 * 60_000L
+    private const val MAX_LATE_MS = 6 * 60 * 60_000L
 
     /** The "Battery" row: those makers, plus Samsung, whose battery saver puts apps to sleep. */
     val showBatteryRow: Boolean get() = maker in lockScreenMakers || maker == "samsung"

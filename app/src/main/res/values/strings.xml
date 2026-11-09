@@ -386,9 +386,7 @@
     <string name="star_github">Star on GitHub</string>
     <string name="maybe_later">Maybe later</string>
     <string name="channel_reminders">Habit reminders</string>
-    <string name="channel_reminders_desc">A reminder at the time you set for each habit.</string>
-    <string name="channel_notes">Note reminders</string>
-    <string name="channel_notes_desc">An evening reminder to add a note when you skip a habit that asks for one.</string>
+    <string name="channel_reminders_desc">A reminder at the time you set for each habit, and the evening reminder to add a note when you skip one.</string>
     <string name="nudge_title">%1$s · how did today go?</string>
     <string name="nudge_text">Add a note about today.</string>
     <string name="reminder_check">Time to check it off.</string>
@@ -668,6 +666,8 @@
     <string name="action_done">Done</string>
     <string name="set_up_alarms">Set up alarms</string>
     <string name="alarm_need_notifications">Show reminders</string>
+    <string name="alarm_need_pop_up">Banner notifications</string>
+    <string name="alarm_need_pop_up_progress">%1$d of %2$d on</string>
     <string name="alarm_need_exact">Ring on the minute</string>
     <string name="alarm_need_full_screen">Ring full screen when locked</string>
     <string name="alarm_overlay">Show over other apps</string>
@@ -690,9 +690,11 @@
     <string name="alarm_sound_choose">Choose from phone</string>
     <string name="alarm_sound_choose_desc">Any sound on your phone</string>
     <string name="reminder_card_fix">Alarm · %1$s · tap to fix</string>
+    <string name="reminder_card_fix_notification">Notification · %1$s · tap to fix</string>
     <string name="reminder_fix_notifications">notifications are off</string>
     <string name="reminder_fix_exact">may ring late</string>
     <string name="reminder_fix_full_screen">can’t ring full screen</string>
+    <string name="reminder_fix_pop_up">banners are off</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Reminders &amp; alarms</string>
     <string name="reminders_section">Reminders</string>
@@ -703,6 +705,7 @@
     <string name="notification_sound">Notification sound</string>
     <string name="reminders_all_allowed">Notifications and alarms allowed</string>
     <string name="reminders_off_notifications">Notifications are off</string>
+    <string name="reminders_off_pop_up">Banner notifications are off</string>
     <string name="reminders_off_exact">Alarms may ring late</string>
     <string name="reminders_off_full_screen">Alarms can’t ring full screen</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->

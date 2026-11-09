@@ -29,14 +29,17 @@ class ReminderNotifier(
     private val context: Context,
     private val repository: HabitRepository,
 ) {
-    /** The habit's reminder, unless today is already done or skipped. */
+    /**
+     * The habit's reminder, unless today is already done or skipped. [alert]: false when +step
+     * updates the line of a reminder already showing.
+     */
     @SuppressLint("MissingPermission") // checked by canPost()
-    suspend fun showReminder(habit: Habit) {
+    suspend fun showReminder(habit: Habit, alert: Boolean = true) {
         if (habit.archived || !Notifications.canPost(context)) return
         val entry = repository.getEntry(habit.id, LocalDate.now().toEpochDay())
         if (entry?.status == EntryStatus.DONE || entry?.status == EntryStatus.SKIP) return
         val (title, text) = reminderText(habit, entry?.amount ?: 0.0, ResourceStrings(context))
-        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id), ReminderActions.forReminder(context, habit))
+        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id), ReminderActions.forReminder(context, habit), alert)
     }
 
     /**
@@ -68,17 +71,26 @@ class ReminderNotifier(
             if (repository.getNote(habit.id, day) != null) continue
             post(
                 habit.id,
-                Notifications.CHANNEL_NOTES,
+                Notifications.CHANNEL_REMINDERS,
                 context.getString(R.string.nudge_title, habit.name),
                 context.getString(R.string.nudge_text),
                 noteReminderId(habit.id),
                 ReminderActions.forNoteNudge(context, habit, day),
+                alert = true,
             )
         }
     }
 
     @SuppressLint("MissingPermission")
-    fun post(habitId: Long, channel: String, title: String, text: String, id: Int, actions: List<NotificationCompat.Action> = emptyList()) {
+    fun post(
+        habitId: Long,
+        channel: String,
+        title: String,
+        text: String,
+        id: Int,
+        actions: List<NotificationCompat.Action> = emptyList(),
+        alert: Boolean = false,
+    ) {
         if (!Notifications.canPost(context)) return
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.ic_notification)
@@ -91,6 +103,8 @@ class ReminderNotifier(
         actions.forEach(builder::addAction)
         val notification = builder.build()
         NotificationManagerCompat.from(context).notify(id, notification)
+        // The sound and buzz the phone may have taken off the channel (ColorOS).
+        if (alert) NotificationChime.play(context, channel)
     }
 
     private fun openHabit(habitId: Long, requestCode: Int): PendingIntent = PendingIntent.getActivity(
