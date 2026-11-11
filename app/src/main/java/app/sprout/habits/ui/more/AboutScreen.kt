@@ -60,21 +60,8 @@ fun AboutScreen(updates: UpdateManager, playUpdates: PlayUpdates, onBack: () -> 
                 Spacer(Modifier.height(10.dp))
                 CheckForUpdates(updates, playUpdates)
             }
-            Column(
-                Modifier.fillMaxWidth().background(colors.primaryContainer, RoundedCornerShape(24.dp)).padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painterResource(R.drawable.ic_code), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(22.dp))
-                    Text(stringResource(R.string.free_open_source), style = WeftType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(start = 12.dp))
-                }
-                Text(
-                    // The play and github builds can also back up to Google Drive, so their line says where else data can go.
-                    stringResource(if (BuildConfig.DRIVE_BACKUP) R.string.about_licence_text_drive else R.string.about_licence_text),
-                    style = WeftType.supporting,
-                    color = colors.onPrimaryContainer,
-                )
-            }
+            // One row (design 2026-11-11); the licence itself is under Source code and Open-source licences.
+            app.sprout.habits.ui.components.InfoRow(R.drawable.ic_code, stringResource(R.string.free_open_source), stringResource(R.string.about_open_source_line))
             // Not in the play build: Google Play doesn't allow asking for money outside its own billing.
             if (!BuildConfig.PLAY_STORE) SettingsCard { SupportRow { openUrl(context, BuildConfig.SPONSOR_URL) } }
             val repo = BuildConfig.REPO_URL

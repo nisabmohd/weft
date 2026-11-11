@@ -225,7 +225,6 @@
     <string name="drive_delete_text">This deletes every Weft backup in %1$s. Your data on this phone stays.</string>
     <string name="drive_deleted">Backups deleted from Drive</string>
     <string name="drive_connected_to">Connected to %1$s</string>
-    <string name="about_licence_text_drive">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them or back them up. Drive backups stay in your own Google account.</string>
     <string name="drive_backed_up">Backed up to Google Drive</string>
     <string name="drive_failed">Couldn\'t reach Google Drive. Try again</string>
     <string name="drive_refused">Weft needs Google Drive to keep your backups. Connect again and tick Google Drive</string>
@@ -241,7 +240,6 @@
     <string name="about">About</string>
     <string name="version_build">Version %1$s (build %2$d)</string>
     <string name="free_open_source">Free and open source</string>
-    <string name="about_licence_text">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them.</string>
     <string name="rate_on_play">Rate on Play Store</string>
     <string name="rate_desc">Takes 10 seconds, helps a lot</string>
     <string name="source_code">Source code</string>
@@ -504,9 +502,9 @@
     <string name="sample_note_sugar">Long day, grabbed chocolate on the way home. I hadn\'t eaten lunch.</string>
     <string name="sample_note_walk">Long walk by the lake after work. Phone stayed in my pocket.</string>
     <string name="sample_note_water">Busy day, forgot the bottle at home.</string>
-    <string name="sample_card_title">These are sample habits</string>
-    <string name="sample_card_body">Try swiping, holding and adding notes. Remove them when you\'re ready to add your own.</string>
-    <string name="sample_remove">Remove sample data</string>
+    <string name="sample_card_title">Sample habits</string>
+    <string name="sample_card_body">Swipe or hold to try them</string>
+    <string name="sample_remove">Remove</string>
     <!-- Insights, By habit: kept days out of the scheduled ones (the plural follows the second number), and the current streak. -->
     <plurals name="days_kept">
         <item quantity="one">%1$d of %2$d day</item>
@@ -746,4 +744,5 @@
     <string name="clear_suggestions_text">Writing suggestions stop learning from the notes you’ve written so far. Your notes stay.</string>
     <string name="drive_disconnect_title">Disconnect Google Drive?</string>
     <string name="drive_disconnect_text">Automatic backups stop. Your backups stay in Drive.</string>
+    <string name="about_open_source_line">No ads · no tracking · GPL v3</string>
 </resources>

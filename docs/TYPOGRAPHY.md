@@ -27,9 +27,10 @@ Weights are only **Regular (400)** and **SemiBold (600)**. Line height: about 1.
 - The value in Insights' Patterns cards ("Tuesday", "No sugar") is 18sp SemiBold (`WeftType.patternValue`, design 2026-11-08).
 - Text that would be cut off shrinks to fit, never below its floor in `Type.kt`: nav bar labels (`NavLabelMinSize` 9sp), habit detail stat values (`StatValueMinSize` 16sp) and every button label (`ButtonLabelMinSize` 12sp, e.g. "Snooze 10 min" at a large text size, 2026-11-08).
 - Font previews in More → Font show each name in its own font at 16sp, with "Aa" at 22sp.
+- (Not an exception: design 2026-11-11 asked for 15 / 13 / 14sp on the info rows and note cards; they use `cardTitle`, `supporting` and `body` like every card, user 2026-11-11: "looks so small".)
 
 ## Rules that keep screens consistent
-1. **Every habit card or row** (Today, Week, Overall, Journal, habit detail, Insights → By habit, filter sheet) uses: `cardTitle` for the name, `supporting` for the line under it, `supporting` for plain trailing text, or `label` (text colour) when the trailing text is the main value.
+1. **Every habit card or row** (Today, Week, Overall, Journal, habit detail, Insights → By habit, filter sheet, the info rows) uses: `cardTitle` for the name, `supporting` for the line under it, `supporting` for plain trailing text, or `label` (text colour) when the trailing text is the main value.
 2. **Section labels** above a group of cards are always `label` in muted colour, 4dp from the left edge of the cards. Never 16sp, never 22sp, never primary colour.
 3. **Inside a card**, its own title is `cardTitle`. A card never contains a `title` or `screenTitle`, except stat cards, whose value uses `title`.
 4. **Never mix sizes on one line**, except a hero number followed by its unit ("87%" `screenTitle` + "average" `supporting`).

@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.theme.habitColors
@@ -45,18 +46,26 @@ object ComponentTags {
 
 /** The tile with any content: [container] behind it, [shape] (the habit tile's by default). */
 @Composable
-fun HabitTile(container: Color, modifier: Modifier = Modifier, shape: Shape = HabitTileShape, content: @Composable () -> Unit) {
+fun HabitTile(container: Color, modifier: Modifier = Modifier, shape: Shape = HabitTileShape, size: Dp = HabitTileSize, content: @Composable () -> Unit) {
     Box(
-        modifier.size(HabitTileSize).background(container, shape).testTag(ComponentTags.HABIT_TILE),
+        modifier.size(size).background(container, shape).testTag(ComponentTags.HABIT_TILE),
         contentAlignment = Alignment.Center,
     ) { content() }
 }
 
 /** The tile with an icon in [ink] on [container]. */
 @Composable
-fun HabitTile(@DrawableRes icon: Int, container: Color, ink: Color, modifier: Modifier = Modifier, shape: Shape = HabitTileShape) {
-    HabitTile(container, modifier, shape) {
-        Icon(painterResource(icon), contentDescription = null, tint = ink, modifier = Modifier.size(HabitTileIconSize))
+fun HabitTile(
+    @DrawableRes icon: Int,
+    container: Color,
+    ink: Color,
+    modifier: Modifier = Modifier,
+    shape: Shape = HabitTileShape,
+    size: Dp = HabitTileSize,
+    iconSize: Dp = HabitTileIconSize,
+) {
+    HabitTile(container, modifier, shape, size) {
+        Icon(painterResource(icon), contentDescription = null, tint = ink, modifier = Modifier.size(iconSize))
     }
 }
 

@@ -19,6 +19,8 @@ Changed:
 - With "Show over other apps" on, a ringing alarm fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
 - The sample habits have No sugar in place of Stay calm.
 - Notifications: one "Send notifications" row opens Weft's notification settings, where you choose banners, sound and lock screen. The separate Banner notifications switch is gone; the row says when banners are off.
+- Journal notes are compact: the habit, its mark and the time on one line, the note right under it. A day's notes are one group.
+- Today's sample habits banner and About's Free and open source are one tidy row each ("Sample habits · Swipe or hold to try them" with Remove).
 - The widget previews in the home screen's widget list are drawn fresh, in light and dark, with no empty space and no dark edge at the corners.
 
 Fixed:

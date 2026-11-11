@@ -160,7 +160,7 @@ def store(out):
         n = d.find("Workout")
         d.tap_xy(int(w * 0.86), n.center[1])
         time.sleep(1.5)
-    assert not d.exists("These are sample habits", timeout=1), "the sample banner is still there"
+    assert not d.exists("Sample habits", timeout=1), "the sample banner is still there"
     # The app in its default accent, Rust (user, 2026-11-09), like the page around it.
     front()
     d.nav("Today"); d.scroll_to_top(); shot(p("today"))

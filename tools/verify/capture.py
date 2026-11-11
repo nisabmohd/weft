@@ -213,6 +213,61 @@ def journal_empty():
     d.tap("Show all notes")
 
 
+def journal_reset():
+    """Filters last while the app is open: restart it so the next screen starts unfiltered."""
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+    time.sleep(1.5)
+
+
+def journal_pick_habits(*names):
+    d.tap("Filter by habit")
+    for n in names:
+        d.tap(n)
+    d.tap("Show notes for", contains=True)
+    time.sleep(1)
+
+
+def journal_pick_dates(first, last):
+    d.tap("Filter by date")
+    d.tap(first)
+    d.tap(last)
+    d.tap("Show ", contains=True)
+    time.sleep(1)
+
+
+@screen
+def today_sample_data():
+    """Today on first run, with the Sample habits row (design 2026-11-11)."""
+    d.nav("Today")
+    d.scroll_to_top()
+    assert d.exists("Sample habits", timeout=5)
+    save("today-sample-data")
+
+
+@screen
+def journal():
+    """Compact note cards, one day's notes grouped (design 2026-11-11)."""
+    d.nav("Journal")
+    d.scroll_to_top()
+    save("journal")
+
+
+@screen
+def journal_filters():
+    """The Journal filtered by habits, by dates, and by both (journal-*-filter)."""
+    d.nav("Journal")
+    journal_pick_habits("Read", "No sugar")
+    save("journal-habit-filter")
+    journal_reset()
+    d.nav("Journal")
+    journal_pick_dates("21", "24")
+    save("journal-date-filter")
+    journal_pick_habits("No sugar", "Drink water")
+    save("journal-date-habit-filter")
+    journal_reset()
+
+
 @screen
 def date_range_sheet():
     d.nav("Journal")

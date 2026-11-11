@@ -221,7 +221,6 @@
     <string name="drive_delete_text">Se eliminarán todas las copias de Weft de %1$s. Los datos de este teléfono se quedan.</string>
     <string name="drive_deleted">Copias eliminadas de Drive</string>
     <string name="drive_connected_to">Conectado a %1$s</string>
-    <string name="about_licence_text_drive">Con licencia GNU GPL v3. Weft no tiene anuncios ni te rastrea. Tus hábitos y notas se quedan en este dispositivo salvo que los exportes o hagas una copia. Las copias en Drive se quedan en tu propia cuenta de Google.</string>
     <string name="drive_backed_up">Copia guardada en Google Drive</string>
     <string name="drive_failed">No se pudo conectar con Google Drive. Inténtalo de nuevo</string>
     <string name="drive_refused">Weft necesita Google Drive para guardar tus copias. Vuelve a conectar y marca Google Drive</string>
@@ -237,7 +236,6 @@
     <string name="about">Acerca de</string>
     <string name="version_build">Versión %1$s (compilación %2$d)</string>
     <string name="free_open_source">Libre y de código abierto</string>
-    <string name="about_licence_text">Con licencia GNU GPL v3. Weft no tiene anuncios ni te rastrea. Tus hábitos y notas se quedan en este dispositivo salvo que los exportes.</string>
     <string name="rate_on_play">Valorar en Play Store</string>
     <string name="rate_desc">Son 10 segundos y ayuda mucho</string>
     <string name="source_code">Código fuente</string>
@@ -512,9 +510,9 @@
     <string name="sample_note_sugar">Día largo, compré chocolate de camino a casa. No había comido.</string>
     <string name="sample_note_walk">Paseo largo por el lago después del trabajo. El móvil se quedó en el bolsillo.</string>
     <string name="sample_note_water">Día ajetreado, olvidé la botella en casa.</string>
-    <string name="sample_card_title">Estos son hábitos de ejemplo</string>
-    <string name="sample_card_body">Prueba a deslizar, mantener pulsado y añadir notas. Quítalos cuando quieras añadir los tuyos.</string>
-    <string name="sample_remove">Quitar datos de ejemplo</string>
+    <string name="sample_card_title">Hábitos de ejemplo</string>
+    <string name="sample_card_body">Desliza o mantén pulsado para probar</string>
+    <string name="sample_remove">Quitar</string>
     <plurals name="days_kept">
         <item quantity="one">%1$d de %2$d día</item>
         <item quantity="other">%1$d de %2$d días</item>
@@ -753,4 +751,5 @@
     <string name="clear_suggestions_text">Las sugerencias de escritura dejan de aprender de las notas que ya escribiste. Tus notas se quedan.</string>
     <string name="drive_disconnect_title">¿Desconectar Google Drive?</string>
     <string name="drive_disconnect_text">Las copias automáticas se detienen. Tus copias se quedan en Drive.</string>
+    <string name="about_open_source_line">Sin anuncios · sin rastreo · GPL v3</string>
 </resources>

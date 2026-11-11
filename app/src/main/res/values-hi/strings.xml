@@ -221,7 +221,6 @@
     <string name="drive_delete_text">इससे %1$s में Weft के सारे बैकअप मिट जाएँगे। इस फ़ोन का डेटा रहेगा।</string>
     <string name="drive_deleted">Drive से बैकअप मिटा दिए गए</string>
     <string name="drive_connected_to">%1$s से कनेक्ट हो गया</string>
-    <string name="about_licence_text_drive">GNU GPL v3 के तहत लाइसेंस। Weft में कोई विज्ञापन नहीं है और यह आपको ट्रैक नहीं करता। आपकी आदतें और नोट इसी डिवाइस पर रहते हैं, जब तक आप उन्हें एक्सपोर्ट या बैकअप न करें। Drive बैकअप आपके अपने Google खाते में रहते हैं।</string>
     <string name="drive_backed_up">Google Drive पर बैकअप हो गया</string>
     <string name="drive_failed">Google Drive से जुड़ नहीं सके। फिर से कोशिश करें</string>
     <string name="drive_refused">बैकअप रखने के लिए Weft को Google Drive चाहिए। फिर से जोड़ें और Google Drive पर टिक करें</string>
@@ -237,7 +236,6 @@
     <string name="about">इसके बारे में</string>
     <string name="version_build">वर्शन %1$s (बिल्ड %2$d)</string>
     <string name="free_open_source">मुफ़्त और ओपन सोर्स</string>
-    <string name="about_licence_text">GNU GPL v3 के तहत लाइसेंस। Weft में कोई विज्ञापन नहीं है और यह आपको ट्रैक नहीं करता। आपकी आदतें और नोट इसी डिवाइस पर रहते हैं, जब तक आप उन्हें एक्सपोर्ट न करें।</string>
     <string name="rate_on_play">Play Store पर रेटिंग दें</string>
     <string name="rate_desc">10 सेकंड लगते हैं, बहुत मदद मिलती है</string>
     <string name="source_code">सोर्स कोड</string>
@@ -500,9 +498,9 @@
     <string name="sample_note_sugar">लंबा दिन, घर लौटते हुए चॉकलेट ले ली। दोपहर का खाना नहीं खाया था।</string>
     <string name="sample_note_walk">काम के बाद झील के किनारे लंबी सैर। फ़ोन जेब में ही रहा।</string>
     <string name="sample_note_water">व्यस्त दिन, बोतल घर पर भूल गया।</string>
-    <string name="sample_card_title">ये उदाहरण वाली आदतें हैं</string>
-    <string name="sample_card_body">स्वाइप करके, दबाकर रखकर और नोट जोड़कर देखें। अपनी आदतें जोड़ने से पहले इन्हें हटा दें।</string>
-    <string name="sample_remove">उदाहरण डेटा हटाएं</string>
+    <string name="sample_card_title">सैंपल आदतें</string>
+    <string name="sample_card_body">आज़माने के लिए स्वाइप करें या दबाकर रखें</string>
+    <string name="sample_remove">हटाएँ</string>
     <plurals name="days_kept">
         <item quantity="one">%2$d में से %1$d दिन</item>
         <item quantity="other">%2$d में से %1$d दिन</item>
@@ -738,4 +736,5 @@
     <string name="clear_suggestions_text">लिखने के सुझाव अब तक लिखे नोट्स से नहीं सीखेंगे। आपके नोट्स रहेंगे।</string>
     <string name="drive_disconnect_title">Google Drive डिस्कनेक्ट करें?</string>
     <string name="drive_disconnect_text">अपने-आप बैकअप रुक जाएँगे। आपके बैकअप Drive में रहेंगे।</string>
+    <string name="about_open_source_line">कोई विज्ञापन नहीं · कोई ट्रैकिंग नहीं · GPL v3</string>
 </resources>

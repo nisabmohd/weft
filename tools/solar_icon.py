@@ -21,7 +21,7 @@ ICONS = {
     "ic_check": "check", "ic_chevron_down": "alt-arrow-down", "ic_chevron_left": "alt-arrow-left",
     "ic_chevron_right": "alt-arrow-right", "ic_chevron_up": "alt-arrow-up", "ic_close": "close",
     "ic_cloud": "cloud", "ic_cloud_done": "cloud-check", "ic_cloud_upload": "cloud-upload",
-    "ic_code": "code", "ic_delete": "trash-bin-trash", "ic_download": "download-minimalistic",
+    "ic_code": "code", "ic_test_tube": "test-tube", "ic_delete": "trash-bin-trash", "ic_download": "download-minimalistic",
     "ic_drag": "reorder", "ic_error": "danger-circle", "ic_filter": "filter", "ic_habit_pen": "pen-new-square",
     "ic_heart": "heart", "ic_minus": "minus", "ic_more_horiz": "menu-dots", "ic_note": "notes",
     "ic_open_external": "arrow-right-up", "ic_music_note": "music-note-2", "ic_volume_loud": "volume-loud", "ic_plus": "add", "ic_refresh": "refresh", "ic_search": "magnifier",

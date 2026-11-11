@@ -1,6 +1,7 @@
 package app.sprout.habits.ui.today
 
 import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.components.InfoRow
 import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.ui.components.ButtonRole
 import androidx.compose.runtime.mutableStateOf
@@ -287,32 +288,19 @@ private fun EmptyState() {
     }
 }
 
-/** Shown while the sample habits are there: what they are, and one tap to remove them. */
+/**
+ * Shown while the sample habits are there: one info row (design 2026-11-11), "Sample habits ·
+ * Swipe or hold to try them" and Remove, which asks first.
+ */
 @Composable
 private fun SampleDataCard(onRemove: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(colors.primaryContainer, RoundedCornerShape(24.dp))
-            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
-    ) {
-        Text(stringResource(R.string.sample_card_title), style = WeftType.cardTitle, color = colors.onPrimaryContainer, modifier = Modifier.padding(end = 12.dp))
-        Text(
-            stringResource(R.string.sample_card_body),
-            style = WeftType.supporting,
-            color = colors.onPrimaryContainer,
-            modifier = Modifier.padding(top = 4.dp, end = 12.dp),
-        )
-        // A plain text button at the bottom right, inked like the card's text.
-        TextButton(
-            onClick = onRemove,
-            colors = ButtonDefaults.textButtonColors(contentColor = colors.onPrimaryContainer),
-            modifier = Modifier.align(Alignment.End).padding(top = 4.dp),
-        ) {
-            Text(stringResource(R.string.sample_remove), style = WeftType.label)
-        }
-    }
+    InfoRow(
+        R.drawable.ic_test_tube,
+        stringResource(R.string.sample_card_title),
+        stringResource(R.string.sample_card_body),
+        button = stringResource(R.string.sample_remove),
+        onButton = onRemove,
+    )
 }
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {

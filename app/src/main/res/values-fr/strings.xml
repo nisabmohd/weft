@@ -221,7 +221,6 @@
     <string name="drive_delete_text">Toutes les sauvegardes Weft de %1$s seront supprimées. Vos données sur ce téléphone restent.</string>
     <string name="drive_deleted">Sauvegardes supprimées de Drive</string>
     <string name="drive_connected_to">Connecté à %1$s</string>
-    <string name="about_licence_text_drive">Sous licence GNU GPL v3. Weft n\'a pas de publicité et ne vous suit pas. Vos habitudes et vos notes restent sur cet appareil, sauf si vous les exportez ou les sauvegardez. Les sauvegardes Drive restent dans votre propre compte Google.</string>
     <string name="drive_backed_up">Sauvegardé sur Google Drive</string>
     <string name="drive_failed">Impossible de joindre Google Drive. Réessayez</string>
     <string name="drive_refused">Weft a besoin de Google Drive pour garder vos sauvegardes. Reconnectez-vous et cochez Google Drive</string>
@@ -237,7 +236,6 @@
     <string name="about">À propos</string>
     <string name="version_build">Version %1$s (build %2$d)</string>
     <string name="free_open_source">Libre et open source</string>
-    <string name="about_licence_text">Sous licence GNU GPL v3. Weft n\'a pas de publicité et ne vous suit pas. Vos habitudes et vos notes restent sur cet appareil, sauf si vous les exportez.</string>
     <string name="rate_on_play">Noter sur le Play Store</string>
     <string name="rate_desc">10 secondes, et ça aide beaucoup</string>
     <string name="source_code">Code source</string>
@@ -513,9 +511,9 @@
     <string name="sample_note_sugar">Longue journée, chocolat acheté en rentrant. Je n’avais pas déjeuné.</string>
     <string name="sample_note_walk">Longue marche au bord du lac après le travail. Le téléphone est resté dans ma poche.</string>
     <string name="sample_note_water">Journée chargée, gourde oubliée à la maison.</string>
-    <string name="sample_card_title">Ce sont des habitudes d\'exemple</string>
-    <string name="sample_card_body">Essayez de glisser, d\'appuyer longuement et d\'ajouter des notes. Supprimez-les quand vous voulez ajouter les vôtres.</string>
-    <string name="sample_remove">Supprimer les données d\'exemple</string>
+    <string name="sample_card_title">Habitudes d’exemple</string>
+    <string name="sample_card_body">Balayez ou maintenez pour essayer</string>
+    <string name="sample_remove">Retirer</string>
     <plurals name="days_kept">
         <item quantity="one">%1$d sur %2$d jour</item>
         <item quantity="other">%1$d sur %2$d jours</item>
@@ -754,4 +752,5 @@
     <string name="clear_suggestions_text">Les suggestions d’écriture n’apprennent plus des notes déjà écrites. Vos notes restent.</string>
     <string name="drive_disconnect_title">Déconnecter Google Drive ?</string>
     <string name="drive_disconnect_text">Les sauvegardes automatiques s’arrêtent. Vos sauvegardes restent dans Drive.</string>
+    <string name="about_open_source_line">Sans pub · sans pistage · GPL v3</string>
 </resources>

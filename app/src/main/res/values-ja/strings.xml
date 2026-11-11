@@ -221,7 +221,6 @@
     <string name="drive_delete_text">%1$s にある Weft のバックアップをすべて削除します。この端末のデータは残ります。</string>
     <string name="drive_deleted">ドライブのバックアップを削除しました</string>
     <string name="drive_connected_to">%1$s に接続しました</string>
-    <string name="about_licence_text_drive">GNU GPL v3 ライセンス。Weft には広告も追跡もありません。習慣とメモは、書き出すかバックアップしない限りこの端末から出ません。ドライブのバックアップはあなた自身の Google アカウントに保存されます。</string>
     <string name="drive_backed_up">Google ドライブにバックアップしました</string>
     <string name="drive_failed">Google ドライブにつながりません。もう一度お試しください</string>
     <string name="drive_refused">バックアップの保存には Google ドライブが必要です。もう一度接続して Google ドライブにチェックを入れてください</string>
@@ -237,7 +236,6 @@
     <string name="about">このアプリについて</string>
     <string name="version_build">バージョン %1$s（ビルド %2$d）</string>
     <string name="free_open_source">無料のオープンソース</string>
-    <string name="about_licence_text">GNU GPL v3 ライセンス。Weft には広告も追跡もありません。習慣とメモは、書き出さない限りこの端末から出ません。</string>
     <string name="rate_on_play">Play ストアで評価</string>
     <string name="rate_desc">10 秒で終わり、とても助かります</string>
     <string name="source_code">ソースコード</string>
@@ -486,9 +484,9 @@
     <string name="sample_note_sugar">長い一日で、帰り道にチョコを買った。昼ごはんを食べていなかった。</string>
     <string name="sample_note_walk">仕事のあと湖のほとりを長く散歩。スマホはポケットのまま。</string>
     <string name="sample_note_water">忙しい日で、ボトルを家に忘れた。</string>
-    <string name="sample_card_title">これはサンプルの習慣です</string>
-    <string name="sample_card_body">スワイプ、長押し、ノートの追加を試してみてください。自分の習慣を追加するときに削除できます。</string>
-    <string name="sample_remove">サンプルデータを削除</string>
+    <string name="sample_card_title">サンプルの習慣</string>
+    <string name="sample_card_body">スワイプや長押しで試せます</string>
+    <string name="sample_remove">削除</string>
     <plurals name="days_kept">
         <item quantity="other">%2$d 日中 %1$d 日</item>
     </plurals>
@@ -718,4 +716,5 @@
     <string name="clear_suggestions_text">これまでに書いたノートから書き込み候補を学ばなくなります。ノートは残ります。</string>
     <string name="drive_disconnect_title">Google ドライブとの接続を解除しますか?</string>
     <string name="drive_disconnect_text">自動バックアップが止まります。バックアップはドライブに残ります。</string>
+    <string name="about_open_source_line">広告なし · トラッキングなし · GPL v3</string>
 </resources>

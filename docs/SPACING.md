@@ -58,7 +58,7 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 
 | Element | Size |
 | --- | --- |
-| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Journal, Insights and the habit picker |
+| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Insights and the habit picker; note cards use the 36dp size (below) |
 | Habit tile in the habit detail header | 56dp, 18dp corners |
 | Header icon button | 48dp circle, 22dp icon |
 | Touch target | at least 48dp |
@@ -67,7 +67,9 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 | Filter chip | 32dp tall, 8dp corners |
 | Habit chip (Filter by habit sheet) | 40dp tall, 12dp corners, 6dp left / 14dp right padding, a 28dp habit tile (9dp corners, 16dp icon), chips 8dp apart both ways (`HabitChip*` in `HabitFilterSheet.kt`) |
 | Journal empty state | text column at most 300dp wide (24dp inside); front note card 156 × 112dp, 18dp corners; 32dp to the title, 8dp to the line, 24dp to the button |
-| Day mark | 32dp in Week, 16dp next to an outcome line |
+| Day mark | 32dp in Week, 16dp next to an outcome line, 14dp on a note card's top line |
+| Info row (About's Free and open source, Today's Sample habits) | at least 64dp, primaryContainer, 24dp corners, 10dp top and bottom, 16dp left, 20dp right (12dp with a button), 14dp gaps; a 40dp white tile (14dp corners, 20dp icon); an optional button 36dp tall, fully rounded, white, 14dp sides, `label` (`InfoRow*` in `InfoRow.kt`) |
+| Note card (Journal, habit detail) | 14dp top and left, 16dp right and bottom; a 36dp tile (12dp corners, 18dp icon) at the top, 12dp to the text; the 14dp mark 6dp after the name; the note 4dp under that line and the time line 4dp under the note (`Note*` in `NoteCard.kt`) |
 | Progress bar and score segments | 6dp tall |
 
 ## Exceptions (only these)

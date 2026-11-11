@@ -221,7 +221,6 @@
     <string name="drive_delete_text">Isso exclui todos os backups do Weft em %1$s. Os dados deste celular ficam.</string>
     <string name="drive_deleted">Backups excluídos do Drive</string>
     <string name="drive_connected_to">Conectado a %1$s</string>
-    <string name="about_licence_text_drive">Licenciado sob a GNU GPL v3. O Weft não tem anúncios e não rastreia você. Seus hábitos e notas ficam neste dispositivo, a menos que você os exporte ou faça backup. Os backups no Drive ficam na sua própria conta do Google.</string>
     <string name="drive_backed_up">Backup feito no Google Drive</string>
     <string name="drive_failed">Não foi possível acessar o Google Drive. Tente de novo</string>
     <string name="drive_refused">O Weft precisa do Google Drive para guardar seus backups. Conecte de novo e marque o Google Drive</string>
@@ -237,7 +236,6 @@
     <string name="about">Sobre</string>
     <string name="version_build">Versão %1$s (build %2$d)</string>
     <string name="free_open_source">Livre e de código aberto</string>
-    <string name="about_licence_text">Licenciado sob a GNU GPL v3. O Weft não tem anúncios e não rastreia você. Seus hábitos e notas ficam neste dispositivo, a menos que você os exporte.</string>
     <string name="rate_on_play">Avaliar na Play Store</string>
     <string name="rate_desc">Leva 10 segundos e ajuda muito</string>
     <string name="source_code">Código-fonte</string>
@@ -513,9 +511,9 @@
     <string name="sample_note_sugar">Dia longo, comprei chocolate na volta para casa. Não tinha almoçado.</string>
     <string name="sample_note_walk">Caminhada longa no lago depois do trabalho. O celular ficou no bolso.</string>
     <string name="sample_note_water">Dia corrido, esqueci a garrafa em casa.</string>
-    <string name="sample_card_title">Estes são hábitos de exemplo</string>
-    <string name="sample_card_body">Experimente deslizar, tocar e segurar e adicionar notas. Remova quando quiser criar os seus.</string>
-    <string name="sample_remove">Remover dados de exemplo</string>
+    <string name="sample_card_title">Hábitos de exemplo</string>
+    <string name="sample_card_body">Deslize ou segure para testar</string>
+    <string name="sample_remove">Remover</string>
     <plurals name="days_kept">
         <item quantity="one">%1$d de %2$d dia</item>
         <item quantity="other">%1$d de %2$d dias</item>
@@ -754,4 +752,5 @@
     <string name="clear_suggestions_text">As sugestões de escrita deixam de aprender com as notas que você já escreveu. Suas notas ficam.</string>
     <string name="drive_disconnect_title">Desconectar o Google Drive?</string>
     <string name="drive_disconnect_text">Os backups automáticos param. Seus backups ficam no Drive.</string>
+    <string name="about_open_source_line">Sem anúncios · sem rastreio · GPL v3</string>
 </resources>

@@ -103,7 +103,7 @@ def sample_data_on_first_launch():
     # A fresh install starts with sample habits, a card to remove them, and notes on several days.
     d.nav("Today")
     d.scroll_to_top()
-    assert d.exists("These are sample habits"), "sample data card missing on Today"
+    assert d.exists("Sample habits") and d.exists("Remove"), "sample habits row missing on Today"
     d.nav("Journal")
     assert d.exists("Yesterday"), "sample notes don't cover earlier days"
 
@@ -118,7 +118,7 @@ def today_circle_toggles_done():
     assert d.exists("Mark Vitamins done"), "circle did not unmark"
     # Logging a habit hides the sample banner for good; More has no sample row.
     d.scroll_to_top()
-    assert not d.exists("These are sample habits", timeout=1.0), "sample banner still there after logging a habit"
+    assert not d.exists("Sample habits", timeout=1.0), "sample banner still there after logging a habit"
 
 
 @check
@@ -395,8 +395,9 @@ def journal_lists_and_adds_notes():
 def journal_cards_and_new_note():
     d.nav("Journal")
     assert d.exists("Today"), "no date header over today's notes"
-    # Outcome and time share one line: "Skipped · 9:12 AM".
-    assert d.exists("Skipped · ", contains=True), "note card doesn't show the day's outcome and time"
+    # Note cards (design 2026-11-11): name and mark on top, the note, then the time; TalkBack reads
+    # the outcome with them ("No sugar, Skipped, Office birthday cake…, 9:12 AM").
+    assert d.exists(", Skipped, ", contains=True), "note card doesn't say the day's outcome and time"
     d.tap("Add note")
     # Since 1.3.6 Add note starts on the habit logged last today that has no note yet, so the note the
     # check before this one wrote is not what opens: the editor is empty. (Opening a day that has a
