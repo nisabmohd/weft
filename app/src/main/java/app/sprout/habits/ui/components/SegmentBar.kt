@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,9 @@ import app.sprout.habits.ui.theme.habitColors
 @Immutable
 data class BarSegment(val hue: Float, val fill: Float, val skipped: Boolean = false)
 
+/** The score bar's segments: 8 dp tall, 4 dp apart. */
+val SegmentBarHeight = Space8
+
 /** One 8 dp bar per habit: solid when full, part-filled otherwise, faint when skipped. */
 @Composable
 fun SegmentBar(segments: List<BarSegment>, modifier: Modifier = Modifier) {
@@ -25,12 +30,12 @@ fun SegmentBar(segments: List<BarSegment>, modifier: Modifier = Modifier) {
     val line = colors.outlineVariant
     val skip = colors.surfaceContainerHigh
     val solids = segments.map { habitColors(it.hue).solid }
-    Canvas(modifier.fillMaxWidth().height(8.dp)) {
+    Canvas(modifier.fillMaxWidth().height(SegmentBarHeight)) {
         if (segments.isEmpty()) {
             drawRoundRect(line, cornerRadius = CornerRadius(size.height / 2))
             return@Canvas
         }
-        val gap = 4.dp.toPx()
+        val gap = Space4.toPx()
         val w = (size.width - gap * (segments.size - 1)) / segments.size
         val r = CornerRadius(size.height / 2)
         segments.forEachIndexed { i, s ->

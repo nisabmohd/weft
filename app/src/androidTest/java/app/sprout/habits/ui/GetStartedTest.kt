@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
@@ -79,12 +80,14 @@ class GetStartedTest {
         rule.onNodeWithText("20 / 20 pages").performTouchInput { swipeLeft() }
         rule.onNodeWithText("20 pages").performTouchInput { swipeLeft() }
         rule.onAllNodesWithText("Skipped").onFirst().assertIsDisplayed()
-        rule.onAllNodesWithContentDescription("Tried").assertCountEquals(2)
+        // Swipe right, Undo (the opposite swipe, 2026-11-08) and Swipe left.
+        rule.onAllNodesWithContentDescription("Tried").assertCountEquals(3)
         // Right on a skipped card undoes it; then tap the circle for Done.
         rule.onAllNodesWithText("Skipped").onFirst().performTouchInput { swipeRight() }
         rule.onNodeWithContentDescription("Mark Read done").performClick()
         rule.onNodeWithText("20 / 20 pages").assertIsDisplayed()
-        rule.onAllNodesWithContentDescription("Tried").assertCountEquals(3)
+        // ... and Tap the circle.
+        rule.onAllNodesWithContentDescription("Tried").assertCountEquals(4)
     }
 
     @Test fun practiceUndoBarPutsTheCardBackAndTicksUndo() {
@@ -105,7 +108,8 @@ class GetStartedTest {
         rule.onNodeWithText("Save").performClick()
         rule.onNodeWithText("10 / 20 pages · note added").assertIsDisplayed()
         rule.onNodeWithText("Journal").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("Fell asleep early").performScrollTo().assertIsDisplayed()
+        // The note card reads as one item (design 2026-11-11b): the note is inside its description.
+        rule.onNode(hasContentDescription("Fell asleep early", substring = true)).performScrollTo().assertIsDisplayed()
         // Hold and Add a note are both ticked.
         rule.onAllNodesWithContentDescription("Tried").assertCountEquals(2)
     }

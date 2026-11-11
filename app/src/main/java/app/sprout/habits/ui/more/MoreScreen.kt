@@ -1,5 +1,15 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.ListEndPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.TabHeaderPadding
 import app.sprout.habits.ui.components.PendingUndoHost
 import app.sprout.habits.ui.LocalUndoableActions
 import app.sprout.habits.ui.components.PromptSheet
@@ -109,14 +119,14 @@ fun MoreScreen(
     Box(Modifier.fillMaxSize()) {
         // The header stays put while the list scrolls under it, so its buttons are always in reach.
         Column(Modifier.fillMaxSize()) {
-        Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-                TabHeader(stringResource(R.string.tab_more), listSpacing = 8.dp)
+        Box(Modifier.padding(TabHeaderPadding)) {
+                TabHeader(stringResource(R.string.tab_more))
             
         }
         LazyColumn(
             Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = ListEndPadding),
+            verticalArrangement = Arrangement.spacedBy(CardGap),
         ) {
 
             item(key = "backup") {
@@ -130,7 +140,7 @@ fun MoreScreen(
                 }
                 SettingsCard {
                     SettingsRow(stringResource(R.string.backups), backupsRowLine(settings, drive.enabled, backingUp), icon = icon, onClick = onOpenBackup) {
-                        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                     }
                 }
             }
@@ -140,7 +150,7 @@ fun MoreScreen(
                 val dynamicSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 SettingsGroup(
                     {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(Modifier.padding(Space16), verticalArrangement = Arrangement.spacedBy(Space12)) {
                             Text(stringResource(R.string.theme), style = WeftType.cardTitle)
                             // Each segment is a fixed share of the row, so labels stop scaling at 1.3x.
                             CappedFontScale {
@@ -172,7 +182,7 @@ fun MoreScreen(
                     {
                         SettingsRow(stringResource(R.string.font), onClick = { pickingFont = true }) {
                             TrailingValue(fontName(theme.font))
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                         }
                     },
                     { TextSizeRow(theme.textScale) { scale -> save { setTextScale(scale) } } },
@@ -186,7 +196,7 @@ fun MoreScreen(
                         SettingsRow(stringResource(R.string.language), onClick = { pickingLanguage = true }) {
                             val tag = AppLanguage.current(context)
                             TrailingValue(AppLanguage.LANGUAGES.firstOrNull { it.tag == tag }?.nativeName ?: stringResource(R.string.language_system))
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                         }
                     },
                     {
@@ -227,7 +237,7 @@ fun MoreScreen(
             }
 
             item(key = "about") {
-                Box(Modifier.padding(top = SectionGapAbove - 8.dp)) {
+                Box(Modifier.padding(top = SectionGapAbove - CardGap)) {
                     SettingsCard {
                         val update = settings.availableUpdate?.takeIf { isNewerVersion(it, BuildConfig.VERSION_NAME) }
                         SettingsRow(
@@ -237,7 +247,7 @@ fun MoreScreen(
                             onClick = onOpenAbout,
                             badge = if (update != null) { { UpdateBadge() } } else null,
                         ) {
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(IconSizeSmall))
                         }
                     }
                 }
@@ -291,8 +301,8 @@ fun MoreScreen(
 
 @Composable
 private fun AccentPicker(selectedHue: Float, onSelect: (Float) -> Unit) {
-    Column(Modifier.padding(horizontal = 8.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(stringResource(R.string.accent), style = WeftType.cardTitle, modifier = Modifier.padding(start = 8.dp))
+    Column(Modifier.padding(horizontal = Space8, vertical = Space8), verticalArrangement = Arrangement.spacedBy(Space4)) {
+        Text(stringResource(R.string.accent), style = WeftType.cardTitle, modifier = Modifier.padding(start = Space8))
         ColorSwatchRow(
             swatches = ACCENT_HUES.map { hue ->
                 val scheme = seedColorScheme(hue, false)
@@ -309,7 +319,7 @@ private fun TextSizeRow(scale: Float, onChange: (Float) -> Unit) {
     // Unknown saved value → show "Default"; index 0 (Small) is a real choice.
     val index = TEXT_SCALES.indexOfFirst { it.first == scale }.takeIf { it >= 0 } ?: 1
     val label = stringResource(TEXT_SCALES[index].second)
-    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(Modifier.padding(RowPadding)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.text_size), style = WeftType.cardTitle, modifier = Modifier.weight(1f))
             Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)

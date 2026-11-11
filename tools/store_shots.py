@@ -7,7 +7,7 @@ the bezel are never cut. The last shot (dark theme) sits on a dark page. Weft's 
 page #733626 (Rust, the default accent, user 2026-11-09) with pale pink text.
 
 usage: python3 tools/store_shots.py <folder with the raw shots> [out folder]
-Raw shots are 1080 x 2400, named today.png, amount-sheet.png, habits-week.png, habit-detail.png,
+Raw shots are 1080 x 2400, named today.png, alarm.png (the ringing screen), amount-sheet.png, habits-week.png,
 journal.png, insights.png, w-week.png (all four widgets, WidgetBoardActivity) and today-dark.png;
 made by `python3 tools/verify/capture_docs.py store <folder>`. A missing one is skipped.
 Needs Pillow."""
@@ -27,9 +27,11 @@ FONT = os.path.join(ROOT, "app", "src", "main", "res", "font", "lexend.ttf")
 # raw name, out file, title, subtitle, dark page
 shots = [
     ("today", "01-today.png", "Check off with a swipe", "Swipe, tap or hold. Every habit on one calm list.", False),
-    ("amount-sheet", "02-log-amount.png", "Log part of a habit", "15 of 20 pages still counts.", False),
-    ("habits-week", "03-habits-week.png", "See your week at a glance", "Every habit, every day, in one look.", False),
-    ("habit-detail", "04-habit-detail.png", "Streaks and a calendar", "Every habit has its own page.", False),
+    # The alarm is 1.6's headline feature (user, 2026-11-11): second, right after Today. Play takes 8
+    # phone shots at most, so habit detail made room for it.
+    ("alarm", "02-alarm.png", "Alarms that really ring", "Full screen, even on a locked phone.", False),
+    ("amount-sheet", "03-log-amount.png", "Log part of a habit", "15 of 20 pages still counts.", False),
+    ("habits-week", "04-habits-week.png", "See your week at a glance", "Every habit, every day, in one look.", False),
     ("journal", "05-journal.png", "Write a note for any day", "Say how it went, or what got in the way.", False),
     ("insights", "06-insights.png", "See what's working", "Your best day, and the habit that needs focus.", False),
     ("w-week", "07-widgets.png", "Home screen widgets", "Today, your week and your streak at a glance.", False),

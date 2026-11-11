@@ -1,5 +1,22 @@
 package app.sprout.habits.ui.journal
 
+import app.sprout.habits.ui.theme.ChipShape
+import app.sprout.habits.ui.theme.FabMargin
+import app.sprout.habits.ui.theme.FabShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.SnackbarLift
+import app.sprout.habits.ui.theme.SnackbarSideMargin
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space32
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.FabListEndPadding
+import app.sprout.habits.ui.theme.HeaderChipsGap
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.TabHeaderPadding
 import app.sprout.habits.ui.components.PendingUndoHost
 import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.ui.components.GroupGap
@@ -110,10 +127,10 @@ fun JournalScreen(
     Box(Modifier.fillMaxSize()) {
         // The header stays put while the list scrolls under it, so its buttons are always in reach.
         Column(Modifier.fillMaxSize()) {
-        Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 2.dp)) {
+        Box(Modifier.padding(TabHeaderPadding)) {
                 // Every filter lives in a sheet; the chips under the title show what is applied.
-                Column(Modifier.padding(bottom = 14.dp)) {
-                    TabHeader(stringResource(R.string.journal_title), listSpacing = 16.dp) {
+                Column {
+                    TabHeader(stringResource(R.string.journal_title)) {
                         state?.let { ui ->
                             HeaderIconButton(R.drawable.ic_calendar, stringResource(R.string.filter_by_date), active = ui.from != null) { pickingRange = true }
                             if (ui.options.isNotEmpty()) {
@@ -124,7 +141,7 @@ fun JournalScreen(
                     // No preset ranges: the row only shows the filters that are on, each with its ✕.
                     val ui = state
                     if (ui != null && (ui.from != null || ui.filter.isNotEmpty())) {
-                        FilterChipRow(Modifier.padding(top = 12.dp)) {
+                        FilterChipRow(Modifier.padding(top = HeaderChipsGap)) {
                             if (ui.from != null) {
                                 CustomRangeChip(
                                     label = ui.dateLabel,
@@ -153,7 +170,7 @@ fun JournalScreen(
         val shown = state
         if (shown != null && shown.days.isEmpty()) {
             // Nothing to list: centred in the space between the chips and Add note (journal-empty.png).
-            Box(Modifier.weight(1f).fillMaxWidth().padding(bottom = 88.dp), contentAlignment = Alignment.Center) {
+            Box(Modifier.weight(1f).fillMaxWidth().padding(bottom = FabListEndPadding), contentAlignment = Alignment.Center) {
                 if (shown.hasNotes) {
                     val picked = shown.options.filter { it.habitId in shown.filter }
                     val one = picked.singleOrNull()
@@ -176,7 +193,7 @@ fun JournalScreen(
             }
         } else LazyColumn(
             Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 104.dp),
+            contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = FabListEndPadding),
             verticalArrangement = Arrangement.spacedBy(GroupGap),
         ) {
             val list = state?.days
@@ -201,20 +218,20 @@ fun JournalScreen(
         if (onAddNote != null && !LocalScrollCaptureInProgress.current) {
             ExtendedFloatingActionButton(
                 onClick = onAddNote,
-                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(IconSize)) },
                 text = { Text(stringResource(R.string.add_note), style = WeftType.label) },
                 containerColor = colors.primaryContainer,
                 contentColor = colors.onPrimaryContainer,
-                shape = RoundedCornerShape(18.dp),
+                shape = FabShape,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp)
+                    .padding(FabMargin)
                     // Moves up while the Undo snackbar shows, like on Today.
-                    .padding(bottom = if (snackbar.currentSnackbarData != null) 64.dp else 0.dp)
+                    .padding(bottom = if (snackbar.currentSnackbarData != null) SnackbarLift else 0.dp)
                     .semantics { contentDescription = addNote },
             )
         }
-        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
+        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = SnackbarSideMargin))
     }
     val ui = state
     if (pickingRange && ui != null) {
@@ -267,12 +284,12 @@ fun JournalScreen(
 private fun EmptyJournal(habit: HabitFilterOption?, title: String, text: String, action: String?, onAction: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     // About as wide as the mockup's text block, so lines break evenly on wide phones too.
-    Column(Modifier.widthIn(max = EmptyTextWidth).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.widthIn(max = EmptyTextWidth).padding(horizontal = Space24), horizontalAlignment = Alignment.CenterHorizontally) {
         EmptyNotesPicture(habit)
-        Text(title, style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 32.dp))
-        Text(text, style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp))
+        Text(title, style = WeftType.title, color = colors.onSurface, textAlign = TextAlign.Center, modifier = Modifier.padding(top = Space32))
+        Text(text, style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = Space8))
         if (action != null) {
-            WeftButton(action, ButtonRole.Secondary, onClick = onAction, modifier = Modifier.padding(top = 24.dp))
+            WeftButton(action, ButtonRole.Secondary, onClick = onAction, modifier = Modifier.padding(top = Space24))
         }
     }
 }
@@ -280,9 +297,25 @@ private fun EmptyJournal(habit: HabitFilterOption?, title: String, text: String,
 /** The empty state's text column, at most this wide. */
 private val EmptyTextWidth = 300.dp
 
-/** Size of the front note card in the empty state picture. */
-private val EmptyCardWidth = 156.dp
-private val EmptyCardHeight = 112.dp
+/** The empty state picture: a front note card and a smaller faded one behind it, on the 4 dp grid. */
+private object EmptyArt {
+    val width = 200.dp
+    val height = 136.dp
+    val frontWidth = 156.dp
+    val frontHeight = 112.dp
+    val backWidth = 120.dp
+    val backHeight = 72.dp
+    /** The back card sits this much lower than the front one. */
+    val backDrop = Space8
+    val corner = Space16
+    val shadow = Space8
+    val tileSize = 24.dp
+    /** The grey lines that stand for text: 8 dp tall. */
+    val lineHeight = Space8
+    val nameLine = 60.dp
+    val backLines = listOf(28.dp, 36.dp, 24.dp)
+    val frontLines = listOf(84.dp, 108.dp, 64.dp)
+}
 
 /** Two tilted note cards: a faded one behind, and in front one with the habit's tile and text lines. */
 @Composable
@@ -290,31 +323,31 @@ private fun EmptyNotesPicture(habit: HabitFilterOption?) {
     val colors = MaterialTheme.colorScheme
     val card = colors.surfaceContainerLowest
     val line = colors.surfaceContainerHigh
-    Box(Modifier.size(width = 200.dp, height = 136.dp)) {
+    Box(Modifier.size(width = EmptyArt.width, height = EmptyArt.height)) {
         // Back card: faded, tilted the other way, peeking out on the left.
         Column(
-            Modifier.align(Alignment.CenterStart).offset(y = 8.dp).rotate(-5f).alpha(0.6f)
-                .size(width = 120.dp, height = 72.dp).background(card, RoundedCornerShape(16.dp)).padding(start = 14.dp, top = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.align(Alignment.CenterStart).offset(y = EmptyArt.backDrop).rotate(-5f).alpha(0.6f)
+                .size(width = EmptyArt.backWidth, height = EmptyArt.backHeight).background(card, RoundedCornerShape(EmptyArt.corner)).padding(start = Space16, top = Space16),
+            verticalArrangement = Arrangement.spacedBy(Space8),
         ) {
-            listOf(28.dp, 36.dp, 24.dp).forEach { Box(Modifier.size(width = it, height = 7.dp).background(line, CircleShape)) }
+            EmptyArt.backLines.forEach { Box(Modifier.size(width = it, height = EmptyArt.lineHeight).background(line, CircleShape)) }
         }
         // Front card.
         Column(
             Modifier.align(Alignment.CenterEnd).rotate(4f)
-                .shadow(6.dp, RoundedCornerShape(18.dp), ambientColor = colors.onSurface.copy(alpha = 0.2f), spotColor = colors.onSurface.copy(alpha = 0.2f))
-                .size(EmptyCardWidth, EmptyCardHeight).background(card, RoundedCornerShape(18.dp)).padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .shadow(EmptyArt.shadow, RoundedCornerShape(EmptyArt.corner), ambientColor = colors.onSurface.copy(alpha = 0.2f), spotColor = colors.onSurface.copy(alpha = 0.2f))
+                .size(EmptyArt.frontWidth, EmptyArt.frontHeight).background(card, RoundedCornerShape(EmptyArt.corner)).padding(Space12),
+            verticalArrangement = Arrangement.spacedBy(Space8),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val (soft, ink) = habit?.let { habitColors(it.hue).let { hc -> hc.soft to hc.ink } } ?: (colors.secondaryContainer to colors.onSecondaryContainer)
-                Box(Modifier.size(24.dp).background(soft, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(habit?.icon ?: R.drawable.ic_sym_edit_note), contentDescription = null, tint = ink, modifier = Modifier.size(15.dp))
+                Box(Modifier.size(EmptyArt.tileSize).background(soft, ChipShape), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(habit?.icon ?: R.drawable.ic_sym_edit_note), contentDescription = null, tint = ink, modifier = Modifier.size(IconSizeTiny))
                 }
-                Box(Modifier.padding(start = 10.dp).size(width = 60.dp, height = 8.dp).background(line, CircleShape))
+                Box(Modifier.padding(start = Space8).size(width = EmptyArt.nameLine, height = EmptyArt.lineHeight).background(line, CircleShape))
             }
-            Spacer(Modifier.size(2.dp))
-            listOf(84.dp, 108.dp, 64.dp).forEach { Box(Modifier.size(width = it, height = 8.dp).background(line, CircleShape)) }
+            Spacer(Modifier.size(Space2))
+            EmptyArt.frontLines.forEach { Box(Modifier.size(width = it, height = EmptyArt.lineHeight).background(line, CircleShape)) }
         }
     }
 }

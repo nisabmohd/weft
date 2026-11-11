@@ -23,16 +23,18 @@ The store shots are made by `python3 tools/store_shots.py <folder of raw shots>`
 
 The feature graphic is made by `python3 tools/feature_graphic.py <folder of raw shots>` from the same `today.png`, or `--reframe` (from `01-today.png` here): the same flat navy, the white Weft tile and name with "Habit tracker and journal" under it on the left, and one upright Today phone running off the bottom on the right. Nothing else (a slogan, extra lines and a second phone were tried on 2026-11-01 and looked cluttered). It writes both copies (here and fastlane). The store icon is `icon.svg` rendered with headless Chrome.
 
-| # | Screen | Caption |
+**2026-11-11 (1.6.2): the alarm is shot 2** (user: highlight the alarm feature). Play takes 8 phone shots at most, so habit detail made room for it. All eight retaken from the final 1.6.2 build.
+
+| # | Screen | Title / subtitle |
 | --- | --- | --- |
-| 1 | Today | Check off habits / with a swipe |
-| 2 | Amount sheet | Log part of a habit, / like 15 of 20 pages |
-| 3 | Habits → Week | See your week / at a glance |
-| 4 | Habit detail | Streaks and a calendar / for every habit |
-| 5 | Journal | Write a note / for any day |
-| 6 | Insights | See which habits / are working |
-| 7 | Home screen widgets | Widgets for your / home screen |
-| 8 | Today, dark | Light and dark themes, / your font and colors |
+| 1 | Today | Check off with a swipe / Swipe, tap or hold. Every habit on one calm list. |
+| 2 | Alarm ringing | Alarms that really ring / Full screen, even on a locked phone. |
+| 3 | Amount sheet | Log part of a habit / 15 of 20 pages still counts. |
+| 4 | Habits → Week | See your week at a glance / Every habit, every day, in one look. |
+| 5 | Journal | Write a note for any day / Say how it went, or what got in the way. |
+| 6 | Insights | See what's working / Your best day, and the habit that needs focus. |
+| 7 | Home screen widgets | Home screen widgets / Today, your week and your streak at a glance. |
+| 8 | Today, dark | Private. Yours. / No ads, no tracking. Free and open source. |
 
 ## What's new (Play Console, 500 characters max)
 

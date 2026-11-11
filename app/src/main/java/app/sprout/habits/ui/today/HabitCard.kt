@@ -1,5 +1,16 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.theme.CheckCircleSize
+import app.sprout.habits.ui.theme.ChipHeight
+import app.sprout.habits.ui.theme.HabitCardMinHeight
+import app.sprout.habits.ui.theme.HabitCardPadding
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TouchTarget
+import app.sprout.habits.ui.theme.TrailingGap
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.components.ProgressRing
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.toggle
@@ -70,7 +81,7 @@ fun HabitCard(
         modifier
             .fillMaxWidth()
             // Grows with large text instead of clipping it.
-            .heightIn(min = 68.dp)
+            .heightIn(min = HabitCardMinHeight)
             .height(IntrinsicSize.Min)
             .clip(HabitCardShape)
             .background(if (skipped) colors.surfaceContainerHigh else colors.surfaceContainerLowest)
@@ -93,12 +104,12 @@ fun HabitCard(
             )
         }
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 68.dp).padding(horizontal = 12.dp, vertical = 8.dp),
+            Modifier.fillMaxWidth().heightIn(min = HabitCardMinHeight).padding(HabitCardPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconTile(habit, hc)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Spacer(Modifier.width(TileTextGap))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                 Text(
                     habit.name,
                     style = WeftType.cardTitle,
@@ -114,7 +125,7 @@ fun HabitCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(TrailingGap))
             TrailingControl(habit, hc) {
                 haptics.toggle(habit.outcome != DayOutcome.DONE)
                 onToggle()
@@ -142,17 +153,17 @@ private fun TrailingControl(habit: HabitRowUi, hc: HabitColors, onToggle: () -> 
     when (habit.outcome) {
         DayOutcome.SKIP -> Box(
             Modifier
-                .height(32.dp)
+                .height(ChipHeight)
                 .background(colors.surfaceContainerLowest, CircleShape)
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = Space12),
             contentAlignment = Alignment.Center,
         ) {
             Text(stringResource(R.string.outcome_skipped), style = WeftType.label, color = colors.onSurfaceVariant)
         }
 
         DayOutcome.DONE -> CircleButton(label, onToggle) {
-            Box(Modifier.size(40.dp).background(hc.solid, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = hc.on, modifier = Modifier.size(20.dp))
+            Box(Modifier.size(CheckCircleSize).background(hc.solid, CircleShape), contentAlignment = Alignment.Center) {
+                Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = hc.on, modifier = Modifier.size(IconSizeSmall))
             }
         }
 
@@ -163,7 +174,7 @@ private fun TrailingControl(habit: HabitRowUi, hc: HabitColors, onToggle: () -> 
         }
 
         DayOutcome.OPEN -> CircleButton(label, onToggle) {
-            Box(Modifier.size(40.dp).border(2.dp, hc.solid, CircleShape))
+            Box(Modifier.size(CheckCircleSize).border(BorderThick, hc.solid, CircleShape))
         }
     }
 }
@@ -173,7 +184,7 @@ private fun TrailingControl(habit: HabitRowUi, hc: HabitColors, onToggle: () -> 
 private fun CircleButton(label: String, onClick: () -> Unit, content: @Composable () -> Unit) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier.size(48.dp).semantics { contentDescription = label },
+        modifier = Modifier.size(TouchTarget).semantics { contentDescription = label },
     ) {
         content()
     }

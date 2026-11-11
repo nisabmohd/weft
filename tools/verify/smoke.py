@@ -32,6 +32,14 @@ def check(fn):
     return fn
 
 
+def tap_lowest(label):
+    """Taps the bottom-most node with [label]: a sheet's button when the screen behind has the same label."""
+    nodes = [n for n in d.dump() if n.label == label]
+    assert nodes, f"not on screen: {label!r}"
+    n = max(nodes, key=lambda n: n.center[1])
+    d.tap_xy(*n.center)
+
+
 def fresh_install():
     d.adb("uninstall", d.PACKAGE)
     out = d.adb("install", APK)
@@ -388,7 +396,8 @@ def journal_lists_and_adds_notes():
     d.tap("Note")
     d.type_text("Smoke test note")
     d.tap("Save")
-    assert d.exists("Smoke test note", timeout=4), "new note not in Journal"
+    # A note card reads as one item ("Read, Skipped, 9:12 AM. <note>", design 2026-11-11b): match inside it.
+    assert d.exists("Smoke test note", contains=True, timeout=4), "new note not in Journal"
 
 
 @check
@@ -436,7 +445,7 @@ def icon_picker():
 @check
 def journal_long_press_actions():
     d.nav("Journal")
-    d.long_press("Office birthday cake. Had a small slice and stopped there.")
+    d.long_press("Office birthday cake. Had a small slice and stopped there.", contains=True)
     for label in ["Edit note", "Share", "Delete note"]:
         assert d.exists(label), f"long-press sheet missing {label}"
     d.back()
@@ -460,7 +469,7 @@ def journal_filter_by_habit():
     d.tap("Show notes for 1 habit")
     time.sleep(1)
     assert d.exists("Office birthday cake", contains=True), "No sugar's note missing when filtered"
-    assert not d.exists("Smoke test note", timeout=1), "another habit's note shown under the filter"
+    assert not d.exists("Smoke test note", contains=True, timeout=1), "another habit's note shown under the filter"
     d.tap("Filter by habit")
     d.tap("Clear")
     # Made by measure_with_step; no sample note and no check writes one. Last in the sheet's list.
@@ -808,6 +817,9 @@ def widget_follows_archive_and_restore():
     d.widget_tap(habit)
     assert d.exists("Edit habit", timeout=8), f"{habit} page didn't open"
     d.tap("Archive")
+    # Archive asks first (2026-11-11): confirm with the sheet's button, the lowest "Archive" on screen.
+    assert d.exists(f"Archive {habit}?", timeout=4), "Archive didn't ask first"
+    tap_lowest("Archive")
     d.home()
     assert d.widget_wait(lambda l: f"{done}/{total - 1}" in l and habit not in up_next(l), WIDGET_S), \
         f"archived {habit} still on the widget"
@@ -1188,6 +1200,9 @@ def drive_account_sheet():
     d.tap("Cancel")
     d.tap("Google account")
     d.tap("Disconnect")
+    # Disconnect asks first (2026-11-11); there's no Undo for it.
+    assert d.exists("Disconnect Google Drive?", timeout=4), "Disconnect didn't ask first"
+    d.tap("Disconnect")
     assert d.exists("Connect Google Drive", timeout=6), "Disconnect didn't go back to Connect Google Drive"
 
 
@@ -1394,6 +1409,8 @@ def make_alarm(name="Wake up at 7"):
     d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
     d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
     d.shell(f"am force-stop {d.PACKAGE}")
+    # Today's snooze counts (3 a day, 2026-11-11) start from zero in every check.
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/snoozes.xml")
     h = habit_id(name)
     sql(f"update habit set reminderType='ALARM', reminderMinutes=390 where id={h}; delete from entry where habitId={h} and date={_epoch_day()}")
     return h
@@ -1515,6 +1532,34 @@ def alarm_snooze_rings_again_later():
     assert ringing(), "snoozed alarm didn't ring again"
     press_action(h, "ALARM_DISMISS")
     assert not ringing()
+    screen(True)
+
+
+@check
+def alarm_snooze_stops_after_three():
+    """User, 2026-11-11: an alarm snoozes three times a day; the fourth ring offers Dismiss (and
+    sliding it done, Skip today) but no Snooze, and a Snooze from an old card counts as Dismiss."""
+    h = make_alarm()
+    screen(False)
+    for i in range(3):
+        # Locked each time, as it would be: on an unlocked phone the alarm is a heads-up card instead.
+        screen(False)
+        fire(h) if i == 0 else fire(h, "app.sprout.habits.action.REMINDER_SNOOZED")
+        assert ringing(), f"ring {i + 1} didn't start"
+        assert d.exists("Snooze 10 min", timeout=5), f"no Snooze on ring {i + 1} of 3"
+        d.tap("Snooze 10 min")
+        time.sleep(2)
+        assert not ringing(), f"Snooze {i + 1} didn't stop the alarm"
+    screen(False)
+    fire(h, "app.sprout.habits.action.REMINDER_SNOOZED")
+    assert ringing(), "the third snooze didn't ring again"
+    assert d.exists("Dismiss", timeout=5), "no Dismiss after three snoozes"
+    assert d.exists("Slide to mark done"), "the slide bar went with Snooze"
+    assert not d.exists("Snooze 10 min", timeout=1), "Snooze offered a fourth time"
+    # A Snooze press from an old card past the cap is a Dismiss.
+    press_action(h, "REMINDER_SNOOZE")
+    assert not ringing(), "a fourth Snooze kept the alarm ringing"
+    assert entry(h) == "", "the capped Snooze logged something"
     screen(True)
 
 
@@ -2000,6 +2045,11 @@ def main(filters):
         except Exception as e:  # noqa: BLE001 - report and continue
             failures += 1
             print(f"FAIL  {c.__name__}: {e}")
+            # FAIL_SHOTS=<dir>: keep a screenshot of what the screen showed when the check failed.
+            if os.environ.get("FAIL_SHOTS"):
+                with open(os.path.join(os.environ["FAIL_SHOTS"], c.__name__ + ".png"), "wb") as f:
+                    serial = ["-s", os.environ["ANDROID_SERIAL"]] if os.environ.get("ANDROID_SERIAL") else []
+                    f.write(d.subprocess.run([d.ADB, *serial, "exec-out", "screencap", "-p"], capture_output=True).stdout)
             if os.environ.get("VERBOSE"):
                 traceback.print_exc()
             recover()

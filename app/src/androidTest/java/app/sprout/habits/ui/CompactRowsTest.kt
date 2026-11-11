@@ -56,19 +56,19 @@ class CompactRowsTest {
 
     @Test fun noteCardReadsNameOutcomeNoteAndTime() {
         rule.setContent { WeftTheme { NoteCard(read, onOpen = {}) } }
-        // The outcome words aren't drawn (the mark says it), but TalkBack reads them, the note and the time.
-        rule.onNodeWithContentDescription("Read, Partial, 8 of 20 pages, Only 8 pages, fell asleep., 11:40 PM", useUnmergedTree = true).assertIsDisplayed()
+        // The habit row (name, outcome · time) and the note, read as one item.
+        rule.onNodeWithContentDescription("Read, 8 of 20 pages, 11:40 PM. Only 8 pages, fell asleep.", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithTag(ComponentTags.HABIT_TILE, useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test fun aLateNoteSaysWhenItWasWritten() {
         rule.setContent { WeftTheme { NoteCard(read.copy(mark = DayMark(MarkKind.SKIP), outcome = "Skipped", time = "written Tue, 12:23 AM"), onOpen = {}) } }
-        rule.onNodeWithContentDescription("Read, Skipped, Only 8 pages, fell asleep., written Tue, 12:23 AM", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("Read, Skipped, written Tue, 12:23 AM. Only 8 pages, fell asleep.", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test fun noteCardOnAHabitsPageHasNoTileAndNamesTheDay() {
         rule.setContent { WeftTheme { NoteCard(read.copy(mark = DayMark(MarkKind.SKIP), outcome = "Skipped"), onOpen = null, showHabit = false, dateLabel = "Yesterday") } }
-        rule.onNodeWithContentDescription("Skipped, Only 8 pages, fell asleep., Yesterday · 11:40 PM", useUnmergedTree = true).assertIsDisplayed()
+        rule.onNodeWithContentDescription("Skipped, Yesterday, 11:40 PM. Only 8 pages, fell asleep.", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithTag(ComponentTags.HABIT_TILE, useUnmergedTree = true).assertDoesNotExist()
     }
 }

@@ -1,5 +1,12 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,23 +40,23 @@ fun ExtraActionCard(icon: Int, title: String, text: String, onClick: () -> Unit)
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
+            .padding(start = ScreenPadding, end = ScreenPadding, top = Space8, bottom = Space20)
             .navigationBarsPadding()
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(CardShape)
             .background(colors.surfaceContainerHigh)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(RowPadding),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(TileTextGap),
     ) {
-        Box(Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(colors.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(painterResource(icon), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(20.dp))
+        Box(Modifier.size(ActionTileSize).clip(HabitTileShape).background(colors.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(painterResource(icon), contentDescription = null, tint = colors.onPrimaryContainer, modifier = Modifier.size(ActionIconSize))
         }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = colors.onSurface)
             Text(text, style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
-        Icon(painterResource(R.drawable.ic_open_external), contentDescription = null, tint = colors.onSurface, modifier = Modifier.size(18.dp))
+        Icon(painterResource(R.drawable.ic_open_external), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSizeSmall))
     }
 }

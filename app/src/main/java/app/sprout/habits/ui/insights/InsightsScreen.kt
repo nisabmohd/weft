@@ -1,5 +1,31 @@
 package app.sprout.habits.ui.insights
 
+import app.sprout.habits.ui.components.ActionTileSize
+import app.sprout.habits.ui.components.GroupGap
+import app.sprout.habits.ui.components.GroupInnerCorner
+import app.sprout.habits.ui.components.HabitTileShape
+import app.sprout.habits.ui.theme.CardContentGap
+import app.sprout.habits.ui.theme.CardCorner
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.ChipShape
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.LegendSwatchSize
+import app.sprout.habits.ui.theme.SnackbarSideMargin
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.HeaderChipsGap
+import app.sprout.habits.ui.theme.ListEndPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.SectionGap
+import app.sprout.habits.ui.theme.TabHeaderPadding
+import app.sprout.habits.ui.components.TitleLineGap
 import androidx.compose.material3.SnackbarHostState
 import app.sprout.habits.ui.today.UndoSnackbarHost
 import app.sprout.habits.ui.components.PendingUndoHost
@@ -89,6 +115,11 @@ import app.sprout.habits.ui.components.BarSegment
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.ui.components.SegmentBar
 import app.sprout.habits.ui.theme.habitColors
+/** Weekly rhythm's bars (24 dp wide, a partial part at least 16 dp) and Habit breakdown's Score | Streak toggle (36 dp). */
+private val RhythmBarWidth = 24.dp
+private val RhythmPartialMin = Space16
+private val ToggleHeight = 36.dp
+
 @Composable
 fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek, onOpenHabit: (Long) -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -102,13 +133,13 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
     Box(Modifier.fillMaxSize()) {
     // The header stays put while the list scrolls under it, so its buttons are always in reach.
     Column(Modifier.fillMaxSize()) {
-        Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-            TabHeader(stringResource(R.string.insights_title), listSpacing = 16.dp) {
+        Column(Modifier.padding(TabHeaderPadding)) {
+            TabHeader(stringResource(R.string.insights_title)) {
                 HeaderIconButton(R.drawable.ic_calendar, stringResource(R.string.change_date_range), active = !ui.thisWeek) { pickingRange = true }
                 HeaderIconButton(R.drawable.ic_filter, stringResource(R.string.filter_by_habit), active = ui.filter.isNotEmpty()) { filtering = true }
             }
             // The range is always shown: "✓ This week" by default, or the picked range with its ✕.
-            FilterChipRow(Modifier.padding(top = 12.dp)) {
+            FilterChipRow(Modifier.padding(top = HeaderChipsGap)) {
                 if (ui.thisWeek) {
                     DefaultRangeChip(ui.rangeLabel, stringResource(R.string.change_date_range)) { pickingRange = true }
                 } else {
@@ -133,8 +164,8 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
         }
         LazyColumn(
             Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = ListEndPadding),
+            verticalArrangement = Arrangement.spacedBy(SectionGap),
         ) {
             item(key = "score") { SummaryCard(ui) }
             if (ui.primeDay != null || ui.focusName != null) item(key = "patterns") { Patterns(ui) }
@@ -142,7 +173,7 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
             if (ui.rates.isNotEmpty()) item(key = "rates") { HabitBreakdown(ui.rates, viewModel.breakdownByStreak, { viewModel.breakdownByStreak = it }, onOpenHabit) }
         }
     }
-    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
+    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = SnackbarSideMargin))
     }
 
     if (pickingRange) {
@@ -177,16 +208,16 @@ private fun SummaryCard(ui: InsightsUi) {
         add(pluralStringResource(R.plurals.count_partial, ui.partialCount, ui.partialCount))
     }.joinToString(" · ")
     Column(
-        Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp)).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, CardShape).padding(CardPadding),
+        verticalArrangement = Arrangement.spacedBy(CardContentGap),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
             Text(stringResource(R.string.percent, ui.scorePercent), style = WeftType.screenTitleNumber, color = colors.onSurface, softWrap = false)
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.insights_average), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(Space8))
+            Text(stringResource(R.string.insights_average), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = Space4))
+            Spacer(Modifier.width(Space12))
             // Takes the rest of the row and wraps at large text sizes.
-            Text(summary, style = WeftType.label, color = colors.onSurfaceVariant, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(bottom = 4.dp))
+            Text(summary, style = WeftType.label, color = colors.onSurfaceVariant, textAlign = TextAlign.End, modifier = Modifier.weight(1f).padding(bottom = Space4))
         }
         // One segment per habit, filled up to that habit's score for the range.
         SegmentBar(ui.rates.map { BarSegment(it.hue, it.percent / 100f) }, Modifier.clearAndSetSemantics {})
@@ -210,14 +241,14 @@ private fun Section(
         // The list puts 16 dp between sections; the header adds the rest of the usual 20 dp.
         SectionHeader(
             title,
-            Modifier.padding(top = SectionGapAbove - 16.dp, bottom = SectionGapBelow),
+            Modifier.padding(top = SectionGapAbove - SectionGap, bottom = SectionGapBelow),
             meta = trailing,
             trailing = trailingContent?.let { content -> { content() } },
         )
         if (card) {
             Column(
-                Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp)).padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                Modifier.fillMaxWidth().background(colors.surfaceContainerLowest, CardShape).padding(start = CardPadding, top = Space20, end = CardPadding, bottom = CardPadding),
+                verticalArrangement = Arrangement.spacedBy(CardContentGap),
             ) { content() }
         } else {
             content()
@@ -235,11 +266,11 @@ private fun Patterns(ui: InsightsUi) {
     val colors = MaterialTheme.colorScheme
     Section(stringResource(R.string.insights_patterns), ui.rangeLabel) {
         // Same height for both, whichever has more text.
-        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(GroupGap)) {
             val both = ui.primeDay != null && ui.focusName != null
             if (ui.primeDay != null) {
                 PatternTile(
-                    shape = if (both) RoundedCornerShape(topStart = 24.dp, topEnd = 6.dp, bottomEnd = 6.dp, bottomStart = 24.dp) else RoundedCornerShape(24.dp),
+                    shape = if (both) RoundedCornerShape(topStart = CardCorner, topEnd = GroupInnerCorner, bottomEnd = GroupInnerCorner, bottomStart = CardCorner) else CardShape,
                     icon = R.drawable.ic_trophy,
                     tile = colors.secondaryContainer,
                     tileContent = colors.onSecondaryContainer,
@@ -253,7 +284,7 @@ private fun Patterns(ui: InsightsUi) {
                 // The habit's colours; a drop is in the error colour.
                 val hc = habitColors(ui.focusHue ?: 0f)
                 PatternTile(
-                    shape = if (both) RoundedCornerShape(topStart = 6.dp, topEnd = 24.dp, bottomEnd = 24.dp, bottomStart = 6.dp) else RoundedCornerShape(24.dp),
+                    shape = if (both) RoundedCornerShape(topStart = GroupInnerCorner, topEnd = CardCorner, bottomEnd = CardCorner, bottomStart = GroupInnerCorner) else CardShape,
                     // A falling graph, in the habit's colours (user, 2026-11-08: not the habit's own icon).
                     icon = R.drawable.ic_trending_down,
                     tile = if (ui.focusHue != null) hc.soft else colors.surfaceContainerHigh,
@@ -282,16 +313,16 @@ private fun RowScope.PatternTile(
 ) {
     val colors = MaterialTheme.colorScheme
     Column(
-        Modifier.weight(1f).fillMaxHeight().background(colors.surfaceContainerLowest, shape).padding(16.dp).semantics(mergeDescendants = true) {},
+        Modifier.weight(1f).fillMaxHeight().background(colors.surfaceContainerLowest, shape).padding(CardPadding).semantics(mergeDescendants = true) {},
     ) {
-        Box(Modifier.size(40.dp).background(tile, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-            Icon(painterResource(icon), contentDescription = null, tint = tileContent, modifier = Modifier.size(22.dp))
+        Box(Modifier.size(ActionTileSize).background(tile, HabitTileShape), contentAlignment = Alignment.Center) {
+            Icon(painterResource(icon), contentDescription = null, tint = tileContent, modifier = Modifier.size(IconSize))
         }
-        Text(label, style = WeftType.caption, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 12.dp))
-        Text(value, style = WeftType.patternValue, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+        Text(label, style = WeftType.caption, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = Space12))
+        Text(value, style = WeftType.patternValue, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = TitleLineGap))
         // One line at normal text sizes; with large text it wraps rather than clips, and the row's
         // IntrinsicSize.Min keeps both cards the same height.
-        Text(detail, style = WeftType.supporting, color = detailColor, modifier = Modifier.padding(top = 2.dp))
+        Text(detail, style = WeftType.supporting, color = detailColor, modifier = Modifier.padding(top = TitleLineGap))
     }
 }
 
@@ -312,7 +343,7 @@ private fun partialTone(): Color {
 @Composable
 private fun ChartTooltip(text: String, at: IntOffset?, onDismiss: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val margin = with(LocalDensity.current) { 6.dp.roundToPx() }
+    val margin = with(LocalDensity.current) { Space8.roundToPx() }
     LaunchedEffect(text, at) {
         delay(2500)
         onDismiss()
@@ -331,7 +362,7 @@ private fun ChartTooltip(text: String, at: IntOffset?, onDismiss: () -> Unit) {
             text,
             style = WeftType.caption,
             color = colors.inverseOnSurface,
-            modifier = Modifier.background(colors.inverseSurface, RoundedCornerShape(8.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.background(colors.inverseSurface, ChipShape).padding(horizontal = Space8, vertical = Space4),
         )
     }
 }
@@ -352,7 +383,7 @@ private fun WeeklyRhythm(ui: InsightsUi) {
         ui.bestDay?.let { stringResource(R.string.insights_best_day, it) },
         card = true,
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Space8)) {
             Row(Modifier.fillMaxWidth().height(BAR_HEIGHT.dp)) {
                 ui.columns.forEachIndexed { index, column ->
                     val description = stringResource(R.string.insights_bar_description, column.name, column.done.toString(), column.partial.toString())
@@ -365,9 +396,9 @@ private fun WeeklyRhythm(ui: InsightsUi) {
                         contentAlignment = Alignment.Center,
                     ) {
                         // 24 dp wide, or narrower when a long range has many weeks.
-                        Canvas(Modifier.padding(horizontal = 1.dp).widthIn(max = 24.dp).fillMaxSize()) {
+                        Canvas(Modifier.padding(horizontal = Space2).widthIn(max = RhythmBarWidth).fillMaxSize()) {
                             val unit = size.height / scale
-                            val gap = 4.dp.toPx()
+                            val gap = Space4.toPx()
                             // Every segment is a full pill; a short one gets a smaller radius so it
                             // stays a pill, not a lens.
                             fun corner(height: Float) = CornerRadius(minOf(size.width, height) / 2)
@@ -376,7 +407,7 @@ private fun WeeklyRhythm(ui: InsightsUi) {
                             if (column.partial > 0) {
                                 // One partial is still visible on a tall scale.
                                 val below = if (doneHeight > 0f) doneHeight + gap else 0f
-                                val partialHeight = (column.partial * unit - (below - doneHeight)).coerceAtLeast(16.dp.toPx()).coerceAtMost(size.height - below)
+                                val partialHeight = (column.partial * unit - (below - doneHeight)).coerceAtLeast(RhythmPartialMin.toPx()).coerceAtMost(size.height - below)
                                 drawRoundRect(partial, Offset(0f, size.height - below - partialHeight), Size(size.width, partialHeight), corner(partialHeight))
                             }
                         }
@@ -401,7 +432,7 @@ private fun WeeklyRhythm(ui: InsightsUi) {
                 }
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Space20, Alignment.CenterHorizontally)) {
             LegendSquare(stringResource(R.string.outcome_done), done)
             LegendSquare(stringResource(R.string.outcome_partial), partial)
         }
@@ -414,8 +445,8 @@ private const val BAR_HEIGHT = 128
 @Composable
 private fun LegendSquare(label: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(10.dp).background(color, RoundedCornerShape(3.dp)))
-        Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp))
+        Box(Modifier.size(LegendSwatchSize).background(color, RoundedCornerShape(Space4)))
+        Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = IconLabelGap))
     }
 }
 
@@ -431,7 +462,7 @@ private fun HabitBreakdown(rates: List<HabitRateUi>, byStreak: Boolean, onSort: 
         if (byStreak) rates.sortedWith(compareByDescending<HabitRateUi> { it.streak }.thenByDescending { it.percent }) else rates
     }
     Section(stringResource(R.string.insights_breakdown), null, trailingContent = { SortToggle(byStreak, onSort) }) {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(GroupGap)) {
             sorted.forEachIndexed { index, r ->
                 key(r.id) {
                 val hc = habitColors(r.hue)
@@ -441,13 +472,13 @@ private fun HabitBreakdown(rates: List<HabitRateUi>, byStreak: Boolean, onSort: 
                         .clip(groupedShape(index, sorted.size))
                         .background(colors.surfaceContainerLowest)
                         .clickable(onClickLabel = stringResource(R.string.open_habit, r.name)) { onOpenHabit(r.id) }
-                        .padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
+                        .padding(start = Space12, top = Space12, end = CardPadding, bottom = Space12)
                         .semantics(mergeDescendants = true) {},
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(TileTextGap),
                 ) {
                     HabitTile(r.icon, hc.soft, hc.ink)
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                         Text(r.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         // "5 done · 1 partial", or "7 of 7 days" when nothing was partial. The streak has its own toggle.
                         Text(
@@ -487,10 +518,10 @@ private fun SortToggle(byStreak: Boolean, onChange: (Boolean) -> Unit) {
     CappedFontScale {
         Row(
             Modifier
-                .height(36.dp)
+                .height(ToggleHeight)
                 .width(IntrinsicSize.Max)
                 .background(colors.surfaceContainerHigh, CircleShape)
-                .padding(3.dp)
+                .padding(Space4)
                 .selectableGroup(),
         ) {
             val haptics = LocalHapticFeedback.current
@@ -508,7 +539,7 @@ private fun SortToggle(byStreak: Boolean, onChange: (Boolean) -> Unit) {
                         .background(if (selected) colors.surfaceContainerLowest else Color.Transparent)
                         .selectable(selected = selected, role = Role.RadioButton) { if (!selected) haptics.tick(); onChange(value) }
                         .semantics { contentDescription = description }
-                        .padding(horizontal = 14.dp),
+                        .padding(horizontal = Space16),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(

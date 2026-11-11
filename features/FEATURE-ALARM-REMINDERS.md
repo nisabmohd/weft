@@ -26,7 +26,7 @@ A full-screen activity (`showWhenLocked`, `turnScreenOn`) started by a full-scre
 - Below it, the button pair: **Snooze 10 min** (secondary) | **Dismiss** (primary).
 - Actions:
   - Slide: marks the habit Done for today (same as a tap on Today), stops the alarm, and closes the screen.
-  - Snooze: stops the alarm and rings again in 10 minutes. Only one snooze is pending at a time.
+  - Snooze: stops the alarm and rings again in 10 minutes. Only one snooze is pending at a time. **Three snoozes a day** per habit (user, 2026-11-11): on the fourth ring Snooze is gone from the ringing screen (Dismiss is the one full-width button) and from the card; a Snooze from an old card counts as Dismiss (`ReminderActions.MAX_SNOOZES`, `SnoozeLimitTest`, smoke `alarm_snooze_stops_after_three`).
   - Dismiss: stops the alarm without logging anything.
   - Power button: silences it, like Dismiss. A volume button only stops the sound; the screen stays to be answered (user, 2026-11-09).
 - Sound: the default alarm ringtone on the alarm stream, with vibration. It stops by itself after 10 minutes, and a missed-alarm notification is posted ("Wake up at 7 · missed at 6:30").

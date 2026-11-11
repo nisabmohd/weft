@@ -1,5 +1,9 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space32
+import app.sprout.habits.ui.theme.Space48
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -412,19 +416,19 @@ private fun RestoreSheet(
                 },
                 enabled = chosen != null,
                 loading = loading,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = Space12).sheetBottomPadding(),
             )
         },
     ) {
         when {
-            backups == null -> Box(Modifier.fillMaxWidth().heightIn(min = 120.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(Modifier.size(32.dp))
+            backups == null -> Box(Modifier.fillMaxWidth().heightIn(min = Space48 + Space48 + Space24), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(Modifier.size(Space32))
             }
             backups.isEmpty() -> Text(
                 stringResource(R.string.drive_no_backup),
                 style = WeftType.body,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = SheetTitleInset, vertical = 24.dp),
+                modifier = Modifier.padding(horizontal = SheetTitleInset, vertical = Space24),
             )
             else -> backups.forEach { info ->
                 val habits = pluralStringResource(R.plurals.habit_count, info.habits, info.habits)

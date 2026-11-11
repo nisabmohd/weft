@@ -1,8 +1,17 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.RowMinHeight
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.TileTextGap
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.components.GroupGap
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.components.SectionGapBelow
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.SectionHeader
@@ -42,12 +51,12 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SectionLabel(text: String, first: Boolean = false) {
-    SectionHeader(text, Modifier.padding(top = if (first) 0.dp else SectionGapAbove - 8.dp, bottom = SectionGapBelow))
+    SectionHeader(text, Modifier.padding(top = if (first) 0.dp else SectionGapAbove - CardGap, bottom = SectionGapBelow))
 }
 
 /** One white card with 24 dp corners, for a row that stands alone. */
 @Composable
-fun SettingsCard(shape: Shape = RoundedCornerShape(24.dp), content: @Composable ColumnScope.() -> Unit) {
+fun SettingsCard(shape: Shape = CardShape, content: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLowest),
         content = content,
@@ -83,21 +92,21 @@ fun SettingsRow(
     Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = RowMinHeight)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(RowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(22.dp).padding(end = 0.dp))
-            androidx.compose.foundation.layout.Spacer(Modifier.size(16.dp))
+            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(IconSize).padding(end = 0.dp))
+            androidx.compose.foundation.layout.Spacer(Modifier.size(TileTextGap))
         }
-        Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(end = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = titleColor.takeOrElse { MaterialTheme.colorScheme.onSurface })
             if (badge == null) {
                 subtitle?.let { Text(it, style = WeftType.supporting, color = subtitleColor.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }) }
             } else {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(ItemGap)) {
                     subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f, fill = false)) }
                     badge()
                 }
@@ -114,17 +123,17 @@ fun SwitchRow(title: String, subtitle: String?, checked: Boolean, icon: Int? = n
     Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = RowMinHeight)
             .toggleable(value = checked, role = Role.Switch) { haptics.toggle(it); onChange(it) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(RowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Same leading icon as SettingsRow, so a switch lines up with the rows around it.
         if (icon != null) {
-            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(22.dp))
-            androidx.compose.foundation.layout.Spacer(Modifier.size(16.dp))
+            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(IconSize))
+            androidx.compose.foundation.layout.Spacer(Modifier.size(TileTextGap))
         }
-        Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(end = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
             subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }

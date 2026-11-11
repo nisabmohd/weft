@@ -1,7 +1,25 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.theme.CardContentGap
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.FabMargin
+import app.sprout.habits.ui.theme.FabShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.SectionGap
+import app.sprout.habits.ui.theme.SnackbarLift
+import app.sprout.habits.ui.theme.SnackbarSideMargin
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space48
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.FabListEndPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.TabHeaderPadding
 import app.sprout.habits.ui.components.PendingUndoHost
 import app.sprout.habits.ui.components.InfoRow
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.ui.components.ButtonRole
 import androidx.compose.runtime.mutableStateOf
@@ -135,21 +153,21 @@ fun TodayScreen(
         )
         val addNote = stringResource(R.string.add_note)
         // Lift the button above the Undo snackbar while it shows, so the two never overlap.
-        val fabLift by animateDpAsState(if (snackbar.currentSnackbarData != null) 72.dp else 0.dp, label = "fabLift")
+        val fabLift by animateDpAsState(if (snackbar.currentSnackbarData != null) SnackbarLift else 0.dp, label = "fabLift")
         // Hidden during a long screenshot, or it would be stamped into every captured frame.
         if (state.habits.isNotEmpty() && !LocalScrollCaptureInProgress.current) {
             ExtendedFloatingActionButton(
                 // New note picks the habit, the same way as the Journal's Add note.
                 onClick = { onAddNote(state.selectedDate.toEpochDay()) },
-                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(IconSize)) },
                 text = { Text(stringResource(R.string.add_note), style = WeftType.label) },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp).padding(bottom = fabLift).semantics { contentDescription = addNote },
+                shape = FabShape,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(FabMargin).padding(bottom = fabLift).semantics { contentDescription = addNote },
             )
         }
-        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
+        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = SnackbarSideMargin))
     }
 }
 
@@ -168,7 +186,7 @@ private fun TodayContent(
 ) {
     // The header stays put while the list scrolls under it, so its buttons are always in reach.
     Column(Modifier.fillMaxSize()) {
-    Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
+    Box(Modifier.padding(TabHeaderPadding)) {
  Header(state, onAddHabit) 
     }
     val listState = rememberLazyListState()
@@ -180,8 +198,8 @@ private fun TodayContent(
     LazyColumn(
         Modifier.weight(1f).fillMaxWidth(),
         state = listState,
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = FabListEndPadding),
+        verticalArrangement = Arrangement.spacedBy(CardGap),
     ) {
         // Nothing until the first data is in, or the app opens on a "0% of today" card that
         // is replaced a moment later.
@@ -211,7 +229,6 @@ private fun Header(state: TodayUiState, onAddHabit: () -> Unit) {
     TabHeader(
         title = if (state.isToday) stringResource(R.string.today) else state.selectedDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()),
         subtitle = state.dateLabel,
-        listSpacing = 8.dp,
     ) {
         HeaderIconButton(R.drawable.ic_plus, stringResource(R.string.new_habit), onClick = onAddHabit)
     }
@@ -223,28 +240,29 @@ private fun ScoreCard(state: TodayUiState) {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            // With the list's 8 dp, 16 dp from the score card to the habits (a section without a header).
+            .padding(bottom = SectionGap - CardGap)
+            .background(colors.surfaceContainerLowest, CardShape)
+            .padding(CardPadding),
+        verticalArrangement = Arrangement.spacedBy(CardContentGap),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
             Text(stringResource(R.string.percent, state.scorePercent), style = WeftType.screenTitleNumber, color = colors.onSurface)
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(Space8))
             Text(
                 stringResource(if (state.isToday) R.string.of_today else R.string.of_the_day),
                 style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier.padding(bottom = Space4),
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(Space12))
             // Takes the rest of the row and wraps at large text sizes.
             Text(
                 summary(state),
                 style = WeftType.label,
                 color = colors.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.End,
-                modifier = Modifier.weight(1f).padding(bottom = 4.dp),
+                modifier = Modifier.weight(1f).padding(bottom = Space4),
             )
         }
         val summary = summary(state)
@@ -279,9 +297,9 @@ private fun Segments(habits: List<HabitRowUi>, modifier: Modifier = Modifier) {
 @Composable
 private fun EmptyState() {
     Column(
-        Modifier.fillMaxWidth().padding(vertical = 48.dp),
+        Modifier.fillMaxWidth().padding(vertical = Space48),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(TitleLineGap),
     ) {
         Text(stringResource(R.string.today_empty), style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
         Text(stringResource(R.string.today_empty_hint), style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)

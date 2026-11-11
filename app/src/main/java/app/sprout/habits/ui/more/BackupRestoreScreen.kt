@@ -1,5 +1,16 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TouchTarget
+import app.sprout.habits.ui.components.TitleLineGap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,14 +82,14 @@ fun BackupRestoreScreen(
             TopBar(stringResource(R.string.backup_restore), onBack)
             Column(
                 Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp).navigationBarsPadding(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(start = Space16, end = Space16, top = Space16, bottom = Space24).navigationBarsPadding(),
+                verticalArrangement = Arrangement.spacedBy(ItemGap),
             ) {
                 if (drive.enabled) DriveBackupContent(drive, backup, settings, repository, files, message)
                 else FileBackupContent(settings, repository, files)
             }
         }
-        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp))
+        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(Space16))
     }
 }
 
@@ -132,10 +143,10 @@ private fun FileBackupContent(settings: Settings, repository: SettingsRepository
 internal fun StatusCard(icon: Int, tile: Color, ink: Color, title: String, subtitle: String, button: @Composable () -> Unit) {
     SettingsCard {
         // Card header → its content is 12 dp, as in every card (docs/SPACING.md).
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.padding(Space16), verticalArrangement = Arrangement.spacedBy(Space12)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Space12)) {
                 HabitTile(icon, tile, ink)
-                Column(Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Column(Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                     Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
                     Text(subtitle, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -158,12 +169,12 @@ internal fun StatusButton(
     busy: Boolean = false,
     onClick: () -> Unit,
 ) {
-    val modifier = Modifier.fillMaxWidth().height(48.dp)
+    val modifier = Modifier.fillMaxWidth().height(TouchTarget)
     val content: @Composable () -> Unit = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = LocalContentColor.current)
-            else if (icon != null) Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(18.dp))
-            if (busy || icon != null) Spacer(Modifier.size(8.dp))
+            if (busy) CircularProgressIndicator(Modifier.size(IconSizeChip), strokeWidth = BorderThick, color = LocalContentColor.current)
+            else if (icon != null) Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(IconSizeChip))
+            if (busy || icon != null) Spacer(Modifier.size(Space8))
             Text(text, style = WeftType.label)
         }
     }
@@ -173,4 +184,4 @@ internal fun StatusButton(
 
 @Composable
 internal fun Chevron() =
-    Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+    Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))

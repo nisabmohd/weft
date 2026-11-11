@@ -27,17 +27,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.sprout.habits.ui.theme.WeftType
+import app.sprout.habits.ui.theme.SmallButtonHeight
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.TileTextGap
 
 /** An info row (design 2026-11-11): 64 dp at least, primaryContainer, 24 dp corners. */
 val InfoRowMinHeight = 64.dp
 val InfoRowShape = RoundedCornerShape(24.dp)
-/** 10 dp top and bottom, 16 dp left, 20 dp right (12 dp when it ends in a button); 14 dp between the parts. */
-val InfoRowPadding = PaddingValues(start = 16.dp, end = 20.dp, top = 10.dp, bottom = 10.dp)
-val InfoRowPaddingWithButton = PaddingValues(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 10.dp)
-val InfoRowGap = 14.dp
-/** The row's small button: 36 dp tall, fully rounded, 14 dp at the sides. */
-val InfoRowButtonHeight = 36.dp
-val InfoRowButtonSidePadding = 14.dp
+/** Like every row: 16 dp at the sides (12 dp right of a button), 12 dp above and below, 12 dp from the tile to the text. */
+val InfoRowPadding = RowPadding
+val InfoRowPaddingWithButton = PaddingValues(start = Space16, end = Space12, top = Space12, bottom = Space12)
+val InfoRowGap = TileTextGap
+/** The row's small button: the app's small pill (40 dp), fully rounded, 14 dp at the sides. */
+val InfoRowButtonHeight = SmallButtonHeight
+val InfoRowButtonSidePadding = Space16
 
 /**
  * A tinted info row, the same shape as the rows around it: a white tile with an icon, a title, one
@@ -68,7 +73,7 @@ fun InfoRow(
         Box(Modifier.size(ActionTileSize).background(colors.surfaceContainerLowest, HabitTileShape), contentAlignment = Alignment.Center) {
             Icon(painterResource(icon), contentDescription = null, tint = ink, modifier = Modifier.size(ActionIconSize))
         }
-        Column(Modifier.weight(1f)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(line, style = WeftType.supporting, color = ink.copy(alpha = 0.8f), maxLines = 1, overflow = TextOverflow.Ellipsis)
         }

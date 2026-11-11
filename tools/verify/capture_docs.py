@@ -172,6 +172,12 @@ def store(out):
     d.shell("cmd uimode night yes"); time.sleep(2)
     front(); d.nav("Today"); d.scroll_to_top(); shot(p("today-dark"))
     d.shell("cmd uimode night no"); time.sleep(2)
+    # The alarm ringing screen (the store's second shot, 2026-11-11). It clears Wake up at 7's day,
+    # so it comes after the shots that show Today.
+    front()
+    c.DESIGN = out
+    c.alarm_ringing()
+    os.replace(os.path.join(out, "alarm-3-ringing.png"), p("alarm"))
     # All four widgets on one screen (last: it trims the sample data to five habits).
     widget_board(p("w-week"))
 

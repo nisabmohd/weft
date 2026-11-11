@@ -64,3 +64,10 @@ Habit colours (`hab()`) are only for a habit's own content: its tile, progress, 
 ## 11. Android's settings pages
 - Open them only through `notify/SystemPages.kt`: inside Weft's task (never `FLAG_ACTIVITY_NEW_TASK`, which can bring back a Settings page left open instead of the one asked for), with fallbacks from the exact page to the app's notification page to its app info, so every phone opens something right. No lists of phone makers for these rows.
 - A row that opens a page says under its title what it is for and where it goes.
+
+## 12. Named sizes only (user, 2026-11-11: "smallest detail matters")
+- Every gap, size, corner and icon comes from a token: `ui/theme/Dimens.kt` (`ScreenPadding`, `CardPadding`, `CardGap`, `TileTextGap`, `TitleLineGap`, `IconSize`…) or a component's own constants (`HabitTileSize`, `ButtonHeight`, `Sheet*`, `Note*`). Never a raw `16.dp` in a screen; `NoRawSizesTest` checks it.
+- Everything sits on the 4 dp grid. The documented exceptions are named too: 2 dp hairlines, 22 dp icons, 14 dp tile corners, 6 dp inner group corners, the widgets' own values (`widget/WidgetDimens.kt`, tied to `WidgetLayout`).
+- The same element always uses the same token: a title is 2 dp above its line in every row, a tile 12 dp from its text, every chevron 20 dp.
+- A design that asks for sizes off the app's scale (15 / 13 sp, a 36 dp tile, 14 dp padding) is built with the app's own styles and tokens, and the difference is said.
+

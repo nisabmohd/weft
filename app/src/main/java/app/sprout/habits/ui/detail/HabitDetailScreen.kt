@@ -1,5 +1,31 @@
 package app.sprout.habits.ui.detail
 
+import app.sprout.habits.ui.theme.AutoSizeStep
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.theme.CalendarDaySize
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.DetailTileIconSize
+import app.sprout.habits.ui.theme.DetailTileShape
+import app.sprout.habits.ui.theme.DetailTileSize
+import app.sprout.habits.ui.theme.FabListEndPadding
+import app.sprout.habits.ui.theme.FabMargin
+import app.sprout.habits.ui.theme.FabShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.SectionGap
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.SnackbarLift
+import app.sprout.habits.ui.theme.SnackbarSideMargin
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TopBarHeight
+import app.sprout.habits.ui.theme.TopBarTopPadding
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.LocalUndoableActions
 import app.sprout.habits.ui.components.PendingUndoHost
 import app.sprout.habits.ui.manage.ArchiveHabitSheet
@@ -97,14 +123,14 @@ fun HabitDetailScreen(
     Box(Modifier.fillMaxSize().background(colors.background).statusBarsPadding()) {
         LazyColumn(
             Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 104.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = FabListEndPadding),
+            verticalArrangement = Arrangement.spacedBy(SectionGap),
         ) {
             item(key = "bar") {
-                Row(Modifier.fillMaxWidth().height(64.dp).padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth().height(TopBarHeight).padding(top = TopBarTopPadding), verticalAlignment = Alignment.CenterVertically) {
                     HeaderIconButton(R.drawable.ic_arrow_back, stringResource(R.string.action_back), onClick = onBack)
                     Spacer(Modifier.weight(1f))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(ItemGap)) {
                         HeaderIconButton(R.drawable.ic_pen, stringResource(R.string.edit_habit), onClick = onEdit)
                         HeaderIconButton(
                             if (ui.habit.archived) R.drawable.ic_unarchive else R.drawable.ic_archive,
@@ -119,10 +145,10 @@ fun HabitDetailScreen(
             }
             item(key = "header") {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(56.dp).background(hc.soft, RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                        Icon(painterResource(ui.icon), contentDescription = null, tint = hc.ink, modifier = Modifier.size(28.dp))
+                    Box(Modifier.size(DetailTileSize).background(hc.soft, DetailTileShape), contentAlignment = Alignment.Center) {
+                        Icon(painterResource(ui.icon), contentDescription = null, tint = hc.ink, modifier = Modifier.size(DetailTileIconSize))
                     }
-                    Column(Modifier.padding(start = 14.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Column(Modifier.padding(start = TileTextGap), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                         Text(ui.habit.name, style = WeftType.screenTitle, color = colors.onBackground)
                         Text(ui.subtitle, style = WeftType.supporting, color = colors.onSurfaceVariant)
                     }
@@ -130,7 +156,7 @@ fun HabitDetailScreen(
             }
             item(key = "stats") {
                 // One height for all three, so a label that needs two lines doesn't make its card stand out.
-                Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(ItemGap)) {
                     StatTile(days(ui.monthDone), ui.monthDoneLabel, hc, Modifier.weight(1f))
                     StatTile(days(ui.bestStreak), stringResource(R.string.best_streak), hc, Modifier.weight(1f))
                     StatTile("${ui.noteCount}", pluralStringResource(R.plurals.notes_count_label, ui.noteCount), hc, Modifier.weight(1f))
@@ -139,12 +165,12 @@ fun HabitDetailScreen(
             item(key = "calendar") { MonthCalendar(ui, hc, viewModel::previousMonth, viewModel::nextMonth, viewModel::editDay) }
             // The notes as one group, like a day in the Journal: header, then rows 2 dp apart.
             item(key = "notes") {
-                Column(Modifier.padding(top = SectionGapAbove - 16.dp), verticalArrangement = Arrangement.spacedBy(SectionGapBelow)) {
+                Column(Modifier.padding(top = SectionGapAbove - SectionGap), verticalArrangement = Arrangement.spacedBy(SectionGapBelow)) {
                     SectionHeader(stringResource(R.string.notes_title)) {
                         if (ui.noteCount > 0) {
                             // The button keeps its 48 dp touch area but overhangs the header, so the
                             // header is as tall as its text and the group sits the usual 8 dp under it.
-                            Box(Modifier.height(20.dp), contentAlignment = Alignment.CenterEnd) {
+                            Box(Modifier.height(Space20), contentAlignment = Alignment.CenterEnd) {
                                 TextButton(onClick = onSeeAllNotes, modifier = Modifier.wrapContentHeight(unbounded = true)) {
                                     Text(stringResource(R.string.see_all), style = WeftType.label)
                                 }
@@ -152,7 +178,7 @@ fun HabitDetailScreen(
                         }
                     }
                     if (ui.notes.isEmpty()) {
-                        Text(stringResource(R.string.no_notes_yet), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp))
+                        Text(stringResource(R.string.no_notes_yet), style = WeftType.supporting, color = colors.onSurfaceVariant, modifier = Modifier.padding(start = SectionHeaderInset))
                     } else {
                         val shown = ui.notes.take(5)
                         Column(verticalArrangement = Arrangement.spacedBy(GroupGap)) {
@@ -169,19 +195,19 @@ fun HabitDetailScreen(
         // Hidden during a long screenshot, or it would be stamped into every captured frame.
         // Lift the button above the Undo snackbar while it shows, so the two never overlap.
         val addNote = stringResource(R.string.add_note)
-        val fabLift by animateDpAsState(if (snackbar.currentSnackbarData != null) 72.dp else 0.dp, label = "fabLift")
+        val fabLift by animateDpAsState(if (snackbar.currentSnackbarData != null) SnackbarLift else 0.dp, label = "fabLift")
         if (onAddNote != null && !LocalScrollCaptureInProgress.current) {
             ExtendedFloatingActionButton(
                 onClick = onAddNote,
-                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(painterResource(R.drawable.ic_habit_pen), contentDescription = null, modifier = Modifier.size(IconSize)) },
                 text = { Text(stringResource(R.string.add_note), style = WeftType.label) },
                 containerColor = colors.primaryContainer,
                 contentColor = colors.onPrimaryContainer,
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(16.dp).padding(bottom = fabLift).semantics { contentDescription = addNote },
+                shape = FabShape,
+                modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(FabMargin).padding(bottom = fabLift).semantics { contentDescription = addNote },
             )
         }
-        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 8.dp))
+        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = SnackbarSideMargin))
     }
 
     if (deleting) {
@@ -200,8 +226,8 @@ private fun StatTile(value: String, label: String, hc: HabitColors, modifier: Mo
     Column(
         modifier
             .fillMaxHeight()
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest, RoundedCornerShape(18.dp))
-            .padding(12.dp),
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest, CardShape)
+            .padding(Space12),
         // The labels sit on the bottom edge, so they stay level when one value has shrunk.
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -211,9 +237,9 @@ private fun StatTile(value: String, label: String, hc: HabitColors, modifier: Mo
             value,
             maxLines = 1,
             style = style.copy(color = hc.ink),
-            autoSize = TextAutoSize.StepBased(minFontSize = StatValueMinSize, maxFontSize = style.fontSize, stepSize = 0.5.sp),
+            autoSize = TextAutoSize.StepBased(minFontSize = StatValueMinSize, maxFontSize = style.fontSize, stepSize = AutoSizeStep),
         )
-        Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, modifier = Modifier.padding(top = 2.dp))
+        Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, modifier = Modifier.padding(top = TitleLineGap))
     }
 }
 
@@ -223,17 +249,17 @@ private fun MonthCalendar(ui: HabitDetailUi, hc: HabitColors, onPrevious: () -> 
     Column(
         Modifier
             .fillMaxWidth()
-            .background(colors.surfaceContainerLowest, RoundedCornerShape(24.dp))
-            .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+            .background(colors.surfaceContainerLowest, CardShape)
+            .padding(start = Space12, end = Space12, top = Space8, bottom = Space12),
+        verticalArrangement = Arrangement.spacedBy(Space4),
     ) {
-        Row(Modifier.fillMaxWidth().padding(start = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(start = Space8), verticalAlignment = Alignment.CenterVertically) {
             Text(ui.monthLabel, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f))
             IconButton(onClick = onPrevious) {
-                Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_month), modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_month), modifier = Modifier.size(IconSizeSmall))
             }
             IconButton(onClick = onNext, enabled = ui.canGoForward) {
-                Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_month), modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_month), modifier = Modifier.size(IconSizeSmall))
             }
         }
         val cells: List<CalendarDayUi?> = List(ui.leadingBlanks) { null } + ui.days
@@ -294,10 +320,10 @@ private fun CalendarDay(day: CalendarDayUi, hc: HabitColors, editable: Boolean, 
     val editLabel = stringResource(R.string.edit_this_day)
     Box(
         Modifier
-            .size(38.dp)
+            .size(CalendarDaySize)
             .clip(CircleShape)
             .background(bg)
-            .then(if (day.isToday) Modifier.border(2.dp, colors.primary, CircleShape) else Modifier)
+            .then(if (day.isToday) Modifier.border(BorderThick, colors.primary, CircleShape) else Modifier)
             .clearAndSetSemantics {
                 contentDescription = fullDescription
                 if (editable) onClick(editLabel) { onEdit(); true }

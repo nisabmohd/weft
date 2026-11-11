@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.TouchTarget
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +35,11 @@ data class Swatch(val color: Color, val onColor: Color, val label: String)
  * one gets a check and a thin ring in its own color, set slightly apart. Used for habit colors
  * and the app accent so selection looks the same everywhere.
  */
+/** A swatch: 32 dp, 28 dp inside the 2 dp ring of a 40 dp circle when picked (on the 4 dp grid; the ring was 38 dp). */
+val SwatchSize = 32.dp
+val SwatchSelectedSize = 28.dp
+val SwatchRingSize = 40.dp
+
 @Composable
 fun ColorSwatchRow(swatches: List<Swatch>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
     val haptics = LocalHapticFeedback.current
@@ -42,7 +50,7 @@ fun ColorSwatchRow(swatches: List<Swatch>, selected: Int, onSelect: (Int) -> Uni
             Box(
                 Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .height(TouchTarget)
                     .clip(CircleShape)
                     .selectable(isSelected, role = Role.RadioButton) { if (!isSelected) haptics.tick(); onSelect(i) }
                     .semantics { contentDescription = swatch.label },
@@ -50,16 +58,16 @@ fun ColorSwatchRow(swatches: List<Swatch>, selected: Int, onSelect: (Int) -> Uni
             ) {
                 Box(
                     Modifier
-                        .size(38.dp)
-                        .then(if (isSelected) Modifier.border(2.dp, swatch.color, CircleShape) else Modifier),
+                        .size(SwatchRingSize)
+                        .then(if (isSelected) Modifier.border(BorderThick, swatch.color, CircleShape) else Modifier),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
-                        Modifier.size(if (isSelected) 28.dp else 32.dp).background(swatch.color, CircleShape),
+                        Modifier.size(if (isSelected) SwatchSelectedSize else SwatchSize).background(swatch.color, CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
                         if (isSelected) {
-                            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = swatch.onColor, modifier = Modifier.size(16.dp))
+                            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = swatch.onColor, modifier = Modifier.size(IconSizeTiny))
                         }
                     }
                 }

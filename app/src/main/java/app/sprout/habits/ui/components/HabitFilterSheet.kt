@@ -1,5 +1,20 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.ChipHeight
+import app.sprout.habits.ui.theme.ChipShape
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.ActiveDotSize
+import app.sprout.habits.ui.theme.BorderThin
+import app.sprout.habits.ui.theme.ChipCorner
+import app.sprout.habits.ui.theme.HeaderButtonSize
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space8
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -54,10 +69,16 @@ data class HabitFilterOption(val habitId: Long, val name: String, val icon: Int,
 /** A habit chip in Filter by habit (filter-by-habit-sheet.png): 40 dp tall, 12 dp corners. */
 val HabitChipHeight = 40.dp
 val HabitChipShape = RoundedCornerShape(12.dp)
-/** The small habit tile inside a habit chip: 28 dp, 9 dp corners (about 0.3 × size), 16 dp icon. */
+/** The small habit tile inside a habit chip: 28 dp, 8 dp corners, 16 dp icon; 6 dp from the chip's edge centres it. */
 val HabitChipTileSize = 28.dp
-val HabitChipTileShape = RoundedCornerShape(9.dp)
+val HabitChipTileShape = RoundedCornerShape(ChipCorner)
 val HabitChipIconSize = 16.dp
+val HabitChipTileInset = (HabitChipHeight - HabitChipTileSize) / 2
+
+/** A filter chip's ✕ (24 dp, a 48 dp touch target) and the active habit filter's overlapping 18 dp colour dots. */
+val ChipClearSize = 24.dp
+val HabitDotSize = 18.dp
+val HabitDotOverlap = 6.dp
 
 /**
  * "Filter by habit", shared by Journal and Insights (filter-by-habit-sheet.png): every habit as a
@@ -78,14 +99,14 @@ fun HabitFilterSheet(
     var picked by remember { mutableStateOf(selected) }
     val haptics = LocalHapticFeedback.current
     WeftSheet(onDismissRequest = onDismiss) {
-        Row(Modifier.fillMaxWidth().padding(start = SheetTitleInset, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(start = SheetTitleInset, end = Space12), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.filter_by_habit), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
             TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = WeftType.label) }
         }
         FlowRow(
-            Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding).padding(top = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding).padding(top = Space12),
+            horizontalArrangement = Arrangement.spacedBy(ItemGap),
+            verticalArrangement = Arrangement.spacedBy(ItemGap),
         ) {
             options.forEach { o ->
                 val checked = o.habitId in picked
@@ -96,7 +117,7 @@ fun HabitFilterSheet(
             helper,
             style = WeftType.supporting,
             color = colors.onSurfaceVariant,
-            modifier = Modifier.padding(start = SheetTitleInset, end = SheetTitleInset, top = 16.dp),
+            modifier = Modifier.padding(start = SheetTitleInset, end = SheetTitleInset, top = Space16),
         )
         WeftButton(
             applyLabel(picked.size),
@@ -116,9 +137,9 @@ private fun HabitChip(option: HabitFilterOption, checked: Boolean, onToggle: (Bo
         Modifier
             .heightIn(min = HabitChipHeight)
             .clip(HabitChipShape)
-            .then(if (checked) Modifier.background(colors.secondaryContainer) else Modifier.border(1.dp, colors.outlineVariant, HabitChipShape))
+            .then(if (checked) Modifier.background(colors.secondaryContainer) else Modifier.border(BorderThin, colors.outlineVariant, HabitChipShape))
             .toggleable(checked, role = Role.Checkbox, onValueChange = onToggle)
-            .padding(start = 6.dp, end = 14.dp),
+            .padding(start = HabitChipTileInset, end = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(hc.soft, Modifier.size(HabitChipTileSize), HabitChipTileShape) {
@@ -129,10 +150,10 @@ private fun HabitChip(option: HabitFilterOption, checked: Boolean, onToggle: (Bo
             style = WeftType.label,
             color = if (checked) colors.onSecondaryContainer else colors.onSurface,
             maxLines = 1,
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.padding(start = IconLabelGap),
         )
         if (checked) {
-            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(start = 8.dp).size(18.dp))
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(start = IconLabelGap).size(IconSizeChip))
         }
     }
 }
@@ -157,7 +178,7 @@ fun HeaderIconButton(
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.size(48.dp),
+        modifier = Modifier.size(HeaderButtonSize),
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = when {
                 primary -> colors.primary
@@ -174,12 +195,12 @@ fun HeaderIconButton(
             disabledContentColor = colors.onSurface.copy(alpha = 0.38f),
         ),
     ) {
-        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(22.dp))
+        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(IconSize))
     }
     // A plain 8 dp dot, 8 dp in from the top right, with no ring. No number: the chip under the
     // header says what is applied.
     if (active) {
-        Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(8.dp).background(colors.primary, CircleShape))
+        Box(Modifier.align(Alignment.TopEnd).padding(Space8).size(ActiveDotSize).background(colors.primary, CircleShape))
     }
     }
 }
@@ -192,7 +213,7 @@ fun HeaderIconButton(
 fun FilterChipRow(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
     Row(
         modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(ItemGap),
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
@@ -207,14 +228,14 @@ fun DefaultRangeChip(label: String, openLabel: String, onOpen: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onOpen)
-            .padding(start = 8.dp, end = 12.dp),
+            .padding(start = Space8, end = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(end = 6.dp).size(18.dp))
+        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(end = IconLabelGap).size(IconSizeChip))
         Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1)
     }
 }
@@ -228,15 +249,15 @@ fun CustomRangeChip(label: String, openLabel: String, clearLabel: String, onOpen
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onOpen)
-            .padding(start = 12.dp, end = 4.dp),
+            .padding(start = Space12, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = 6.dp))
-        SmallClearButton(clearLabel, 24.dp, Color.Transparent, colors.onSecondaryContainer, onClear)
+        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = Space4))
+        SmallClearButton(clearLabel, ChipClearSize, Color.Transparent, colors.onSecondaryContainer, onClear)
     }
 }
 
@@ -249,16 +270,16 @@ fun HabitFilterChip(selected: List<HabitFilterOption>, label: String, removeLabe
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(role = Role.Button, onClick = onOpen)
-            .padding(start = 6.dp, end = 4.dp),
+            .padding(start = Space8, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy((-5).dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(-HabitDotOverlap)) {
             selected.take(5).forEach { option ->
-                Box(Modifier.size(18.dp).background(colors.secondaryContainer, CircleShape).padding(2.dp).background(habitColors(option.hue).solid, CircleShape))
+                Box(Modifier.size(HabitDotSize).background(colors.secondaryContainer, CircleShape).padding(Space2).background(habitColors(option.hue).solid, CircleShape))
             }
         }
         Text(
@@ -266,8 +287,8 @@ fun HabitFilterChip(selected: List<HabitFilterOption>, label: String, removeLabe
             style = WeftType.label,
             color = colors.onSecondaryContainer,
             maxLines = 1,
-            modifier = Modifier.padding(horizontal = 6.dp),
+            modifier = Modifier.padding(start = IconLabelGap, end = Space4),
         )
-        SmallClearButton(removeLabel, 24.dp, Color.Transparent, colors.onSecondaryContainer, onClear)
+        SmallClearButton(removeLabel, ChipClearSize, Color.Transparent, colors.onSecondaryContainer, onClear)
     }
 }

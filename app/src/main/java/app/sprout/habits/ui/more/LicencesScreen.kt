@@ -1,5 +1,6 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.ScreenPadding
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,7 @@ fun LicencesScreen(onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) {
         TopBar(stringResource(R.string.licences), onBack)
         // One group, like the Journal: rows 2 dp apart, big corners only on the outside.
-        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(GroupGap)) {
+        LazyColumn(contentPadding = PaddingValues(ScreenPadding), verticalArrangement = Arrangement.spacedBy(GroupGap)) {
             itemsIndexed(LICENCES, key = { _, it -> it.first }) { i, (name, licence) ->
                 SettingsCard(groupedShape(i, LICENCES.size)) { SettingsRow(name, licence) }
             }

@@ -27,6 +27,7 @@ Weights are only **Regular (400)** and **SemiBold (600)**. Line height: about 1.
 - The value in Insights' Patterns cards ("Tuesday", "No sugar") is 18sp SemiBold (`WeftType.patternValue`, design 2026-11-08).
 - Text that would be cut off shrinks to fit, never below its floor in `Type.kt`: nav bar labels (`NavLabelMinSize` 9sp), habit detail stat values (`StatValueMinSize` 16sp) and every button label (`ButtonLabelMinSize` 12sp, e.g. "Snooze 10 min" at a large text size, 2026-11-08).
 - Font previews in More → Font show each name in its own font at 16sp, with "Aa" at 22sp.
+- Note cards (Journal, habit detail): the name `cardTitle`, the outcome · time line `supporting` muted, the note `body` (design 2026-11-11b).
 - (Not an exception: design 2026-11-11 asked for 15 / 13 / 14sp on the info rows and note cards; they use `cardTitle`, `supporting` and `body` like every card, user 2026-11-11: "looks so small".)
 
 ## Rules that keep screens consistent

@@ -88,8 +88,42 @@ object ReminderActions {
 
     private val ACTIONS = listOf(ACTION_DONE, ACTION_ADD_STEP, ACTION_SKIP, ACTION_SNOOZE, ACTION_DISMISS)
 
-    /** Brings the reminder back in [SNOOZE_MINUTES]; only one snooze per habit is ever pending. */
-    fun snooze(context: Context, habitId: Long) {
+    /**
+     * An alarm can be snoozed [MAX_SNOOZES] times a day (user, 2026-11-11); after that only Dismiss,
+     * sliding it done, Log amount or Skip today are offered. Counted per habit and day, so the next
+     * day's alarm starts fresh. Kept in plain SharedPreferences: a fact about today, not a setting.
+     */
+    const val MAX_SNOOZES = 3
+
+    fun snoozesLeft(context: Context, habitId: Long, day: Long = LocalDate.now().toEpochDay()): Int =
+        snoozesLeft(snoozes(context).getInt(snoozeKey(habitId, day), 0))
+
+    /** How many snoozes are left after [used] of them; never below 0. */
+    fun snoozesLeft(used: Int): Int = (MAX_SNOOZES - used).coerceAtLeast(0)
+
+    fun snoozeKey(habitId: Long, day: Long) = "$habitId@$day"
+
+    private fun snoozes(context: Context) = context.getSharedPreferences("snoozes", Context.MODE_PRIVATE)
+
+    /** Counts one snooze; other days' counts are dropped, so the file never grows. */
+    private fun countSnooze(context: Context, habitId: Long, day: Long) {
+        val prefs = snoozes(context)
+        val key = snoozeKey(habitId, day)
+        val used = prefs.getInt(key, 0)
+        prefs.edit().apply {
+            prefs.all.keys.filter { !it.endsWith("@$day") }.forEach(::remove)
+            putInt(key, used + 1)
+        }.apply()
+    }
+
+    /**
+     * Brings the reminder back in [SNOOZE_MINUTES]; only one snooze per habit is ever pending. False
+     * (and nothing scheduled) once today's [MAX_SNOOZES] are used: the press counts as Dismiss.
+     */
+    fun snooze(context: Context, habitId: Long): Boolean {
+        val day = LocalDate.now().toEpochDay()
+        if (snoozesLeft(context, habitId, day) == 0) return false
+        countSnooze(context, habitId, day)
         val alarms = context.getSystemService(AlarmManager::class.java)
         val at = System.currentTimeMillis() + SNOOZE_MINUTES * 60_000L
         val intent = PendingIntent.getBroadcast(
@@ -104,6 +138,7 @@ object ReminderActions {
         val exact = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
         if (exact) alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, intent)
         else alarms.setWindow(AlarmManager.RTC_WAKEUP, at, 60_000L, intent)
+        return true
     }
 
     /** Snooze alarms use these request codes, clear of the daily reminders' (the habit id). */
@@ -135,6 +170,7 @@ class ReminderActionReceiver : BroadcastReceiver() {
                     }
                     ReminderActions.ACTION_SNOOZE -> {
                         manager.cancel(ReminderNotifier.reminderId(habit.id))
+                        // Past today's three snoozes the press is a Dismiss: nothing comes back.
                         ReminderActions.snooze(context, habit.id)
                         null
                     }

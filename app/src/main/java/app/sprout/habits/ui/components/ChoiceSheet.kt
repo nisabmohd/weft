@@ -1,5 +1,10 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.RowMinHeight
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TrailingGap
 import androidx.compose.ui.text.font.FontFamily
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
@@ -69,20 +74,20 @@ fun ChoiceRow(
     Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = RowMinHeight)
             .background(if (selected) colors.surfaceContainerHigh else Color.Transparent)
             .selectable(selected, role = Role.RadioButton, onClick = onClick)
             // Edge to edge, the text at the sheet's title inset (docs/DESIGN-RULES.md → 4).
-            .padding(horizontal = SheetTitleInset, vertical = 6.dp),
+            .padding(horizontal = SheetTitleInset, vertical = Space8),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(TrailingGap),
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle.copy(fontFamily = fontFamily ?: WeftType.cardTitle.fontFamily), color = colors.onSurface)
             subtitle?.let {
                 val color = subtitleColor.takeOrElse { colors.onSurfaceVariant }
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    subtitleIcon?.let { icon -> Icon(painterResource(icon), contentDescription = null, tint = color, modifier = Modifier.size(16.dp)) }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(IconLabelGap)) {
+                    subtitleIcon?.let { icon -> Icon(painterResource(icon), contentDescription = null, tint = color, modifier = Modifier.size(IconSizeTiny)) }
                     Text(it, style = WeftType.supporting.copy(fontFamily = fontFamily ?: WeftType.supporting.fontFamily), color = color)
                 }
             }

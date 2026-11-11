@@ -19,7 +19,8 @@ Changed:
 - With "Show over other apps" on, a ringing alarm fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
 - The sample habits have No sugar in place of Stay calm.
 - Notifications: one "Send notifications" row opens Weft's notification settings, where you choose banners, sound and lock screen. The separate Banner notifications switch is gone; the row says when banners are off.
-- Journal notes are compact: the habit, its mark and the time on one line, the note right under it. A day's notes are one group.
+- Journal notes open with the same habit row as Today: the habit, its mark and "8 of 20 pages · 11:40 PM" under the name, then the note across the full card.
+- One set of sizes everywhere: every gap, corner and icon comes from one named list, so cards, rows, sheets and headers line up on every screen (tab headers, the Add note button, chevrons, title-to-line gaps, calendar days and more were a few dp apart).
 - Today's sample habits banner and About's Free and open source are one tidy row each ("Sample habits · Swipe or hold to try them" with Remove).
 - The widget previews in the home screen's widget list are drawn fresh, in light and dark, with no empty space and no dark edge at the corners.
 
@@ -35,6 +36,10 @@ Fixed:
 - The switches on Reminders & alarms could open the wrong settings page (on OnePlus, the lock screen notifications page): a Settings page left open in the background came back instead. Each opens its own page now, on every phone, and Back returns to Weft.
 - A notification reminder and another habit's alarm at the same minute both popped up a second apart. The alarm alone pops up and rings now; the reminder waits quietly in the notification shade.
 - Clear suggestion history and Archive happened at once, with no way back.
+
+Changed (alarms):
+
+- An alarm can be snoozed three times a day. After that the ringing screen offers Dismiss (and still slide to done, Log amount or Skip today), so a snooze can't go on forever.
 
 ## 1.6.1
 

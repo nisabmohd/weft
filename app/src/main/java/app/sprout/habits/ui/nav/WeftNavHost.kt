@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.nav
 
+import app.sprout.habits.ui.theme.AutoSizeStep
+import app.sprout.habits.ui.theme.IconSize
 import app.sprout.habits.ui.theme.NavLabelMinSize
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.unit.sp
@@ -302,7 +304,7 @@ private fun WeftNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
             NavigationBarItem(
                 selected = selected,
                 onClick = { onSelect(tab) },
-                icon = { Icon(painterResource(tab.icon), contentDescription = null, Modifier.size(22.dp)) },
+                icon = { Icon(painterResource(tab.icon), contentDescription = null, Modifier.size(IconSize)) },
                 label = {
                     // Long translations ("Gewohnheiten", "Statistiques") shrink to fit instead of being cut off.
                     val style = if (selected) WeftType.captionStrong else WeftType.caption
@@ -310,7 +312,7 @@ private fun WeftNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
                         stringResource(tab.label),
                         maxLines = 1,
                         style = style.copy(color = LocalContentColor.current),
-                        autoSize = TextAutoSize.StepBased(minFontSize = NavLabelMinSize, maxFontSize = style.fontSize, stepSize = 0.5.sp),
+                        autoSize = TextAutoSize.StepBased(minFontSize = NavLabelMinSize, maxFontSize = style.fontSize, stepSize = AutoSizeStep),
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

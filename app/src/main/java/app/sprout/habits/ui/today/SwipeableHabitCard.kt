@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.Space24
 import app.sprout.habits.ui.components.confirm
 import app.sprout.habits.ui.components.threshold
 import kotlinx.coroutines.flow.drop
@@ -133,32 +136,32 @@ private fun SwipeBackground(habit: HabitRowUi, direction: SwipeToDismissBoxValue
     if (undo) {
         val start = direction == SwipeToDismissBoxValue.StartToEnd
         Row(
-            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(horizontal = 24.dp),
+            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(horizontal = Space24),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp, if (start) Alignment.Start else Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(IconLabelGap, if (start) Alignment.Start else Alignment.End),
         ) {
-            Icon(painterResource(R.drawable.ic_undo), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_undo), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSizeSmall))
             Text(stringResource(R.string.action_undo), style = WeftType.label, color = colors.onSurfaceVariant)
         }
         return
     }
     when (direction) {
         SwipeToDismissBoxValue.StartToEnd -> Row(
-            Modifier.fillMaxSize().background(hc.solid, HabitCardShape).padding(start = 24.dp),
+            Modifier.fillMaxSize().background(hc.solid, HabitCardShape).padding(start = Space24),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(IconLabelGap),
         ) {
-            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = hc.on, modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = hc.on, modifier = Modifier.size(IconSizeSmall))
             Text(stringResource(R.string.outcome_done), style = WeftType.label, color = hc.on)
         }
 
         SwipeToDismissBoxValue.EndToStart -> Row(
-            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(end = 24.dp),
+            Modifier.fillMaxSize().background(colors.surfaceContainerHigh, HabitCardShape).padding(end = Space24),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(IconLabelGap, Alignment.End),
         ) {
             Text(stringResource(R.string.outcome_skip), style = WeftType.label, color = colors.onSurfaceVariant)
-            Icon(painterResource(R.drawable.ic_skip), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_skip), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSizeSmall))
         }
 
         SwipeToDismissBoxValue.Settled -> Box(Modifier)

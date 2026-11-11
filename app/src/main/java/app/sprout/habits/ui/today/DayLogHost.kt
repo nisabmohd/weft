@@ -1,5 +1,6 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.theme.SnackbarShape
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -64,7 +65,7 @@ fun UndoSnackbarHost(state: SnackbarHostState, modifier: Modifier = Modifier) {
             SwipeToDismissBox(state = swipe, backgroundContent = {}) {
                 Snackbar(
                     data,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = SnackbarShape,
                     containerColor = MaterialTheme.colorScheme.inverseSurface,
                     contentColor = MaterialTheme.colorScheme.inverseOnSurface,
                     actionColor = MaterialTheme.colorScheme.inversePrimary,

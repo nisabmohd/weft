@@ -90,6 +90,9 @@ fun weftTypography(body: BodyFont, scale: Float): Typography {
  * The only text styles screens use; TYPOGRAPHY.md says what each one is for. Colour is not part
  * of a style: set it where the text is drawn.
  */
+/** How far text that doesn't fit shrinks at a time (buttons, nav labels, stat values). */
+val AutoSizeStep = 0.5.sp
+
 object WeftType {
     /** 40 SemiBold: big input numbers, the Welcome headline. */
     val display: TextStyle @Composable @ReadOnlyComposable get() = MaterialTheme.typography.displayLarge

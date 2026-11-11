@@ -1,5 +1,13 @@
 package app.sprout.habits.ui.note
 
+import app.sprout.habits.ui.theme.BorderThin
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.ChipHeight
+import app.sprout.habits.ui.theme.ChipShape
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.TrailingGap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -157,8 +165,8 @@ private fun Section(title: String, meta: String, chips: Boolean = false, afterCh
         SectionHeader(
             title,
             Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
+                start = ScreenPadding,
+                end = ScreenPadding,
                 top = if (afterChips) SectionGapAbove - ChipTouchMargin else SectionGapAbove,
                 bottom = if (chips) SectionGapBelow - ChipTouchMargin else SectionGapBelow,
             ),
@@ -179,24 +187,24 @@ private fun ChipRow(labels: List<String>, highlightFirst: Boolean, onPick: (Int,
     val haptics = LocalHapticFeedback.current
     val addLabel = stringResource(R.string.suggest_add)
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = ScreenPadding),
+        horizontalArrangement = Arrangement.spacedBy(ItemGap),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         itemsIndexed(labels, key = { i, label -> "$i:$label" }) { i, label ->
             val filled = highlightFirst && i == 0
-            val shape = RoundedCornerShape(8.dp)
+            val shape = ChipShape
             val description = stringResource(R.string.suggest_chip_a11y, label)
             Box(
                 Modifier
                     .minimumInteractiveComponentSize()
-                    .heightIn(min = 32.dp)
+                    .heightIn(min = ChipHeight)
                     .clip(shape)
                     .background(if (filled) colors.secondaryContainer else Color.Transparent)
-                    .then(if (filled) Modifier else Modifier.border(1.dp, colors.outlineVariant, shape))
+                    .then(if (filled) Modifier else Modifier.border(BorderThin, colors.outlineVariant, shape))
                     .clickable(onClickLabel = addLabel, role = Role.Button) { haptics.tick(); onPick(i, label) }
                     .semantics { contentDescription = description }
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = Space12),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -223,7 +231,7 @@ private fun NoteRows(rows: List<PastRow>, onUse: (String) -> Unit) {
     val useLabel = stringResource(R.string.suggest_use)
     val today = LocalDate.now()
     val strings = DayLabels(stringResource(R.string.today), stringResource(R.string.yesterday))
-    Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(GroupGap)) {
+    Column(Modifier.padding(horizontal = ScreenPadding), verticalArrangement = Arrangement.spacedBy(GroupGap)) {
         rows.forEachIndexed { i, row ->
             val day = LocalDate.ofEpochDay(row.date)
             val description = stringResource(R.string.suggest_past_note_a11y, strings.label(day, today, long = true), row.plain)
@@ -234,10 +242,10 @@ private fun NoteRows(rows: List<PastRow>, onUse: (String) -> Unit) {
                     .background(colors.surfaceContainerLowest)
                     .clickable(onClickLabel = useLabel, role = Role.Button) { onUse(row.plain) }
                     .clearAndSetSemantics { contentDescription = description }
-                    .padding(16.dp),
+                    .padding(CardPadding),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(row.text, style = WeftType.body, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
+                Text(row.text, style = WeftType.body, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = TrailingGap))
                 Text(strings.label(day, today, long = false), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1)
             }
         }

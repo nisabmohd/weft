@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space24
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,8 +60,8 @@ fun RemindersAlarmsScreen(settings: Settings, repository: SettingsRepository, on
         TopBar(stringResource(R.string.reminders_alarms), onBack)
         Column(
             Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp).navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(start = Space16, end = Space16, top = Space16, bottom = Space24).navigationBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(ItemGap),
         ) {
             SectionLabel(stringResource(R.string.reminders_section), first = true)
             SettingsCard {

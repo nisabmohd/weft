@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.alarm
 
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.RowMinHeight
+import app.sprout.habits.ui.theme.Space12
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -51,6 +54,7 @@ import app.sprout.habits.ui.components.SheetTitleInset
 import app.sprout.habits.ui.components.WeftButton
 import app.sprout.habits.ui.components.sheetBottomPadding
 import app.sprout.habits.ui.components.toggle
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.theme.WeftType
 
 /**
@@ -142,7 +146,7 @@ fun SetupSwitchRow(title: String, text: String?, allowed: Boolean, padding: Padd
     Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = RowMinHeight)
             .toggleable(value = allowed, role = Role.Switch) { haptics.toggle(it); onOpen() }
             .padding(padding),
         verticalAlignment = Alignment.CenterVertically,
@@ -156,7 +160,7 @@ fun SetupSwitchRow(title: String, text: String?, allowed: Boolean, padding: Padd
 @Composable
 fun SetupLinkRow(title: String, text: String?, padding: PaddingValues, onOpen: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onOpen).padding(padding),
+        Modifier.fillMaxWidth().heightIn(min = RowMinHeight).clickable(onClick = onOpen).padding(padding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, text, Modifier.weight(1f))
@@ -164,14 +168,14 @@ fun SetupLinkRow(title: String, text: String?, padding: PaddingValues, onOpen: (
             painterResource(R.drawable.ic_open_external),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(IconSizeSmall),
         )
     }
 }
 
 @Composable
 private fun RowText(title: String, text: String?, modifier: Modifier) {
-    Column(modifier.padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(modifier.padding(end = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
         Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
         text?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }

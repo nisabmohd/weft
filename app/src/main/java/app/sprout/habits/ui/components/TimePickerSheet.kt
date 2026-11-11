@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space8
 import android.text.format.DateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,7 +118,7 @@ fun TimePickerSheet(
             // Drags in the wheel area belong to the wheels: the sheet must not move or close when a
             // wheel runs past its first or last row, or when the drag starts between the columns.
             Box(
-                Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                Modifier.fillMaxWidth().padding(bottom = Space16)
                     .nestedScroll(KeepInWheels)
                     .pointerInput(Unit) { detectVerticalDragGestures { change, _ -> change.consume() } },
                 contentAlignment = Alignment.Center,
@@ -124,7 +127,7 @@ fun TimePickerSheet(
                 Box(Modifier.fillMaxWidth().height(WheelRow).clip(CircleShape).background(colors.surfaceContainerHigh))
                 Row(
                     Modifier.height(WheelRow * VISIBLE_ROWS).fadeEdges(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(ItemGap),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     WheelColumn(hours, hourState, stringResource(R.string.time_hour)) { haptics.stepTick() }
@@ -143,7 +146,7 @@ fun TimePickerSheet(
                 haptics.confirm()
                 onApply(wheelMinutes(hourState.centred(), minuteState.centred(), halfState.centred() == 1, h24))
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = if (below != null) 16.dp else 8.dp).sheetBottomPadding(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = if (below != null) Space16 else Space8).sheetBottomPadding(),
         )
     }
 }

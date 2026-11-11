@@ -67,7 +67,7 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
     val context = LocalContext.current
     if (data == null) {
         Column(
-            GlanceModifier.fillMaxSize().background(GlanceTheme.colors.widgetBackground).cornerRadius(28.dp).padding(16.dp)
+            GlanceModifier.fillMaxSize().background(GlanceTheme.colors.widgetBackground).cornerRadius(WidgetCorner).padding(WidgetPadding)
                 .clickable(actionStartActivity(context.openAppIntent())),
             verticalAlignment = Alignment.Vertical.CenterVertically,
         ) {
@@ -88,13 +88,13 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
         GlanceModifier
             .fillMaxSize()
             .background(ColorProvider(hc.soft, hc.soft))
-            .cornerRadius(28.dp)
+            .cornerRadius(WidgetCorner)
             .padding(pad)
             .clickable(actionStartActivity(context.openHabitIntent(habit.id))),
     ) {
         if (layout.showName) Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
-            Image(ImageProvider(habit.icon), contentDescription = null, colorFilter = ColorFilter.tint(ink), modifier = GlanceModifier.size(if (compact) 18.dp else 24.dp))
-            Spacer(GlanceModifier.width(8.dp))
+            Image(ImageProvider(habit.icon), contentDescription = null, colorFilter = ColorFilter.tint(ink), modifier = GlanceModifier.size(if (compact) StreakIconSizeCompact else StreakIconSize))
+            Spacer(GlanceModifier.width(StreakIconGap))
             Text(
                 habit.name,
                 maxLines = 1,
@@ -113,7 +113,7 @@ private fun StreakContent(data: StreakWidgetData?, bitmaps: WidgetBitmaps) {
         Text(LocalContext.current.getString(R.string.day_streak), maxLines = 1, style = TextStyle(fontSize = if (compact) WidgetType.caption else WidgetType.supporting, fontWeight = FontWeight.Medium, color = ink))
         if (layout.showMarks) {
             Spacer(GlanceModifier.defaultWeight())
-            Spacer(GlanceModifier.height(if (compact) 6.dp else 10.dp))
+            Spacer(GlanceModifier.height(if (compact) StreakMarksGapCompact else StreakMarksGap))
             Image(
                 ImageProvider(bitmaps.marks(data.last7, habit.hue, marksWidth, markSize)),
                 contentDescription = LocalContext.current.getString(R.string.last_7_days),

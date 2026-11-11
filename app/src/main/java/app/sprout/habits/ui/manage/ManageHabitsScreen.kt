@@ -1,5 +1,19 @@
 package app.sprout.habits.ui.manage
 
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.HabitCardCorner
+import app.sprout.habits.ui.theme.HabitCardMinHeight
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space32
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TopBarHeight
+import app.sprout.habits.ui.theme.TopBarTitleGap
+import app.sprout.habits.ui.theme.TouchTarget
 import app.sprout.habits.ui.LocalUndoableActions
 import app.sprout.habits.ui.components.PendingUndoHost
 import androidx.compose.material3.SnackbarHostState
@@ -100,16 +114,16 @@ fun ManageHabitsScreen(
     Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding()) {
         Row(
-            Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            Modifier.fillMaxWidth().height(TopBarHeight).padding(start = Space16, end = Space16, top = Space8),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
-            Text(stringResource(R.string.manage_habits), style = WeftType.title, color = colors.onBackground, modifier = Modifier.padding(start = 14.dp))
+            Text(stringResource(R.string.manage_habits), style = WeftType.title, color = colors.onBackground, modifier = Modifier.padding(start = TopBarTitleGap))
         }
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(start = Space16, end = Space16, top = Space8, bottom = Space32),
+            verticalArrangement = Arrangement.spacedBy(ItemGap),
             modifier = Modifier.fillMaxSize(),
         ) {
             item(key = "hint") {
@@ -117,7 +131,7 @@ fun ManageHabitsScreen(
                     stringResource(R.string.reorder_hint),
                     style = WeftType.supporting,
                     color = colors.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = Space4, vertical = Space4),
                 )
             }
             itemsIndexed(order, key = { _, h -> h.id }) { index, habit ->
@@ -178,7 +192,7 @@ fun ManageHabitsScreen(
             if (archived.isNotEmpty()) {
                 item(key = "archived") {
                     // With the list's 8 dp gaps: the usual 20 dp above the header, 8 dp below it.
-                    SectionHeader(stringResource(R.string.archived), Modifier.padding(top = SectionGapAbove - 8.dp))
+                    SectionHeader(stringResource(R.string.archived), Modifier.padding(top = SectionGapAbove - CardGap))
                 }
                 items(archived, key = { "a${it.id}" }) { habit ->
                     HabitRow(habit, Modifier.animateItem(), elevated = false, handleModifier = null) {
@@ -189,7 +203,7 @@ fun ManageHabitsScreen(
             }
         }
     }
-    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 8.dp))
+    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = Space8))
     }
 
     deleting?.let { habit ->
@@ -210,18 +224,18 @@ private fun HabitRow(
 ) {
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(habit.colorHue.toFloat())
-    val shape = RoundedCornerShape(22.dp)
+    val shape = RoundedCornerShape(HabitCardCorner)
     Row(
         modifier
             .fillMaxWidth()
-            .height(68.dp)
-            .then(if (elevated) Modifier.shadow(8.dp, shape) else Modifier)
+            .height(HabitCardMinHeight)
+            .then(if (elevated) Modifier.shadow(Space8, shape) else Modifier)
             .background(colors.surfaceContainerLowest, shape)
-            .padding(start = 12.dp, end = 4.dp),
+            .padding(start = Space12, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(HabitIcon.fromKey(habit.icon).drawable, hc.soft, hc.ink)
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(TileTextGap))
         Text(
             habit.name,
             style = WeftType.cardTitle,
@@ -232,8 +246,8 @@ private fun HabitRow(
         )
         actions()
         if (handleModifier != null) {
-            Box(handleModifier.size(48.dp), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_drag), contentDescription = stringResource(R.string.drag_to_reorder), tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
+            Box(handleModifier.size(TouchTarget), contentAlignment = Alignment.Center) {
+                Icon(painterResource(R.drawable.ic_drag), contentDescription = stringResource(R.string.drag_to_reorder), tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSize))
             }
         }
     }

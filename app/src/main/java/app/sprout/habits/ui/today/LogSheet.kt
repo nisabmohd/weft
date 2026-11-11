@@ -1,5 +1,14 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.SmallButtonHeight
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.components.TitleLineGap
+import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.confirm
 import app.sprout.habits.ui.components.stepTick
 import app.sprout.habits.ui.components.tick
@@ -74,6 +83,9 @@ import kotlin.math.roundToInt
 
 /** Log sheet for one habit on one day: outcome, amount (stepper, slider) and an optional note. */
 @OptIn(ExperimentalMaterial3Api::class)
+/** The − / + step buttons: 52 dp circles. */
+private val StepButtonSize = 52.dp
+
 @Composable
 fun LogSheet(
     sheet: LogSheetUi,
@@ -117,13 +129,12 @@ fun LogSheet(
                 .padding(horizontal = SheetSidePadding)
                 .sheetBottomPadding()
                 .imePadding(),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(Space20),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Box(Modifier.size(48.dp).background(hc.soft, RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(sheet.icon), contentDescription = null, tint = hc.ink, modifier = Modifier.size(24.dp))
-                }
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TileTextGap)) {
+                // The same 44 dp tile as every habit card.
+                HabitTile(sheet.icon, hc.soft, hc.ink)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                     Text(sheet.name, style = WeftType.title, color = colors.onSurface)
                     Text(sheet.subtitle, style = WeftType.supporting, color = colors.onSurfaceVariant)
                 }
@@ -132,12 +143,12 @@ fun LogSheet(
                     val clearLabel = if (sheet.isToday) stringResource(R.string.clear_today_entry, sheet.name) else stringResource(R.string.clear_entry_on, sheet.name, sheet.dayLabel)
                     FilledTonalButton(
                         onClick = onUndo,
-                        contentPadding = PaddingValues(horizontal = 12.dp),
-                        modifier = Modifier.height(40.dp).semantics { contentDescription = clearLabel },
+                        contentPadding = PaddingValues(horizontal = Space12),
+                        modifier = Modifier.height(SmallButtonHeight).semantics { contentDescription = clearLabel },
                         colors = ButtonDefaults.filledTonalButtonColors(containerColor = colors.surfaceContainerHigh, contentColor = colors.onSurface),
                     ) {
-                        Icon(painterResource(R.drawable.ic_undo), contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(6.dp))
+                        Icon(painterResource(R.drawable.ic_undo), contentDescription = null, modifier = Modifier.size(IconSizeChip))
+                        Spacer(Modifier.width(IconLabelGap))
                         Text(stringResource(R.string.action_undo), style = WeftType.label)
                     }
                 }
@@ -173,7 +184,7 @@ fun LogSheet(
             }
 
             if (hasAmount && status != EntryStatus.SKIP) {
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(Space12)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         StepButton(R.drawable.ic_minus, stringResource(R.string.less)) { setAmount(amount - step) }
                         Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -240,12 +251,12 @@ fun LogSheet(
 private fun StepButton(icon: Int, label: String, onClick: () -> Unit) {
     FilledIconButton(
         onClick = onClick,
-        modifier = Modifier.size(52.dp),
+        modifier = Modifier.size(StepButtonSize),
         colors = IconButtonDefaults.filledIconButtonColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     ) {
-        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(22.dp))
+        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(IconSize))
     }
 }

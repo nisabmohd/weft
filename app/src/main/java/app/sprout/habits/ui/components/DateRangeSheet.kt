@@ -1,5 +1,9 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.CalendarDaySize
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space8
 import app.sprout.habits.ui.theme.WeftType
 import app.sprout.habits.ui.englishDates
 import app.sprout.habits.ui.datePattern
@@ -118,7 +122,7 @@ fun DateRangeSheet(
                 ButtonRole.Primary,
                 onClick = { if (s != null && e != null) onApply(s, e) },
                 enabled = s != null,
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).sheetBottomPadding(),
+                modifier = Modifier.fillMaxWidth().padding(top = SheetActionGap).sheetBottomPadding(),
             )
         }
     }
@@ -151,7 +155,7 @@ fun DatePickerSheet(
                 stringResource(R.string.use_value, picked.format(datePattern("d MMM"))),
                 ButtonRole.Primary,
                 onClick = { onApply(picked) },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).sheetBottomPadding(),
+                modifier = Modifier.fillMaxWidth().padding(top = SheetActionGap).sheetBottomPadding(),
             )
         }
     }
@@ -159,9 +163,9 @@ fun DatePickerSheet(
 
 @Composable
 private fun MonthHeader(month: YearMonth, today: LocalDate, onMonth: (YearMonth) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().padding(top = Space12), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { onMonth(month.minusMonths(1)) }) {
-            Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_month), modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_month), modifier = Modifier.size(IconSizeSmall))
         }
         Text(
             month.format(datePattern("MMMM yyyy")),
@@ -171,7 +175,7 @@ private fun MonthHeader(month: YearMonth, today: LocalDate, onMonth: (YearMonth)
             modifier = Modifier.weight(1f),
         )
         IconButton(onClick = { onMonth(month.plusMonths(1)) }, enabled = month < YearMonth.from(today)) {
-            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_month), modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_month), modifier = Modifier.size(IconSizeSmall))
         }
     }
 }
@@ -192,7 +196,7 @@ private fun MonthGrid(month: YearMonth, weekStart: DayOfWeek, today: LocalDate, 
                         style = WeftType.tiny,
                         color = colors.onSurfaceVariant,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f).padding(vertical = 6.dp),
+                        modifier = Modifier.weight(1f).padding(vertical = Space8),
                     )
                 }
             }
@@ -207,14 +211,14 @@ private fun MonthGrid(month: YearMonth, weekStart: DayOfWeek, today: LocalDate, 
                                 val inRange = start != null && end != null && day > start && day < end
                                 // The band runs behind the days in the range, including half behind each end.
                                 if (start != null && end != null && start != end && (inRange || isEdge)) {
-                                    Row(Modifier.fillMaxWidth().height(40.dp)) {
+                                    Row(Modifier.fillMaxWidth().height(CalendarDaySize)) {
                                         Box(Modifier.weight(1f).fillMaxSize().background(if (day == start) Color.Transparent else band))
                                         Box(Modifier.weight(1f).fillMaxSize().background(if (day == end) Color.Transparent else band))
                                     }
                                 }
                                 Box(
                                     Modifier
-                                        .size(40.dp)
+                                        .size(CalendarDaySize)
                                         .clip(CircleShape)
                                         .background(if (isEdge) colors.primary else Color.Transparent)
                                         .clickable(enabled = !future, role = Role.Button) { onPick(day) }

@@ -1,5 +1,27 @@
 package app.sprout.habits.ui.habits
 
+import app.sprout.habits.ui.theme.BorderThin
+import app.sprout.habits.ui.theme.CardContentGap
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.LegendSwatchSize
+import app.sprout.habits.ui.theme.SectionGap
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.SnackbarSideMargin
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TrailingGap
+import app.sprout.habits.ui.theme.WeekMarkSize
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.ListEndPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.TabHeaderPadding
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.components.PendingUndoHost
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
@@ -84,8 +106,8 @@ fun HabitsScreen(
     Box(Modifier.fillMaxSize()) {
     // The header stays put while the list scrolls under it, so its buttons are always in reach.
     Column(Modifier.fillMaxSize()) {
-    Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-            TabHeader(stringResource(R.string.tab_habits), listSpacing = 12.dp) {
+    Box(Modifier.padding(TabHeaderPadding)) {
+            TabHeader(stringResource(R.string.tab_habits)) {
                 HeaderIconButton(R.drawable.ic_drag, stringResource(R.string.manage_habits), onClick = onManage)
                 HeaderIconButton(R.drawable.ic_plus, stringResource(R.string.new_habit), onClick = onAddHabit)
             }
@@ -93,15 +115,15 @@ fun HabitsScreen(
     }
     LazyColumn(
         Modifier.weight(1f).fillMaxWidth(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+        contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = ListEndPadding),
         // Cards sit 8 dp apart on every tab.
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(CardGap),
     ) {
         item(key = "mode") {
             // Each segment is a fixed share of the row, so labels stop scaling at 1.3x.
             CappedFontScale {
             val haptics = LocalHapticFeedback.current
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(bottom = SectionGap - CardGap)) {
                 HabitsMode.entries.forEachIndexed { index, m ->
                     SegmentedButton(
                         selected = mode == m,
@@ -125,7 +147,7 @@ fun HabitsScreen(
         }
     }
     }
-    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
+    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = SnackbarSideMargin))
     }
 }
 
@@ -134,14 +156,14 @@ private fun WeekNavigator(week: WeekUi, onPrevious: () -> Unit, onNext: () -> Un
     val colors = MaterialTheme.colorScheme
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = onPrevious) {
-            Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_week), modifier = Modifier.size(22.dp))
+            Icon(painterResource(R.drawable.ic_chevron_left), contentDescription = stringResource(R.string.previous_week), modifier = Modifier.size(IconSizeSmall))
         }
         Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(week.label, style = WeftType.cardTitle, color = colors.onBackground)
             Text(stringResource(R.string.week_complete, week.percent), style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         IconButton(onClick = onNext, enabled = week.canGoForward) {
-            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_week), modifier = Modifier.size(22.dp))
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = stringResource(R.string.next_week), modifier = Modifier.size(IconSizeSmall))
         }
     }
 }
@@ -152,7 +174,7 @@ private fun CardHeader(icon: Int, hue: Float, title: String, subtitle: String?, 
     Row(verticalAlignment = Alignment.CenterVertically) {
         // The same 44 dp tile and 22 dp icon as a Today habit card.
         HabitTile(icon, hc.soft, hc.ink)
-        Column(Modifier.weight(1f).padding(start = 12.dp, end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(start = TileTextGap, end = TrailingGap), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
             subtitle?.let { Text(it, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
@@ -173,11 +195,11 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
     Column(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(CardShape)
             .background(colors.surfaceContainerLowest)
             .clickable(onClickLabel = stringResource(R.string.open_habit, habit.name)) { onOpen(habit.id) }
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(CardPadding),
+        verticalArrangement = Arrangement.spacedBy(CardContentGap),
     ) {
         CardHeader(habit.icon, habit.hue, habit.name, null) {
             Text(habit.goal, style = WeftType.supporting, color = colors.onSurfaceVariant)
@@ -185,7 +207,7 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
         // Seven equal columns that share the card's width, so they fit narrow phones; the day
         // labels stop scaling at 1.3x so they never wrap.
         CappedFontScale {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Space2)) {
             habit.marks.forEachIndexed { i, mark ->
                 val isToday = i == week.todayIndex
                 // Any scheduled day up to today can be edited; future and unscheduled days can't.
@@ -195,16 +217,16 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
                 Column(
                     Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(Space16))
                         .background(if (isToday) colors.surfaceContainerHigh else colors.surfaceContainerLowest)
                         .then(if (editable) Modifier.clickable(onClickLabel = editLabel) { onEditDay(i) } else Modifier)
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = Space8)
                         .clearAndSetSemantics {
                             contentDescription = description
                             if (editable) onClick(editLabel) { onEditDay(i); true }
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(Space8),
                 ) {
                     Text(
                         week.dayLabels[i],
@@ -213,7 +235,7 @@ private fun WeekCard(habit: HabitWeekUi, week: WeekUi, onOpen: (Long) -> Unit, o
                         maxLines = 1,
                         softWrap = false,
                     )
-                    DayMarkView(mark, hc, mc, Modifier.size(32.dp))
+                    DayMarkView(mark, hc, mc, Modifier.size(WeekMarkSize))
                 }
             }
         }
@@ -236,11 +258,11 @@ private fun Legend() {
     val colors = MaterialTheme.colorScheme
     FlowRow(
         // With the list's 8 dp, the legend has the same 16 dp under it as above it.
-        Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
+        Modifier.fillMaxWidth().padding(start = SectionHeaderInset, end = SectionHeaderInset, bottom = Space8),
         horizontalArrangement = Arrangement.SpaceBetween,
         itemVerticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(pluralStringResource(R.plurals.last_weeks, OVERALL_WEEKS, OVERALL_WEEKS), style = WeftType.label, color = colors.onSurfaceVariant, modifier = Modifier.padding(end = 12.dp))
+        Text(pluralStringResource(R.plurals.last_weeks, OVERALL_WEEKS, OVERALL_WEEKS), style = WeftType.label, color = colors.onSurfaceVariant, modifier = Modifier.padding(end = TrailingGap))
         Row(verticalAlignment = Alignment.CenterVertically) {
         LegendItem(stringResource(R.string.outcome_done)) { drawRoundRect(colors.onSurfaceVariant, cornerRadius = CornerRadius(size.width * 0.3f)) }
         // Neutral greys: the cells themselves are in each habit's own color.
@@ -252,9 +274,9 @@ private fun Legend() {
 
 @Composable
 private fun LegendItem(label: String, draw: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit) {
-    Row(Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Canvas(Modifier.size(10.dp), onDraw = draw)
-        Text(label, style = WeftType.caption, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp))
+    Row(Modifier.padding(start = Space12), verticalAlignment = Alignment.CenterVertically) {
+        Canvas(Modifier.size(LegendSwatchSize), onDraw = draw)
+        Text(label, style = WeftType.caption, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = IconLabelGap))
     }
 }
 
@@ -264,11 +286,11 @@ private fun OverallCard(habit: HabitOverallUi, overall: OverallUi, onOpen: (Long
     Column(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(CardShape)
             .background(colors.surfaceContainerLowest)
             .clickable(onClickLabel = stringResource(R.string.open_habit, habit.name)) { onOpen(habit.id) }
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(CardPadding),
+        verticalArrangement = Arrangement.spacedBy(CardContentGap),
     ) {
         CardHeader(habit.icon, habit.hue, habit.name, pluralStringResource(R.plurals.best_streak_days, habit.bestStreak, habit.bestStreak)) {
             Text(
@@ -315,7 +337,7 @@ private fun Heatmap(habit: HabitOverallUi) {
         val pitch = size.width / OVERALL_WEEKS
         val cell = pitch * 0.72f
         val radius = CornerRadius(cell * 0.3f)
-        val stroke = 1.dp.toPx()
+        val stroke = BorderThin.toPx()
         habit.cells.forEachIndexed { i, mark ->
             val col = i / 7
             val row = i % 7

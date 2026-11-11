@@ -1,5 +1,13 @@
 package app.sprout.habits.ui.alarm
 
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space40
+import app.sprout.habits.ui.theme.Space8
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -74,6 +82,8 @@ import app.sprout.habits.notify.ReminderActionReceiver
 import app.sprout.habits.notify.ReminderActions
 import app.sprout.habits.notify.ReminderScheduler
 import app.sprout.habits.ui.components.ButtonPair
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.WeftButton
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.SheetSidePadding
 import app.sprout.habits.ui.drawEdgeToEdge
@@ -184,7 +194,8 @@ class AlarmActivity : ComponentActivity() {
                     position = (answered + queue.size).takeIf { it > 1 }?.let { answered + 1 to it },
                     next = queue.getOrNull(1)?.name,
                     onDone = { answer(ReminderActions.ACTION_DONE) },
-                    onSnooze = { answer(ReminderActions.ACTION_SNOOZE) },
+                    // No Snooze once today's three are used (user, 2026-11-11).
+                    onSnooze = { answer(ReminderActions.ACTION_SNOOZE) }.takeIf { ReminderActions.snoozesLeft(this@AlarmActivity, h.id) > 0 },
                     onDismiss = { answer(ReminderActions.ACTION_DISMISS) },
                     onSkip = { answer(ReminderActions.ACTION_SKIP) },
                     onLogAmount = {
@@ -347,7 +358,8 @@ private fun AlarmScreen(
     position: Pair<Int, Int>?,
     next: String?,
     onDone: () -> Unit,
-    onSnooze: () -> Unit,
+    /** Null once the alarm was snoozed [ReminderActions.MAX_SNOOZES] times today: only Dismiss shows. */
+    onSnooze: (() -> Unit)?,
     onDismiss: () -> Unit,
     onSkip: () -> Unit,
     onLogAmount: () -> Unit,
@@ -365,9 +377,9 @@ private fun AlarmScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Open Weft: a text button with a chevron (alarm-4/5).
-        TextButton(onClick = onOpenWeft, modifier = Modifier.padding(top = 16.dp).heightIn(min = ButtonHeight)) {
+        TextButton(onClick = onOpenWeft, modifier = Modifier.padding(top = Space16).heightIn(min = ButtonHeight)) {
             Text(stringResource(R.string.alarm_open_weft), style = WeftType.label, color = hc.ink)
-            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = hc.ink, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = hc.ink, modifier = Modifier.padding(start = Space8).size(IconSizeChip))
         }
         Spacer(Modifier.weight(1f))
         if (position != null) {
@@ -375,19 +387,19 @@ private fun AlarmScreen(
                 stringResource(R.string.alarm_position, position.first, position.second),
                 style = WeftType.captionStrong,
                 color = hc.ink,
-                modifier = Modifier.padding(bottom = 16.dp).background(hc.mid, CircleShape).padding(horizontal = 14.dp, vertical = 6.dp),
+                modifier = Modifier.padding(bottom = Space16).background(hc.mid, CircleShape).padding(horizontal = Space12, vertical = Space8),
             )
         }
         HabitTile(hc.mid, Modifier.size(AlarmTileSize), RoundedCornerShape(AlarmTileCorner)) {
             Icon(painterResource(HabitIcon.fromKey(habit.icon).drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(AlarmTileIconSize))
         }
-        Text(habit.name, style = WeftType.title, color = hc.ink, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
+        Text(habit.name, style = WeftType.title, color = hc.ink, textAlign = TextAlign.Center, modifier = Modifier.padding(top = Space20))
         if (measured) {
-            Text(stringResource(R.string.alarm_goal, habit.measure(habit.target)), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 4.dp))
+            Text(stringResource(R.string.alarm_goal, habit.measure(habit.target)), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = Space4))
         }
-        Text(time, style = WeftType.alarmTime, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 4.dp))
+        Text(time, style = WeftType.alarmTime, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = Space4))
         if (next != null) {
-            Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 8.dp))
+            Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = Space8))
         }
         Spacer(Modifier.weight(2f))
         // Keyed by habit: when the next alarm takes the screen ("2 of 2") its slider starts at the left.
@@ -397,17 +409,22 @@ private fun AlarmScreen(
         // Log amount (measured) or Skip today (check-off), between the slide bar and the pair.
         TextButton(
             onClick = if (measured) onLogAmount else onSkip,
-            modifier = Modifier.padding(vertical = 8.dp).heightIn(min = ButtonHeight),
+            modifier = Modifier.padding(vertical = Space8).heightIn(min = ButtonHeight),
         ) {
             Text(stringResource(if (measured) R.string.log_amount else R.string.alarm_skip_today), style = WeftType.cardTitle, color = hc.ink)
         }
-        ButtonPair(
-            secondaryLabel = stringResource(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES),
-            onSecondary = onSnooze,
-            primaryLabel = stringResource(R.string.alarm_dismiss),
-            onPrimary = onDismiss,
-        )
-        Spacer(Modifier.height(40.dp))
+        if (onSnooze != null) {
+            ButtonPair(
+                secondaryLabel = stringResource(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES),
+                onSecondary = onSnooze,
+                primaryLabel = stringResource(R.string.alarm_dismiss),
+                onPrimary = onDismiss,
+            )
+        } else {
+            // One action: the one full-width button (docs/DESIGN-RULES.md 2).
+            WeftButton(stringResource(R.string.alarm_dismiss), ButtonRole.Primary, onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+        }
+        Spacer(Modifier.height(Space40))
     }
 }
 
@@ -447,7 +464,7 @@ private fun SlideToDone(track: Color, thumb: Color, label: String, labelColor: C
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = Color.White, modifier = Modifier.size(IconSize))
         }
     }
 }

@@ -195,6 +195,8 @@ class AlarmRinger(
             setOnClickPendingIntent(R.id.done, ReminderActions.pendingAction(context, ReminderActions.ACTION_DONE, habit.id))
             setTextViewText(R.id.snooze, context.getString(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES))
             setOnClickPendingIntent(R.id.snooze, ReminderActions.pendingAction(context, ReminderActions.ACTION_SNOOZE, habit.id))
+            // After today's three snoozes the card offers Done and Dismiss only.
+            if (ReminderActions.snoozesLeft(context, habit.id) == 0) setViewVisibility(R.id.snooze, android.view.View.GONE)
             setTextViewText(R.id.dismiss, context.getString(R.string.alarm_dismiss))
             setOnClickPendingIntent(R.id.dismiss, ReminderActions.pendingAction(context, ReminderActions.ACTION_DISMISS, habit.id))
             // In the habit's colours, like the ringing screen (user, 2026-11-08): Done a pill in its

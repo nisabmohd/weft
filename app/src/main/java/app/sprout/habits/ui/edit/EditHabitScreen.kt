@@ -1,5 +1,29 @@
 package app.sprout.habits.ui.edit
 
+import app.sprout.habits.ui.theme.BorderThin
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.DayCircleSize
+import app.sprout.habits.ui.theme.DetailTileIconSize
+import app.sprout.habits.ui.theme.DetailTileShape
+import app.sprout.habits.ui.theme.DetailTileSize
+import app.sprout.habits.ui.theme.FieldShape
+import app.sprout.habits.ui.components.HabitTileShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TopBarHeight
+import app.sprout.habits.ui.theme.TopBarTitleGap
+import app.sprout.habits.ui.theme.TopBarTopPadding
+import app.sprout.habits.ui.theme.TouchTarget
+import app.sprout.habits.ui.theme.TrailingGap
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.ui.manage.ArchiveHabitSheet
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
@@ -169,7 +193,7 @@ private fun EditHabitContent(
 
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding().imePadding().focusRequester(focusSink).focusable()) {
         Row(
-            Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            Modifier.fillMaxWidth().height(TopBarHeight).padding(start = ScreenPadding, end = ScreenPadding, top = TopBarTopPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
@@ -177,7 +201,7 @@ private fun EditHabitContent(
                 stringResource(if (form.isNew) R.string.new_habit else R.string.edit_habit),
                 style = WeftType.title,
                 color = colors.onBackground,
-                modifier = Modifier.weight(1f).padding(start = 14.dp),
+                modifier = Modifier.weight(1f).padding(start = TopBarTitleGap),
             )
             HeaderIconButton(R.drawable.ic_check, stringResource(R.string.action_save), primary = true, enabled = form.canSave, onClick = onSave)
         }
@@ -186,16 +210,16 @@ private fun EditHabitContent(
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 24.dp)
+                .padding(horizontal = ScreenPadding)
+                .padding(top = Space8, bottom = Space24)
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(SectionGapAbove),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // The text field keeps 8 dp above its outline for the floating label; match it so the
                 // tile lines up with the outline, not with the label space.
-                Box(Modifier.padding(top = 8.dp).size(56.dp).background(hc.soft, RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(form.icon.drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(28.dp))
+                Box(Modifier.padding(top = Space8).size(DetailTileSize).background(hc.soft, DetailTileShape), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(form.icon.drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(DetailTileIconSize))
                 }
                 OutlinedTextField(
                     value = form.name,
@@ -203,9 +227,9 @@ private fun EditHabitContent(
                     label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
                     textStyle = WeftType.cardTitle,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = FieldShape,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    modifier = Modifier.weight(1f).padding(start = 12.dp),
+                    modifier = Modifier.weight(1f).padding(start = TileTextGap),
                 )
             }
 
@@ -213,7 +237,7 @@ private fun EditHabitContent(
             Section(stringResource(R.string.icon)) {
                 // Seven suggestions and a More tile that opens every icon in a sheet.
                 var pickingIcon by rememberSaveable { mutableStateOf(false) }
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(Space8)) {
                     HabitIcon.suggestedFor(form.icon).forEach { icon ->
                         IconTile(icon, selected = icon == form.icon, colors = hc, modifier = Modifier.weight(1f).aspectRatio(1f)) {
                             edit { it.copy(icon = icon) }
@@ -223,13 +247,13 @@ private fun EditHabitContent(
                         Modifier
                             .weight(1f)
                             .aspectRatio(1f)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(HabitTileShape)
                             .background(colors.surfaceContainerHigh)
                             .clickable(onClickLabel = moreIcons) { endTyping(); pickingIcon = true }
                             .semantics { contentDescription = moreIcons },
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(painterResource(R.drawable.ic_more_horiz), contentDescription = null, tint = colors.onSurface, modifier = Modifier.size(24.dp))
+                        Icon(painterResource(R.drawable.ic_more_horiz), contentDescription = null, tint = colors.onSurface, modifier = Modifier.size(IconSize))
                     }
                 }
                 if (pickingIcon) {
@@ -269,7 +293,7 @@ private fun EditHabitContent(
                 }
                 }
                 if (form.trackType == TrackType.AMOUNT) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(ItemGap)) {
                         NumberField(stringResource(R.string.target), form.target, Modifier.weight(1f)) { v -> onEdit { it.copy(target = v) } }
                         OutlinedTextField(
                             value = form.unit,
@@ -277,7 +301,7 @@ private fun EditHabitContent(
                             label = { Text(stringResource(R.string.unit)) },
                             placeholder = { Text(stringResource(R.string.unit_placeholder)) },
                             singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(Space12),
                             modifier = Modifier.weight(1.3f),
                         )
                         NumberField(stringResource(R.string.step), form.step, Modifier.weight(0.9f)) { v -> onEdit { it.copy(step = v) } }
@@ -299,7 +323,7 @@ private fun EditHabitContent(
                         Box(
                             Modifier
                                 .weight(1f)
-                                .height(48.dp)
+                                .height(TouchTarget)
                                 .clip(CircleShape)
                                 .semantics { contentDescription = day.getDisplayName(TextStyle.FULL, Locale.getDefault()) }
                                 .toggleable(value = on, role = Role.Checkbox) { haptics.toggle(!on); endTyping(); onToggleDay(day) },
@@ -307,12 +331,12 @@ private fun EditHabitContent(
                         ) {
                             Box(
                                 Modifier
-                                    .size(44.dp)
-                                    .padding(2.dp)
+                                    .size(DayCircleSize)
+                                    .padding(Space2)
                                     .aspectRatio(1f)
                                     .clip(CircleShape)
                                     .background(if (on) hc.solid else colors.surfaceContainerLowest)
-                                    .border(1.dp, if (on) hc.solid else colors.outlineVariant, CircleShape),
+                                    .border(BorderThin, if (on) hc.solid else colors.outlineVariant, CircleShape),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 CappedFontScale {
@@ -350,12 +374,12 @@ private fun EditHabitContent(
                                 type = form.reminderType
                                 pickingTime = true
                             }
-                        }.padding(horizontal = 16.dp, vertical = 14.dp),
+                        }.padding(RowPadding),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         // The habit's own tile with an alarm (alarm-1-new-habit-reminder.png).
                         HabitTile(R.drawable.ic_sym_alarm, hc.soft, hc.ink)
-                        Column(Modifier.weight(1f).padding(start = 12.dp, end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Column(Modifier.weight(1f).padding(start = TileTextGap, end = TrailingGap), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                             // 16sp like the titles in the card below; 22sp looked too big next to them.
                             Text(TodayViewModel.formatTime(form.reminderMinutes), style = WeftType.cardTitle, color = colors.onSurface)
                             Text(
@@ -389,7 +413,7 @@ private fun EditHabitContent(
                     stringResource(R.string.reminder_card_hint),
                     style = WeftType.supporting,
                     color = colors.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                    modifier = Modifier.padding(start = SectionHeaderInset, top = Space8),
                 )
             }
 
@@ -496,7 +520,7 @@ private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) 
 }
 
 @Composable
-private fun Card(shape: Shape = RoundedCornerShape(22.dp), content: @Composable ColumnScope.() -> Unit) {
+private fun Card(shape: Shape = CardShape, content: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLowest),
         content = content,
@@ -510,10 +534,10 @@ private fun ToggleRow(title: String, subtitle: String, checked: Boolean, onChang
         Modifier
             .fillMaxWidth()
             .toggleable(value = checked, role = Role.Switch) { haptics.toggle(it); onChange(it) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(RowPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(end = TrailingGap), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = MaterialTheme.colorScheme.onSurface)
             Text(subtitle, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -528,7 +552,7 @@ private fun NumberField(label: String, value: String, modifier: Modifier, onChan
         onValueChange = { v -> onChange(v.filter { it.isDigit() || it == '.' || it == ',' }) },
         label = { Text(label) },
         singleLine = true,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Space12),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         modifier = modifier,
     )
