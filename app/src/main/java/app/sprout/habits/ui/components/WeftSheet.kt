@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -111,6 +114,9 @@ val SheetSidePadding = 20.dp
 /** A sheet's title row sits a little further in than its content. */
 val SheetTitleInset = 24.dp
 
+/** Space between a sheet's list and the one full-width button under it (Set up alarms). */
+val SheetActionGap = 20.dp
+
 /** Space under a sheet's last element, on top of the navigation bar's own inset. */
 val SheetBottomGap = 16.dp
 
@@ -124,7 +130,7 @@ fun Modifier.sheetBottomPadding(): Modifier = this.padding(bottom = SheetBottomG
 @Composable
 fun SheetHeader(title: String, subtitle: String? = null, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
-    Column(modifier.fillMaxWidth().padding(horizontal = SheetTitleInset).padding(top = 8.dp, bottom = 16.dp)) {
+    Column(modifier.fillMaxWidth().padding(horizontal = SheetTitleInset).padding(top = Space8, bottom = Space16)) {
         Text(title, style = WeftType.title, color = colors.onSurface)
         if (subtitle != null) {
             Text(
@@ -133,7 +139,7 @@ fun SheetHeader(title: String, subtitle: String? = null, modifier: Modifier = Mo
                 color = colors.onSurfaceVariant,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = Space4),
             )
         }
     }

@@ -19,5 +19,6 @@ import kotlinx.serialization.Serializable
 @Serializable data class WriteNoteRoute(val noteId: Long = 0L, val habitId: Long = 0L, val epochDay: Long = -1L)
 
 @Serializable data object BackupRoute
+@Serializable data object RemindersAlarmsRoute
 @Serializable data object AboutRoute
 @Serializable data object LicencesRoute

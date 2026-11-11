@@ -40,6 +40,24 @@ class HabitRepository(private val db: WeftDatabase, private val onUserChange: su
     /** Deletes the habit together with its entries and notes (cascade). */
     suspend fun deleteHabit(habit: Habit) = habits.delete(habit).also { onUserChange() }
 
+    /** What [deleteHabits] removed, so Undo can put it back exactly (same ids). */
+    class Removed(val habits: List<Habit>, val entries: List<Entry>, val notes: List<Note>)
+
+    /** Deletes [list] with their entries and notes, and returns them for [restore]. */
+    suspend fun deleteHabits(list: List<Habit>): Removed = db.withTransaction {
+        val ids = list.map { it.id }.toSet()
+        val removed = Removed(list, entries.getAll().filter { it.habitId in ids }, notes.getAll().filter { it.habitId in ids })
+        list.forEach { habits.delete(it) }
+        removed
+    }.also { onUserChange() }
+
+    /** Undo for [deleteHabits]. */
+    suspend fun restore(removed: Removed) = db.withTransaction {
+        habits.insertAll(removed.habits)
+        entries.insertAll(removed.entries)
+        notes.insertAll(removed.notes)
+    }.also { onUserChange() }
+
     // Entries
 
     fun observeEntries(fromDay: Long, toDay: Long): Flow<List<Entry>> = entries.observeRange(fromDay, toDay)

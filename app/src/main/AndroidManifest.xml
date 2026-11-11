@@ -8,6 +8,9 @@
     <!-- Alarm reminders open the ringing screen over the lock screen (1.6.0). Declared in Play Console
          as an alarm feature; when Android 14+ doesn't grant it, alarms show as heads-up notifications. -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- Optional (More → Alarms, "Show over other apps"): on phones that block the full-screen alarm
+         (OnePlus / ColorOS), Weft opens the ringing screen itself when the phone is locked (1.6.2). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- A ringing alarm plays its sound from AlarmSoundService (media playback) and vibrates. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />

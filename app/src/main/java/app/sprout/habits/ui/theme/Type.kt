@@ -90,6 +90,9 @@ fun weftTypography(body: BodyFont, scale: Float): Typography {
  * The only text styles screens use; TYPOGRAPHY.md says what each one is for. Colour is not part
  * of a style: set it where the text is drawn.
  */
+/** How far text that doesn't fit shrinks at a time (buttons, nav labels, stat values). */
+val AutoSizeStep = 0.5.sp
+
 object WeftType {
     /** 40 SemiBold: big input numbers, the Welcome headline. */
     val display: TextStyle @Composable @ReadOnlyComposable get() = MaterialTheme.typography.displayLarge
@@ -136,7 +139,7 @@ object WeftType {
     val alarmTime: TextStyle
         @Composable @ReadOnlyComposable get() = displayNumber.let { it.copy(fontSize = it.fontSize * (88f / 40f), lineHeight = it.fontSize * (88f / 40f)) }
 
-    /** Exception: the value in Insights' Patterns cards ("Tuesday", "Stay calm"), 18 SemiBold (design 2026-11-08). */
+    /** Exception: the value in Insights' Patterns cards ("Tuesday", "No sugar"), 18 SemiBold (design 2026-11-08). */
     val patternValue: TextStyle
         @Composable @ReadOnlyComposable get() = cardTitle.let { it.copy(fontSize = it.fontSize * (18f / 16f), lineHeight = it.fontSize * (18f / 16f) * 1.3f) }
 
@@ -150,6 +153,9 @@ val NavLabelMinSize = 9.sp
 
 /** The smallest a habit detail stat value ("11 days") may shrink to when its card is too narrow for it. */
 val StatValueMinSize = 16.sp
+
+/** The smallest a button label may shrink to when its button is too narrow ("Snooze 10 min" at a large text size). */
+val ButtonLabelMinSize = 12.sp
 
 /** Sizes for the Glance widgets, which can't use Compose text styles. Same scale as [WeftType]. */
 object WidgetType {

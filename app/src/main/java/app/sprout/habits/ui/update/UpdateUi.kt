@@ -1,5 +1,16 @@
 package app.sprout.habits.ui.update
 
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.PillShape
+import app.sprout.habits.ui.theme.SmallButtonHeight
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -102,28 +113,28 @@ fun UpdateSheet(
                     .weight(1f, fill = false)
                     .padding(horizontal = SheetSidePadding)
                     .fillMaxWidth()
-                    .background(colors.surfaceContainerHigh, RoundedCornerShape(24.dp))
+                    .background(colors.surfaceContainerHigh, CardShape)
                     .verticalScroll(rememberScrollState())
                     // 16 dp inside, like every card.
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                    .padding(Space16),
+                verticalArrangement = Arrangement.spacedBy(Space12),
             ) {
                 Text(stringResource(R.string.whats_new), style = WeftType.cardTitle, color = colors.onSurface)
                 update.notes.forEach { line ->
                     Row(verticalAlignment = Alignment.Top) {
-                        Box(Modifier.padding(top = 9.dp).size(6.dp).background(colors.primary, CircleShape))
-                        Text(line, style = WeftType.body, color = colors.onSurface, modifier = Modifier.padding(start = 14.dp))
+                        Box(Modifier.padding(top = Space8).size(Space8).background(colors.primary, CircleShape))
+                        Text(line, style = WeftType.body, color = colors.onSurface, modifier = Modifier.padding(start = Space12))
                     }
                 }
             }
         }
         Column(
-            Modifier.padding(horizontal = SheetSidePadding).padding(top = 20.dp).sheetBottomPadding(),
+            Modifier.padding(horizontal = SheetSidePadding).padding(top = Space20).sheetBottomPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (val s = state) {
                 is DownloadState.Progress -> {
-                    Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(ItemGap)) {
                         val fraction = s.fraction
                         if (fraction == null) LinearProgressIndicator(Modifier.fillMaxWidth())
                         else LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
@@ -133,13 +144,13 @@ fun UpdateSheet(
                             color = colors.onSurfaceVariant,
                         )
                     }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(Space16))
                     WeftButton(stringResource(R.string.later), ButtonRole.Secondary, onClick = onLater, modifier = Modifier.fillMaxWidth())
                 }
                 is DownloadState.Ready -> {
                     if (!canInstall) {
                         Text(stringResource(R.string.allow_installs_hint), style = WeftType.supporting, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(Space12))
                     }
                     ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.install), {
                         if (updates.canInstall()) updates.install(s.apk) else updates.openInstallPermission()
@@ -147,7 +158,7 @@ fun UpdateSheet(
                 }
                 DownloadState.Failed -> {
                     Text(stringResource(R.string.update_failed), style = WeftType.supporting, color = colors.error, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(Space12))
                     ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.open_release_page), { openUrl(context, update.pageUrl); onDismiss() })
                 }
                 null -> ButtonPair(stringResource(R.string.later), onLater, stringResource(R.string.update), {
@@ -230,8 +241,8 @@ private fun UpdatesPill(state: CheckState, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         enabled = state != CheckState.CHECKING,
-        modifier = Modifier.heightIn(min = 40.dp).semantics { liveRegion = LiveRegionMode.Polite },
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 12.dp, end = 16.dp),
+        modifier = Modifier.heightIn(min = SmallButtonHeight).semantics { liveRegion = LiveRegionMode.Polite },
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(start = Space12, end = Space16),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (latest) colors.primaryContainer else colors.surfaceContainerHigh,
             contentColor = when {
@@ -244,11 +255,11 @@ private fun UpdatesPill(state: CheckState, onClick: () -> Unit) {
         ),
     ) {
         when (state) {
-            CheckState.CHECKING -> CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = colors.onSurface)
-            CheckState.LATEST -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = Modifier.size(18.dp))
-            else -> Icon(painterResource(R.drawable.ic_refresh), contentDescription = null, modifier = Modifier.size(18.dp))
+            CheckState.CHECKING -> CircularProgressIndicator(Modifier.size(IconSizeChip), strokeWidth = BorderThick, color = colors.onSurface)
+            CheckState.LATEST -> Icon(painterResource(R.drawable.ic_check), contentDescription = null, modifier = Modifier.size(IconSizeChip))
+            else -> Icon(painterResource(R.drawable.ic_refresh), contentDescription = null, modifier = Modifier.size(IconSizeChip))
         }
-        Spacer(Modifier.size(8.dp))
+        Spacer(Modifier.size(Space8))
         Text(
             stringResource(
                 when (state) {
@@ -306,7 +317,7 @@ fun UpdateBadge() {
         style = WeftType.captionStrong,
         color = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(11.dp))
-            .padding(horizontal = 8.dp, vertical = 3.dp),
+            .background(MaterialTheme.colorScheme.primaryContainer, PillShape)
+            .padding(horizontal = Space8, vertical = Space4),
     )
 }

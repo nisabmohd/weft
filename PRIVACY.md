@@ -21,6 +21,7 @@ We collect nothing: Weft has no account, no ads, no analytics and no crash repor
 - **Notifications**: to show the habit reminders you set.
 - **Alarms & reminders** (exact alarms): optional, so reminders arrive on time.
 - **Full-screen notifications**: so a habit reminder you set as an alarm can ring over the lock screen. Without it, the alarm rings as a notification.
+- **Display over other apps**: optional, and only offered on phones that keep alarms off the lock screen (OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei, Honor). It lets Weft open a ringing alarm itself when the phone is locked; Weft draws nothing over other apps.
 - **Run at startup**: to set your reminders again after the phone restarts.
 
 ## Backups and exports

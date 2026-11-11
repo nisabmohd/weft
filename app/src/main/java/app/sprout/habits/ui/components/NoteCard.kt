@@ -1,11 +1,24 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.CardContentGap
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.CardShape
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -103,10 +116,23 @@ data class NoteCardUi(
 }
 
 /**
- * A note, built from the same pieces as a Today habit card: the habit tile, the name, the day's
- * mark, outcome and time under it ("Skipped · 9:12 AM"), then the note itself. Without
- * [showHabit] (on a habit's own page) the first line is the mark and "[outcome] · [dateLabel]",
- * with the time as plain text on the right. [shape] rounds it as part of a day's group.
+ * A note card (design 2026-11-11b, "habit row on top"): the app's habit row (the 44 dp tile, 12 dp,
+ * the name and 2 dp under it the 16 dp mark + "outcome · time"), then the note 12 dp under the row
+ * across the full card width. 16 dp inside like every card.
+ */
+val NoteCardPadding = PaddingValues(CardPadding)
+val NoteCardTileGap = TileTextGap
+val NoteMarkSize = IconSizeTiny
+val NoteMarkGap = IconLabelGap
+/** The habit row to the note: a card's header to its content. */
+val NoteTextGap = CardContentGap
+
+/**
+ * A note: the habit row (tile, name, mark + "8 of 20 pages · 11:40 PM" or "Done · written Sat,
+ * 9:45 PM"), then the note under it. Without [showHabit] (a habit's own page) there is no tile and
+ * no name: the row is the mark + "8 of 20 pages · Yesterday · 11:40 PM". TalkBack reads the card as
+ * one item: "Read, 8 of 20 pages, 11:40 PM. Only 8 pages, fell asleep." [shape] rounds it as part of
+ * a day's group.
  */
 @Composable
 fun NoteCard(
@@ -114,12 +140,15 @@ fun NoteCard(
     onOpen: ((Long) -> Unit)?,
     showHabit: Boolean = true,
     dateLabel: String? = null,
-    shape: RoundedCornerShape = RoundedCornerShape(24.dp),
+    shape: RoundedCornerShape = CardShape,
     onLongPress: ((NoteCardUi) -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(note.hue)
     val marks = MarkColors(skip = colors.outlineVariant, skipInk = colors.onSurfaceVariant, outline = colors.outline)
+    val line = listOfNotNull(note.outcome, dateLabel.takeIf { !showHabit }, note.time).joinToString(" · ")
+    val description = listOfNotNull(note.habitName.takeIf { showHabit }, note.outcome, dateLabel.takeIf { !showHabit }, note.time)
+        .joinToString(", ") + ". " + note.text
     Column(
         Modifier
             .fillMaxWidth()
@@ -137,32 +166,24 @@ fun NoteCard(
                     Modifier
                 },
             )
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(NoteCardPadding)
+            .clearAndSetSemantics { contentDescription = description },
+        verticalArrangement = Arrangement.spacedBy(NoteTextGap),
     ) {
+        // The habit row, as on Today and Habits.
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (showHabit) {
                 HabitTile(note.icon, hc.soft, hc.ink)
+                Spacer(Modifier.width(NoteCardTileGap))
             }
-            Column(Modifier.weight(1f).padding(start = if (showHabit) 12.dp else 0.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
                 if (showHabit) {
                     Text(note.habitName, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    DayMarkView(note.mark, hc, marks, Modifier.size(16.dp))
-                    Text(
-                        if (showHabit) "${note.outcome} · ${note.time}" else listOfNotNull(note.outcome, dateLabel).joinToString(" · "),
-                        style = WeftType.supporting,
-                        color = colors.onSurfaceVariant,
-                        maxLines = if (showHabit) 2 else 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 6.dp),
-                    )
+                    DayMarkView(note.mark, hc, marks, Modifier.size(NoteMarkSize))
+                    Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = NoteMarkGap))
                 }
-            }
-            // Trailing text is always plain, never a pill.
-            if (!showHabit) {
-                Text(note.time, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
             }
         }
         Text(note.text, style = WeftType.body, color = colors.onSurface)

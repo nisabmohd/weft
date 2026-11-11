@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.Space12
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +23,8 @@ import app.sprout.habits.ui.theme.WeftType
 
 /** Corners of a filled note field: the same 24 dp as a card. */
 val NoteFieldCorner = 24.dp
+/** At least two lines of `body` with its padding (was 76 dp). */
+val NoteFieldMinHeight = 80.dp
 
 /**
  * The note field of a sheet or form (docs/DESIGN-RULES.md → 5): filled surfaceContainerHigh, 24 dp corners, no outline, with a
@@ -32,7 +36,7 @@ fun NoteField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    minHeight: Dp = 76.dp,
+    minHeight: Dp = NoteFieldMinHeight,
 ) {
     val colors = MaterialTheme.colorScheme
     val style = WeftType.body.copy(color = colors.onSurface)
@@ -50,7 +54,7 @@ fun NoteField(
                     .heightIn(min = minHeight)
                     .clip(RoundedCornerShape(NoteFieldCorner))
                     .background(colors.surfaceContainerHigh)
-                    .padding(horizontal = 18.dp, vertical = 14.dp), // docs/DESIGN-RULES.md → 5
+                    .padding(horizontal = CardPadding, vertical = Space12), // docs/DESIGN-RULES.md → 5
             ) {
                 if (value.isEmpty()) Text(placeholder, style = style.copy(color = colors.onSurfaceVariant))
                 inner()

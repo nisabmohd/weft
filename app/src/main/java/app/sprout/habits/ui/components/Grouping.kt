@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.TrailingGap
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.sprout.habits.ui.theme.CardCorner
 import app.sprout.habits.ui.theme.WeftType
 
 /*
@@ -25,6 +28,9 @@ import app.sprout.habits.ui.theme.WeftType
 /** Gap between the rows of one group. */
 val GroupGap = 2.dp
 
+/** A row's title (`cardTitle`) to the line under it (`supporting`): every card, row and setting (docs/SPACING.md). */
+val TitleLineGap = 2.dp
+
 /** Space above a section header, and between sections. */
 val SectionGapAbove = 20.dp
 
@@ -32,9 +38,11 @@ val SectionGapAbove = 20.dp
 val SectionGapBelow = 8.dp
 
 /** The 24/6 dp corners of a grouped list: big on the outside of the group, small between its rows. */
+val GroupInnerCorner = 6.dp
+
 fun groupedShape(index: Int, count: Int): RoundedCornerShape {
-    val top = if (index == 0) 24.dp else 6.dp
-    val bottom = if (index == count - 1) 24.dp else 6.dp
+    val top = if (index == 0) CardCorner else GroupInnerCorner
+    val bottom = if (index == count - 1) CardCorner else GroupInnerCorner
     return RoundedCornerShape(top, top, bottom, bottom)
 }
 
@@ -50,8 +58,8 @@ fun SectionHeader(
     trailing: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
-    Row(modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = 12.dp))
+    Row(modifier.fillMaxWidth().padding(horizontal = SectionHeaderInset), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(end = TrailingGap))
         when {
             trailing != null -> trailing()
             meta != null -> Text(meta, style = WeftType.supporting, color = colors.onSurfaceVariant)

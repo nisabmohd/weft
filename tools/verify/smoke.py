@@ -32,6 +32,14 @@ def check(fn):
     return fn
 
 
+def tap_lowest(label):
+    """Taps the bottom-most node with [label]: a sheet's button when the screen behind has the same label."""
+    nodes = [n for n in d.dump() if n.label == label]
+    assert nodes, f"not on screen: {label!r}"
+    n = max(nodes, key=lambda n: n.center[1])
+    d.tap_xy(*n.center)
+
+
 def fresh_install():
     d.adb("uninstall", d.PACKAGE)
     out = d.adb("install", APK)
@@ -103,7 +111,7 @@ def sample_data_on_first_launch():
     # A fresh install starts with sample habits, a card to remove them, and notes on several days.
     d.nav("Today")
     d.scroll_to_top()
-    assert d.exists("These are sample habits"), "sample data card missing on Today"
+    assert d.exists("Sample habits") and d.exists("Remove"), "sample habits row missing on Today"
     d.nav("Journal")
     assert d.exists("Yesterday"), "sample notes don't cover earlier days"
 
@@ -118,7 +126,7 @@ def today_circle_toggles_done():
     assert d.exists("Mark Vitamins done"), "circle did not unmark"
     # Logging a habit hides the sample banner for good; More has no sample row.
     d.scroll_to_top()
-    assert not d.exists("These are sample habits", timeout=1.0), "sample banner still there after logging a habit"
+    assert not d.exists("Sample habits", timeout=1.0), "sample banner still there after logging a habit"
 
 
 @check
@@ -375,7 +383,7 @@ def note_suggestions():
 @check
 def journal_lists_and_adds_notes():
     d.nav("Journal")
-    assert d.exists("Rough morning", contains=True), "seeded note missing"
+    assert d.exists("Office birthday cake", contains=True), "seeded note missing"
     d.tap("Add note")
     # Add note starts on the habit logged last today, which is Deep work after measure_with_step;
     # journal_filter_by_habit needs Deep work without notes, so write this one on Read (no note today).
@@ -388,15 +396,17 @@ def journal_lists_and_adds_notes():
     d.tap("Note")
     d.type_text("Smoke test note")
     d.tap("Save")
-    assert d.exists("Smoke test note", timeout=4), "new note not in Journal"
+    # A note card reads as one item ("Read, Skipped, 9:12 AM. <note>", design 2026-11-11b): match inside it.
+    assert d.exists("Smoke test note", contains=True, timeout=4), "new note not in Journal"
 
 
 @check
 def journal_cards_and_new_note():
     d.nav("Journal")
     assert d.exists("Today"), "no date header over today's notes"
-    # Outcome and time share one line: "Skipped · 9:12 AM".
-    assert d.exists("Skipped · ", contains=True), "note card doesn't show the day's outcome and time"
+    # Note cards (design 2026-11-11): name and mark on top, the note, then the time; TalkBack reads
+    # the outcome with them ("No sugar, Skipped, Office birthday cake…, 9:12 AM").
+    assert d.exists(", Skipped, ", contains=True), "note card doesn't say the day's outcome and time"
     d.tap("Add note")
     # Since 1.3.6 Add note starts on the habit logged last today that has no note yet, so the note the
     # check before this one wrote is not what opens: the editor is empty. (Opening a day that has a
@@ -435,7 +445,7 @@ def icon_picker():
 @check
 def journal_long_press_actions():
     d.nav("Journal")
-    d.long_press("Rough morning, but I noticed it sooner than usual.")
+    d.long_press("Office birthday cake. Had a small slice and stopped there.", contains=True)
     for label in ["Edit note", "Share", "Delete note"]:
         assert d.exists(label), f"long-press sheet missing {label}"
     d.back()
@@ -455,11 +465,11 @@ def journal_filter_by_habit():
     d.nav("Journal")
     d.tap("Filter by habit")
     assert d.exists("Show all notes"), "filter sheet didn't open"
-    d.tap("Stay calm")
+    d.tap("No sugar")
     d.tap("Show notes for 1 habit")
     time.sleep(1)
-    assert d.exists("Rough morning", contains=True), "Stay calm's note missing when filtered"
-    assert not d.exists("Smoke test note", timeout=1), "another habit's note shown under the filter"
+    assert d.exists("Office birthday cake", contains=True), "No sugar's note missing when filtered"
+    assert not d.exists("Smoke test note", contains=True, timeout=1), "another habit's note shown under the filter"
     d.tap("Filter by habit")
     d.tap("Clear")
     # Made by measure_with_step; no sample note and no check writes one. Last in the sheet's list.
@@ -468,9 +478,9 @@ def journal_filter_by_habit():
     d.tap_xy(*n.center)
     d.tap("Show notes for 1 habit")
     time.sleep(1)
-    assert d.exists("No notes for these habits"), "empty filter message missing"
+    assert d.exists("No Deep work notes yet"), "empty filter message missing (it names the habit, 2026-11-09)"
     d.tap("Show all notes")
-    assert d.exists("Rough morning", contains=True), "filter didn't reset"
+    assert d.exists("Office birthday cake", contains=True), "filter didn't reset"
 
 
 @check
@@ -483,7 +493,7 @@ def journal_filter_by_date():
     d.tap(str(today.day))
     d.tap("Show", contains=True)
     time.sleep(1)
-    assert d.exists("Rough morning", contains=True), "today's note missing under a today-only range"
+    assert d.exists("Office birthday cake", contains=True), "today's note missing under a today-only range"
     assert d.exists(f"{today.day} ", contains=True), "date chip doesn't show the range"
     d.tap("Clear date filter")
     assert not d.exists("Clear date filter", timeout=1.0), "the chip's ✕ didn't clear the range"
@@ -524,7 +534,7 @@ def note_date_in_a_sheet():
 
 @check
 def note_shows_the_saved_one_for_that_day():
-    # The sample data has a Stay calm note for today.
+    # The sample data has a No sugar note for today.
     d.nav("Journal")
     d.tap("Add note")
     time.sleep(1)
@@ -532,8 +542,8 @@ def note_shows_the_saved_one_for_that_day():
         d.back()
     d.tap("Choose habit")
     time.sleep(1)
-    d.tap("Stay calm")
-    assert d.exists("Rough morning", contains=True), "the day's saved note isn't shown in the form"
+    d.tap("No sugar")
+    assert d.exists("Office birthday cake", contains=True), "the day's saved note isn't shown in the form"
     assert d.exists("Edit note"), "the form didn't switch to editing the saved note"
     d.tap("Close")
 
@@ -807,6 +817,9 @@ def widget_follows_archive_and_restore():
     d.widget_tap(habit)
     assert d.exists("Edit habit", timeout=8), f"{habit} page didn't open"
     d.tap("Archive")
+    # Archive asks first (2026-11-11): confirm with the sheet's button, the lowest "Archive" on screen.
+    assert d.exists(f"Archive {habit}?", timeout=4), "Archive didn't ask first"
+    tap_lowest("Archive")
     d.home()
     assert d.widget_wait(lambda l: f"{done}/{total - 1}" in l and habit not in up_next(l), WIDGET_S), \
         f"archived {habit} still on the widget"
@@ -1187,6 +1200,9 @@ def drive_account_sheet():
     d.tap("Cancel")
     d.tap("Google account")
     d.tap("Disconnect")
+    # Disconnect asks first (2026-11-11); there's no Undo for it.
+    assert d.exists("Disconnect Google Drive?", timeout=4), "Disconnect didn't ask first"
+    d.tap("Disconnect")
     assert d.exists("Connect Google Drive", timeout=6), "Disconnect didn't go back to Connect Google Drive"
 
 
@@ -1393,6 +1409,8 @@ def make_alarm(name="Wake up at 7"):
     d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
     d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT allow")
     d.shell(f"am force-stop {d.PACKAGE}")
+    # Today's snooze counts (3 a day, 2026-11-11) start from zero in every check.
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/snoozes.xml")
     h = habit_id(name)
     sql(f"update habit set reminderType='ALARM', reminderMinutes=390 where id={h}; delete from entry where habitId={h} and date={_epoch_day()}")
     return h
@@ -1410,6 +1428,10 @@ def press_action(h, action):
 
 def ringing():
     return "channel=alarms" in d.shell("dumpsys notification --noredact")
+
+
+def sound_playing():
+    return "AlarmSoundService" in d.shell("dumpsys activity services app.sprout.habits")
 
 
 def top_activity():
@@ -1448,8 +1470,8 @@ def reminder_sheet_offers_notification_and_alarm():
     for label in ("Reminder", "Notification", "Alarm", "Set reminder"):
         assert d.exists(label), f"reminder sheet is missing {label!r}"
     d.tap("Alarm")
-    if d.exists("Allow alarms in settings", timeout=1) or d.exists("Allow full-screen alarms in settings", timeout=1):
-        d.back()  # the system settings page opened; come back
+    if d.exists("Set up alarms", timeout=1):
+        d.back()  # something isn't allowed yet (1.6.2: Set up alarms opens over the sheet)
     d.tap("Set reminder")
     assert d.exists("Alarm · on the days above · tap to change", timeout=3), "card doesn't say Alarm after picking it"
     d.back()
@@ -1514,14 +1536,48 @@ def alarm_snooze_rings_again_later():
 
 
 @check
+def alarm_snooze_stops_after_three():
+    """User, 2026-11-11: an alarm snoozes three times a day; the fourth ring offers Dismiss (and
+    sliding it done, Skip today) but no Snooze, and a Snooze from an old card counts as Dismiss."""
+    h = make_alarm()
+    screen(False)
+    for i in range(3):
+        # Locked each time, as it would be: on an unlocked phone the alarm is a heads-up card instead.
+        screen(False)
+        fire(h) if i == 0 else fire(h, "app.sprout.habits.action.REMINDER_SNOOZED")
+        assert ringing(), f"ring {i + 1} didn't start"
+        assert d.exists("Snooze 10 min", timeout=5), f"no Snooze on ring {i + 1} of 3"
+        d.tap("Snooze 10 min")
+        time.sleep(2)
+        assert not ringing(), f"Snooze {i + 1} didn't stop the alarm"
+    screen(False)
+    fire(h, "app.sprout.habits.action.REMINDER_SNOOZED")
+    assert ringing(), "the third snooze didn't ring again"
+    assert d.exists("Dismiss", timeout=5), "no Dismiss after three snoozes"
+    assert d.exists("Slide to mark done"), "the slide bar went with Snooze"
+    assert not d.exists("Snooze 10 min", timeout=1), "Snooze offered a fourth time"
+    # A Snooze press from an old card past the cap is a Dismiss.
+    press_action(h, "REMINDER_SNOOZE")
+    assert not ringing(), "a fourth Snooze kept the alarm ringing"
+    assert entry(h) == "", "the capped Snooze logged something"
+    screen(True)
+
+
+@check
 def alarm_volume_and_power_keys_silence():
     h = make_alarm()
     screen(False)
     fire(h)
     assert "AlarmActivity" in top_activity()
+    assert sound_playing(), "alarm sound didn't start"
+    # Volume only stops the sound: the ringing screen and its card stay to be answered.
     d.shell("input keyevent KEYCODE_VOLUME_DOWN")
     time.sleep(2)
-    assert not ringing(), "volume key didn't silence the alarm"
+    assert not sound_playing(), "volume key didn't stop the sound"
+    assert "AlarmActivity" in top_activity(), "volume key closed the ringing screen"
+    assert ringing(), "volume key dismissed the alarm"
+    press_action(h, "ALARM_DISMISS")
+    assert not ringing()
     # Also as a heads-up (screen on and unlocked): the power button still silences it.
     screen(True)
     d.home()
@@ -1573,7 +1629,7 @@ def alarm_falls_back_without_full_screen_permission():
 
 
 @check
-def alarm_without_exact_alarms_says_so():
+def alarm_without_exact_alarms_opens_setup():
     root()
     # Off the battery allow-list (root() puts it there): Android lets allow-listed apps set exact alarms.
     d.shell(f"dumpsys deviceidle whitelist -{d.PACKAGE}")
@@ -1585,11 +1641,45 @@ def alarm_without_exact_alarms_says_so():
         d.tap("New habit")
         d.scroll_to("Reminder")
         d.tap("tap to set a time", contains=True)
-        assert d.exists("Allow alarms in settings"), "Alarm row doesn't ask to allow alarms"
-        d.back()
+        d.tap("Alarm")
+        # 1.6.2: picking Alarm opens Set up alarms with every need, not a settings page.
+        assert d.exists("Set up alarms", timeout=3), "picking Alarm without exact alarms doesn't open Set up alarms"
+        assert d.exists("Ring alarms on time"), "Set up alarms has no Ring alarms on time row"
+        assert d.exists("Use a notification instead"), "Set up alarms offers no way out while something is missing"
+        d.back()  # keep Alarm: the card warns
+        d.tap("Set reminder")
+        assert d.exists("may ring late · tap to fix", contains=True, timeout=3), "Reminder card doesn't warn about exact alarms"
+        d.tap("may ring late · tap to fix", contains=True)
+        assert d.exists("Set up alarms", timeout=3), "the warning doesn't open Set up alarms"
+        d.tap("Use a notification instead")
+        assert d.exists("Notification · on the days above · tap to change", timeout=3), "Use a notification instead didn't switch the reminder"
         d.back()
     finally:
         d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM allow")
+
+
+@check
+def more_reminders_alarms_screen():
+    """More → Reminders & alarms (design 2026-11-09): one row, then Reminders, Allow Weft to and Sound."""
+    d.open_app()
+    d.nav("More")
+    assert not d.exists("Default reminder", timeout=1), "Default reminder is still in More → General"
+    assert d.scroll_to("Reminders & alarms"), "no Reminders & alarms row in More"
+    d.tap("Reminders & alarms")
+    for label in ("Reminders", "Default reminder", "Allow Weft to", "Send notifications", "Ring alarms on time",
+                  "Show alarms full screen", "Sound", "Alarm sound", "Vibrate", "Notification sound"):
+        assert d.scroll_to(label), f"Reminders & alarms is missing {label!r}"
+    d.tap("Alarm sound")
+    for label in ("Weft", "Weft · Soft", "Phone’s alarm sound", "Choose from phone"):
+        assert d.exists(label, timeout=3), f"Alarm sound sheet is missing {label!r}"
+    d.tap("Weft · Soft")
+    assert d.exists("Playing", timeout=2), "tapping a sound doesn't preview it"
+    d.back()
+    assert d.exists("Weft · Soft", timeout=2), "the Alarm sound row doesn't show the pick"
+    d.tap("Weft · Soft")
+    d.tap("Weft")
+    d.back()
+    d.back()
 
 
 @check
@@ -1602,6 +1692,27 @@ def alarm_is_an_alarm_clock_and_survives_reboot():
     alarms = d.shell("dumpsys alarm")
     # An alarm clock carries a showIntent (what the status bar's clock opens): Weft's.
     assert f"{d.PACKAGE} startActivity" in alarms, "the alarm reminder isn't scheduled as an alarm clock"
+
+
+@check
+def late_reminder_switches_phone_to_alarm_clocks():
+    """Any phone that holds back an exact reminder (not only the known makers) gets every reminder
+    as an alarm clock from then on (user, 2026-11-09)."""
+    root()
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/device.xml")
+    sql("update habit set reminderType='NOTIFICATION', reminderMinutes=1200")
+    d.open_app()
+    time.sleep(3)
+    assert f"{d.PACKAGE} startActivity" not in d.shell("dumpsys alarm"), "reminders were alarm clocks before any came late"
+    read = habit_id("Read")
+    late = int(time.time() * 1000) - 5 * 60_000
+    d.shell(f"am broadcast -n {RECEIVER} -a app.sprout.habits.action.REMINDER --el habitId {read} --el exactAt {late}")
+    time.sleep(3)
+    assert f"{d.PACKAGE} startActivity" in d.shell("dumpsys alarm"), "a late reminder didn't switch reminders to alarm clocks"
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"rm -f /data/data/{d.PACKAGE}/shared_prefs/device.xml")
+    d.shell("cmd notification cancel_all 2>/dev/null")
 
 
 @check
@@ -1654,7 +1765,7 @@ def sound_playing():
 def alarm_cards():
     """How many alarm notifications are posted (alarms ringing together are one card)."""
     out = d.shell("dumpsys notification --noredact")
-    return sum(1 for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=alarms_ring" in l)
+    return sum(1 for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=alarms_popup" in l)
 
 
 def make_alarms(*names):
@@ -1779,6 +1890,57 @@ def alarms_at_the_same_time_while_phone_in_use():
     assert entry(wake) == "" and entry(workout) == ""
 
 
+def reminder_records():
+    """The posted reminder notifications' record lines. A quiet one (NotificationCompat.setSilent)
+    is in the "silent" group, which never alerts: groupKey=silent."""
+    out = d.shell("dumpsys notification --noredact")
+    return [l for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=reminders_popup" in l]
+
+
+@check
+def notification_and_alarm_at_the_same_time():
+    """User, 2026-11-11: a notification reminder and another habit's alarm at the same minute both
+    popped up, a second apart. The alarm alone pops up and sounds; the reminder waits in the shade
+    quietly, whichever arrives first."""
+    (wake,) = make_alarms("Wake up at 7")
+    read = habit_id("Read")
+    sql(f"update habit set reminderType='NOTIFICATION', reminderMinutes=390 where id={read}; "
+        f"delete from entry where habitId={read} and date={_epoch_day()}")
+    screen(True)
+    d.home()
+    # The notification a second before the alarm (what the user saw).
+    fire(read)
+    records = reminder_records()
+    assert records, "the reminder isn't in the shade"
+    assert "groupKey=silent" in records[0], f"the reminder popped up although an alarm is due now: {records[0]}"
+    fire(wake)
+    assert alarm_cards() == 1 and sound_playing(), "the alarm didn't ring"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    d.tap("Dismiss")
+    time.sleep(2)
+    d.shell("cmd statusbar collapse")
+    # The other order: the alarm is ringing when the reminder arrives.
+    d.shell(f"am force-stop {d.PACKAGE}")
+    fire(wake)
+    assert sound_playing(), "the alarm didn't ring the second time"
+    fire(read)
+    records = reminder_records()
+    assert records and "groupKey=silent" in records[0], f"the reminder popped up over a ringing alarm: {records}"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    d.tap("Dismiss")
+    time.sleep(2)
+    d.shell("cmd statusbar collapse")
+    # Alone, the same reminder still pops up.
+    d.shell(f"am force-stop {d.PACKAGE}")
+    sql(f"update habit set reminderType='NOTIFICATION' where id={wake}; delete from entry where habitId={wake} and date={_epoch_day()}")
+    fire(read)
+    records = reminder_records()
+    assert records and "groupKey=silent" not in records[0], f"a reminder with no alarm due was quiet: {records}"
+    assert entry(wake) == "" and entry(read) == ""
+
+
 @check
 def alarms_power_button_silences_all():
     wake, workout = make_alarms("Wake up at 7", "Workout")
@@ -1883,6 +2045,11 @@ def main(filters):
         except Exception as e:  # noqa: BLE001 - report and continue
             failures += 1
             print(f"FAIL  {c.__name__}: {e}")
+            # FAIL_SHOTS=<dir>: keep a screenshot of what the screen showed when the check failed.
+            if os.environ.get("FAIL_SHOTS"):
+                with open(os.path.join(os.environ["FAIL_SHOTS"], c.__name__ + ".png"), "wb") as f:
+                    serial = ["-s", os.environ["ANDROID_SERIAL"]] if os.environ.get("ANDROID_SERIAL") else []
+                    f.write(d.subprocess.run([d.ADB, *serial, "exec-out", "screencap", "-p"], capture_output=True).stdout)
             if os.environ.get("VERBOSE"):
                 traceback.print_exc()
             recover()

@@ -1,5 +1,6 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.Space8
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,7 +30,7 @@ fun PromptSheet(
             primaryLabel = action,
             onPrimary = onAction,
             primaryRole = actionRole,
-            modifier = Modifier.padding(horizontal = SheetSidePadding).padding(top = 8.dp).sheetBottomPadding(),
+            modifier = Modifier.padding(horizontal = SheetSidePadding).padding(top = Space8).sheetBottomPadding(),
         )
     }
 }

@@ -68,6 +68,8 @@ class WriteNoteViewModel(
     private val state: SavedStateHandle,
     /** "Clear suggestion history" time: notes last written before it aren't suggested. */
     suggestionsClearedAt: Flow<Long> = flowOf(0L),
+    /** Deletes with an Undo message on the screen underneath; null in tests: deletes directly. */
+    private val actions: app.sprout.habits.ui.UndoableActions? = null,
 ) : ViewModel() {
     /** True when the screen was opened to write, not to edit a note picked from a list. */
     val opensTyping: Boolean = noteId == 0L
@@ -221,7 +223,8 @@ class WriteNoteViewModel(
         val id = _form.value.noteId
         if (id == 0L) return
         viewModelScope.launch {
-            repository.deleteNote(id)
+            val note = repository.getNote(id)
+            if (actions != null && note != null) actions.deleteNote(note) else repository.deleteNote(id)
             _done.send(Unit)
         }
     }

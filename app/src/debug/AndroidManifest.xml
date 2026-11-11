@@ -8,7 +8,7 @@
         <activity
             android:name=".SheetPreviewActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/Theme.Weft.SheetPreview" />
         <!-- The widgets on one screen with a calm wallpaper of its own, for screenshots. -->
         <activity
             android:name=".WidgetBoardActivity"

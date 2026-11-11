@@ -56,6 +56,8 @@ class EditHabitViewModel(
     private val repository: HabitRepository,
     private val settings: SettingsRepository,
     private val habitId: Long,
+    /** Archive and Delete with an Undo message; null in tests: they happen directly. */
+    private val actions: app.sprout.habits.ui.UndoableActions? = null,
 ) : ViewModel() {
     private val _form = MutableStateFlow(HabitForm())
     val form: StateFlow<HabitForm> = _form
@@ -134,7 +136,7 @@ class EditHabitViewModel(
     fun archive() {
         val habit = original ?: return
         viewModelScope.launch {
-            repository.setArchived(habit.id, !habit.archived)
+            if (actions != null) actions.setArchived(habit, !habit.archived) else repository.setArchived(habit.id, !habit.archived)
             _saved.send(Unit)
         }
     }
@@ -142,7 +144,8 @@ class EditHabitViewModel(
     fun delete() {
         val habit = original ?: return
         viewModelScope.launch {
-            repository.deleteHabit(habit)
+            // Its detail page closes too, so the Undo shows on the screen under it.
+            if (actions != null) actions.deleteHabit(habit, notOn = "detail") else repository.deleteHabit(habit)
             _deleted.send(Unit)
         }
     }

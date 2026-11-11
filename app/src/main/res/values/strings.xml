@@ -53,8 +53,7 @@
     <string name="insights_lowest">Lowest score</string>
     <string name="insights_weekly_rhythm">Weekly rhythm</string>
     <string name="insights_breakdown">Habit breakdown</string>
-    <string name="journal_empty_range">No notes for %1$s</string>
-    <string name="journal_empty_habits">No notes for these habits</string>
+    <string name="journal_empty_range">No notes from %1$s</string>
     <string name="journal_empty_earlier">Your notes from earlier are still here.</string>
     <string name="journal_empty_hint">Add a note from any habit, or tap Add note.</string>
     <!-- A streak in days, as short as it gets: "5d". It follows a flame icon. -->
@@ -173,9 +172,7 @@
     <string name="general">General</string>
     <string name="week_starts_on">Week starts on</string>
     <string name="default_reminder">Default reminder</string>
-    <string name="default_reminder_desc">Suggested time for new reminders</string>
-    <string name="notifications">Notifications</string>
-    <string name="system_settings">System settings</string>
+    <string name="default_reminder_desc">For new habits</string>
     <string name="about_weft">About Weft</string>
     <string name="version_open_source">Version %1$s · open source</string>
     <string name="accent">Accent</string>
@@ -228,7 +225,6 @@
     <string name="drive_delete_text">This deletes every Weft backup in %1$s. Your data on this phone stays.</string>
     <string name="drive_deleted">Backups deleted from Drive</string>
     <string name="drive_connected_to">Connected to %1$s</string>
-    <string name="about_licence_text_drive">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them or back them up. Drive backups stay in your own Google account.</string>
     <string name="drive_backed_up">Backed up to Google Drive</string>
     <string name="drive_failed">Couldn\'t reach Google Drive. Try again</string>
     <string name="drive_refused">Weft needs Google Drive to keep your backups. Connect again and tick Google Drive</string>
@@ -244,7 +240,6 @@
     <string name="about">About</string>
     <string name="version_build">Version %1$s (build %2$d)</string>
     <string name="free_open_source">Free and open source</string>
-    <string name="about_licence_text">Licensed under the GNU GPL v3. Weft has no ads and doesn\'t track you. Your habits and notes stay on this device unless you export them.</string>
     <string name="rate_on_play">Rate on Play Store</string>
     <string name="rate_desc">Takes 10 seconds, helps a lot</string>
     <string name="source_code">Source code</string>
@@ -389,9 +384,7 @@
     <string name="star_github">Star on GitHub</string>
     <string name="maybe_later">Maybe later</string>
     <string name="channel_reminders">Habit reminders</string>
-    <string name="channel_reminders_desc">A reminder at the time you set for each habit.</string>
-    <string name="channel_notes">Note reminders</string>
-    <string name="channel_notes_desc">An evening reminder to add a note when you skip a habit that asks for one.</string>
+    <string name="channel_reminders_desc">A reminder at the time you set for each habit, and the evening reminder to add a note when you skip one.</string>
     <string name="nudge_title">%1$s · how did today go?</string>
     <string name="nudge_text">Add a note about today.</string>
     <string name="reminder_check">Time to check it off.</string>
@@ -495,23 +488,23 @@
     <string name="sample_wake">Wake up at 7</string>
     <string name="sample_read">Read</string>
     <string name="sample_water">Drink water</string>
-    <string name="sample_calm">Stay calm</string>
+    <string name="sample_no_sugar">No sugar</string>
     <string name="sample_workout">Workout</string>
     <string name="sample_vitamins">Vitamins</string>
     <string name="sample_walk">Walk outside</string>
     <string name="sample_journal">Evening journal</string>
     <string name="sample_unit_pages">pages</string>
     <string name="sample_unit_glasses">glasses</string>
-    <string name="sample_note_calm_today">Rough morning, but I noticed it sooner than usual.</string>
+    <string name="sample_note_sugar_today">Office birthday cake. Had a small slice and stopped there.</string>
     <string name="sample_note_read">Only 8 pages, fell asleep. Start before 10 PM.</string>
     <string name="sample_note_workout">Legs day. Felt strong, added 5 kg on squats.</string>
     <string name="sample_note_journal">Wrote a full page about the week. Calmer than I expected.</string>
-    <string name="sample_note_calm">Snapped at a teammate when the deploy failed. I was tired and hadn\'t eaten.</string>
+    <string name="sample_note_sugar">Long day, grabbed chocolate on the way home. I hadn\'t eaten lunch.</string>
     <string name="sample_note_walk">Long walk by the lake after work. Phone stayed in my pocket.</string>
     <string name="sample_note_water">Busy day, forgot the bottle at home.</string>
-    <string name="sample_card_title">These are sample habits</string>
-    <string name="sample_card_body">Try swiping, holding and adding notes. Remove them when you\'re ready to add your own.</string>
-    <string name="sample_remove">Remove sample data</string>
+    <string name="sample_card_title">Sample habits</string>
+    <string name="sample_card_body">Swipe or hold to try them</string>
+    <string name="sample_remove">Remove</string>
     <!-- Insights, By habit: kept days out of the scheduled ones (the plural follows the second number), and the current streak. -->
     <plurals name="days_kept">
         <item quantity="one">%1$d of %2$d day</item>
@@ -653,8 +646,6 @@
     <string name="reminder_type_notification_desc">A quiet nudge in your notifications</string>
     <string name="reminder_type_alarm">Alarm</string>
     <string name="reminder_type_alarm_desc">Rings full screen until you act</string>
-    <string name="reminder_alarm_allow">Allow alarms in settings</string>
-    <string name="reminder_fullscreen_allow">Allow full-screen alarms in settings</string>
     <string name="set_reminder">Set reminder</string>
     <string name="reminder_card_line">%1$s · on the days above · tap to change</string>
     <string name="reminder_card_off">Off · tap to set a time</string>
@@ -668,4 +659,90 @@
     <string name="alarm_goal">Goal %1$s</string>
     <string name="alarm_skip_today">Skip today</string>
     <string name="alarm_position">%1$d of %2$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="action_done">Done</string>
+    <string name="set_up_alarms">Set up alarms</string>
+    <string name="alarm_need_notifications">Send notifications</string>
+    <string name="alarm_need_notifications_desc">For reminders. Tap to choose banners, sound and lock screen.</string>
+    <string name="alarm_need_notifications_banners_off">Banners are off, so reminders won’t pop up. Tap to turn them on.</string>
+    <string name="alarm_need_exact">Ring alarms on time</string>
+    <string name="alarm_need_exact_desc">Without this, Android may ring them a few minutes late.</string>
+    <string name="alarm_need_full_screen">Show alarms full screen</string>
+    <string name="alarm_need_full_screen_desc">An alarm fills the screen, even when the phone is locked.</string>
+    <string name="alarm_overlay">Show over other apps</string>
+    <string name="alarm_overlay_desc">Optional · lets an alarm open over other apps</string>
+    <string name="alarm_lock_screen">Lock screen &amp; pop-ups</string>
+    <string name="alarm_lock_screen_desc">Turn both on in Weft’s app info</string>
+    <string name="alarm_battery">Battery</string>
+    <string name="alarm_battery_desc">Set to “Don’t restrict” so alarms aren’t stopped</string>
+    <string name="alarm_use_notification">Use a notification instead</string>
+    <string name="alarms_sound_section">Sound</string>
+    <string name="alarm_sound">Alarm sound</string>
+    <string name="alarm_vibrate">Vibrate</string>
+    <string name="alarm_vibrate_desc">When an alarm rings</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">Default</string>
+    <string name="alarm_sound_weft_soft">Weft · Soft</string>
+    <string name="alarm_sound_weft_soft_desc">A gentler tone</string>
+    <string name="alarm_sound_phone">Phone’s alarm sound</string>
+    <string name="alarm_sound_picked_desc">From your phone</string>
+    <string name="alarm_sound_playing">Playing</string>
+    <string name="alarm_sound_choose">Choose from phone</string>
+    <string name="alarm_sound_choose_desc">Any sound on your phone</string>
+    <string name="reminder_card_fix">Alarm · %1$s · tap to fix</string>
+    <string name="reminder_card_fix_notification">Notification · %1$s · tap to fix</string>
+    <string name="reminder_fix_notifications">notifications are off</string>
+    <string name="reminder_fix_exact">may ring late</string>
+    <string name="reminder_fix_full_screen">can’t ring full screen</string>
+    <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
+    <string name="reminders_alarms">Reminders &amp; alarms</string>
+    <string name="reminders_section">Reminders</string>
+    <string name="allow_weft_to">Allow Weft to</string>
+    <string name="extra_phone_settings">Extra phone settings</string>
+    <string name="extra_phone_settings_desc">Only needed on some phones</string>
+    <string name="extra_phone_settings_text">Some phones stop alarms on their own. Android can’t tell us if these are on, so check them once.</string>
+    <string name="notification_sound">Notification sound</string>
+    <string name="notification_sound_desc">Change it in your phone’s settings</string>
+    <string name="reminders_all_allowed">Notifications and alarms allowed</string>
+    <string name="reminders_off_notifications">Notifications are off</string>
+    <string name="reminders_off_exact">Alarms may ring late</string>
+    <string name="reminders_off_full_screen">Alarms can’t ring full screen</string>
+    <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
+    <string name="filter_helper_journal">Tap habits to show only their notes.</string>
+    <string name="filter_helper_insights">Tap habits to show only their scores.</string>
+    <string name="journal_empty_one_habit">No %1$s notes yet</string>
+    <string name="journal_empty_one_habit_text">Notes you add when you log %1$s will show up here.</string>
+    <string name="journal_empty_filters">No notes for these filters</string>
+    <plurals name="journal_empty_n_habits">
+        <item quantity="one">No notes for %d habit</item>
+        <item quantity="other">No notes for %d habits</item>
+    </plurals>
+    <!-- 1.6.2: new habit icons -->
+    <string name="icon_breathe">Breathe</string>
+    <string name="icon_gratitude">Gratitude</string>
+    <string name="icon_focus">Focus</string>
+    <string name="icon_less_social_media">Less social media</string>
+    <string name="icon_less_coffee">Less coffee</string>
+    <string name="icon_no_sugar">No sugar</string>
+    <string name="icon_sunlight">Sunlight</string>
+    <string name="icon_speak">Speak</string>
+    <string name="icon_weekly_review">Weekly review</string>
+    <string name="icon_scripture">Scripture</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">Clear</string>
+    <string name="action_remove">Remove</string>
+    <string name="archive_habit_title">Archive %1$s?</string>
+    <string name="archive_habit_text">It leaves Today, widgets and reminders. Its days and notes stay, and you can restore it from Manage habits.</string>
+    <string name="habit_archived">%1$s archived</string>
+    <string name="habit_restored">%1$s restored</string>
+    <string name="habit_deleted">%1$s deleted</string>
+    <string name="sample_remove_title">Remove sample data?</string>
+    <string name="sample_remove_text">The sample habits are deleted with their days and notes. Your own habits stay.</string>
+    <string name="sample_data_removed">Sample data removed</string>
+    <string name="clear_suggestions_title">Clear suggestion history?</string>
+    <string name="clear_suggestions_text">Writing suggestions stop learning from the notes you’ve written so far. Your notes stay.</string>
+    <string name="drive_disconnect_title">Disconnect Google Drive?</string>
+    <string name="drive_disconnect_text">Automatic backups stop. Your backups stay in Drive.</string>
+    <string name="about_open_source_line">No ads · no tracking · GPL v3</string>
 </resources>

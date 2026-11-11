@@ -1,5 +1,13 @@
 package app.sprout.habits.ui.alarm
 
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space40
+import app.sprout.habits.ui.theme.Space8
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,7 +25,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +43,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,6 +82,8 @@ import app.sprout.habits.notify.ReminderActionReceiver
 import app.sprout.habits.notify.ReminderActions
 import app.sprout.habits.notify.ReminderScheduler
 import app.sprout.habits.ui.components.ButtonPair
+import app.sprout.habits.ui.components.ButtonRole
+import app.sprout.habits.ui.components.WeftButton
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.SheetSidePadding
 import app.sprout.habits.ui.drawEdgeToEdge
@@ -82,6 +94,13 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
+import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
+import androidx.compose.ui.graphics.toArgb
+import app.sprout.habits.ui.theme.ThemeMode
 
 /**
  * The alarm ringing screen (`design/alarm-3-ringing.png`): opened full screen by an alarm
@@ -102,28 +121,54 @@ class AlarmActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Fade in and out (user, 2026-11-08: the default slide looked like a glitch, most of all
-        // when a notification button answered it and the screen opened and shut at once).
+        // Opens at once, already drawn, and fades out (user, 2026-11-08: the default slide looked
+        // like a glitch). No fade in: over the lock screen Android paints the theme's page colour
+        // behind a fading window, which flashed white before the alarm (2026-11-09).
         if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, android.R.anim.fade_in, android.R.anim.fade_out)
         } else {
             @Suppress("DEPRECATION")
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            overridePendingTransition(0, 0)
         }
         showOverLockScreen()
         drawEdgeToEdge(dark = false)
         habitId = intent.getLongExtra(EXTRA_HABIT_ID, 0L)
         val container = (application as WeftApp).container
-        // Back doesn't close a ringing alarm; one of its three answers does.
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) { override fun handleOnBackPressed() = Unit })
+        // Read the settings and the habit before the first frame (a few ms), and paint the window
+        // in the habit's colour, so the screen opens already drawn: no blank or page-coloured flash.
+        val first = runBlocking {
+            withTimeoutOrNull(FIRST_LOAD_MS) { container.settings.settings.first() to container.repository.getHabit(habitId) }
+        }
+        val firstSettings = first?.first
+        val firstHabit = first?.second
+        if (firstSettings != null && firstHabit != null) {
+            val dark = when (firstSettings.theme.mode) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            }
+            window.setBackgroundDrawable(ColorDrawable(habitColors(firstHabit.colorHue.toFloat(), dark).soft.toArgb()))
+        } else {
+            window.setBackgroundDrawableResource(R.color.weft_bg)
+        }
+        // The theme starts see-through on Android 11+ so Android shows no splash screen (values-v30);
+        // make it opaque now, because only an opaque screen covers the lock screen.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTranslucent(false)
+        // On the lock screen Back does nothing (a pocket press mustn't silence it). Opened over an
+        // app on an unlocked phone, Back is Dismiss and returns to that app (design 2026-11-08, 12).
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!getSystemService(KeyguardManager::class.java).isKeyguardLocked) answer(ReminderActions.ACTION_DISMISS)
+            }
+        })
         registerReceiver(screenOff, IntentFilter(Intent.ACTION_SCREEN_OFF))
         setContent {
-            val settings by container.settings.settings.collectAsStateWithLifecycle(null)
+            val settings by container.settings.settings.collectAsStateWithLifecycle(firstSettings)
             val queue by container.alarmRinger.queue.collectAsStateWithLifecycle()
             val ringing = queue.firstOrNull()
             val answered by container.alarmRinger.answered.collectAsStateWithLifecycle()
-            var habit by remember { mutableStateOf<Habit?>(null) }
+            var habit by remember { mutableStateOf(firstHabit) }
             var seenRinging by remember { mutableStateOf(false) }
             // Always the alarm that is sounding: after one is answered, the next takes the screen.
             // Every alarm stopped (answered, a log anywhere, the 10-minute limit): close.
@@ -132,7 +177,7 @@ class AlarmActivity : ComponentActivity() {
                 if (id != null) {
                     seenRinging = true
                     habitId = id
-                    habit = container.repository.getHabit(id)
+                    if (habit?.id != id) habit = container.repository.getHabit(id)
                 } else if (seenRinging) {
                     finish()
                 }
@@ -149,7 +194,8 @@ class AlarmActivity : ComponentActivity() {
                     position = (answered + queue.size).takeIf { it > 1 }?.let { answered + 1 to it },
                     next = queue.getOrNull(1)?.name,
                     onDone = { answer(ReminderActions.ACTION_DONE) },
-                    onSnooze = { answer(ReminderActions.ACTION_SNOOZE) },
+                    // No Snooze once today's three are used (user, 2026-11-11).
+                    onSnooze = { answer(ReminderActions.ACTION_SNOOZE) }.takeIf { ReminderActions.snoozesLeft(this@AlarmActivity, h.id) > 0 },
                     onDismiss = { answer(ReminderActions.ACTION_DISMISS) },
                     onSkip = { answer(ReminderActions.ACTION_SKIP) },
                     onLogAmount = {
@@ -182,11 +228,24 @@ class AlarmActivity : ComponentActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // A volume button only stops the sound; the screen stays to answer it (user, 2026-11-09).
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            silenceAll()
+            if (event?.repeatCount == 0) (application as WeftApp).container.alarmRinger.hush(habitId)
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    // "Showing" means in front of the user. A started screen can still sit behind the lock screen,
+    // and then the Show over other apps fallback must still step in.
+    override fun onResume() {
+        super.onResume()
+        showing = true
+    }
+
+    override fun onPause() {
+        showing = false
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -232,7 +291,7 @@ class AlarmActivity : ComponentActivity() {
         send(action, id)
     }
 
-    /** The power or a volume button: every ringing alarm stops, like Dismiss on each. */
+    /** The power button: every ringing alarm stops, like Dismiss on each. */
     private fun silenceAll() {
         val ringer = (application as WeftApp).container.alarmRinger
         ringer.queue.value.map { it.habitId }.forEach { id ->
@@ -261,6 +320,14 @@ class AlarmActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA_HABIT_ID = "habitId"
+
+        /** How long the first frame may wait for the habit; past it the screen draws when it loads. */
+        private const val FIRST_LOAD_MS = 400L
+
+        /** True while the ringing screen is on screen: the overlay fallback leaves it alone. */
+        @Volatile
+        var showing = false
+            private set
 
         fun intent(context: Context, habitId: Long): Intent = Intent(context, AlarmActivity::class.java)
             .putExtra(EXTRA_HABIT_ID, habitId)
@@ -291,7 +358,8 @@ private fun AlarmScreen(
     position: Pair<Int, Int>?,
     next: String?,
     onDone: () -> Unit,
-    onSnooze: () -> Unit,
+    /** Null once the alarm was snoozed [ReminderActions.MAX_SNOOZES] times today: only Dismiss shows. */
+    onSnooze: (() -> Unit)?,
     onDismiss: () -> Unit,
     onSkip: () -> Unit,
     onLogAmount: () -> Unit,
@@ -309,9 +377,9 @@ private fun AlarmScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Open Weft: a text button with a chevron (alarm-4/5).
-        TextButton(onClick = onOpenWeft, modifier = Modifier.padding(top = 16.dp).heightIn(min = ButtonHeight)) {
+        TextButton(onClick = onOpenWeft, modifier = Modifier.padding(top = Space16).heightIn(min = ButtonHeight)) {
             Text(stringResource(R.string.alarm_open_weft), style = WeftType.label, color = hc.ink)
-            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = hc.ink, modifier = Modifier.padding(start = 6.dp).size(18.dp))
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = hc.ink, modifier = Modifier.padding(start = Space8).size(IconSizeChip))
         }
         Spacer(Modifier.weight(1f))
         if (position != null) {
@@ -319,36 +387,44 @@ private fun AlarmScreen(
                 stringResource(R.string.alarm_position, position.first, position.second),
                 style = WeftType.captionStrong,
                 color = hc.ink,
-                modifier = Modifier.padding(bottom = 16.dp).background(hc.mid, CircleShape).padding(horizontal = 14.dp, vertical = 6.dp),
+                modifier = Modifier.padding(bottom = Space16).background(hc.mid, CircleShape).padding(horizontal = Space12, vertical = Space8),
             )
         }
         HabitTile(hc.mid, Modifier.size(AlarmTileSize), RoundedCornerShape(AlarmTileCorner)) {
             Icon(painterResource(HabitIcon.fromKey(habit.icon).drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(AlarmTileIconSize))
         }
-        Text(habit.name, style = WeftType.title, color = hc.ink, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
+        Text(habit.name, style = WeftType.title, color = hc.ink, textAlign = TextAlign.Center, modifier = Modifier.padding(top = Space20))
         if (measured) {
-            Text(stringResource(R.string.alarm_goal, habit.measure(habit.target)), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 4.dp))
+            Text(stringResource(R.string.alarm_goal, habit.measure(habit.target)), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = Space4))
         }
-        Text(time, style = WeftType.alarmTime, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 4.dp))
+        Text(time, style = WeftType.alarmTime, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = Space4))
         if (next != null) {
-            Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = 8.dp))
+            Text(stringResource(R.string.widget_next, next), style = WeftType.supporting, color = hc.ink.copy(alpha = 0.75f), modifier = Modifier.padding(top = Space8))
         }
         Spacer(Modifier.weight(2f))
-        SlideToDone(track = hc.mid, thumb = hc.solid, label = stringResource(R.string.alarm_slide), labelColor = hc.ink, onDone = onDone)
+        // Keyed by habit: when the next alarm takes the screen ("2 of 2") its slider starts at the left.
+        key(habit.id) {
+            SlideToDone(track = hc.mid, thumb = hc.solid, label = stringResource(R.string.alarm_slide), labelColor = hc.ink, onDone = onDone)
+        }
         // Log amount (measured) or Skip today (check-off), between the slide bar and the pair.
         TextButton(
             onClick = if (measured) onLogAmount else onSkip,
-            modifier = Modifier.padding(vertical = 8.dp).heightIn(min = ButtonHeight),
+            modifier = Modifier.padding(vertical = Space8).heightIn(min = ButtonHeight),
         ) {
             Text(stringResource(if (measured) R.string.log_amount else R.string.alarm_skip_today), style = WeftType.cardTitle, color = hc.ink)
         }
-        ButtonPair(
-            secondaryLabel = stringResource(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES),
-            onSecondary = onSnooze,
-            primaryLabel = stringResource(R.string.alarm_dismiss),
-            onPrimary = onDismiss,
-        )
-        Spacer(Modifier.height(40.dp))
+        if (onSnooze != null) {
+            ButtonPair(
+                secondaryLabel = stringResource(R.string.notify_snooze_minutes, ReminderActions.SNOOZE_MINUTES),
+                onSecondary = onSnooze,
+                primaryLabel = stringResource(R.string.alarm_dismiss),
+                onPrimary = onDismiss,
+            )
+        } else {
+            // One action: the one full-width button (docs/DESIGN-RULES.md 2).
+            WeftButton(stringResource(R.string.alarm_dismiss), ButtonRole.Primary, onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+        }
+        Spacer(Modifier.height(Space40))
     }
 }
 
@@ -356,17 +432,20 @@ private fun AlarmScreen(
 @Composable
 private fun SlideToDone(track: Color, thumb: Color, label: String, labelColor: Color, onDone: () -> Unit) {
     val density = LocalDensity.current
-    BoxWithConstraints(
+    // The track's width, measured: the thumb travels from the left inset to the right one.
+    var width by remember { mutableIntStateOf(0) }
+    Box(
         Modifier
             .fillMaxWidth()
             .height(SlideHeight)
+            .onSizeChanged { width = it.width }
             .background(track, CircleShape)
             // TalkBack: a double tap marks it done, as sliding does.
             .semantics { contentDescription = label; onClick(label) { onDone(); true } },
         contentAlignment = Alignment.CenterStart,
     ) {
         val thumbSize = SlideHeight - SlideInset * 2
-        val max = with(density) { (maxWidth - thumbSize - SlideInset * 2).toPx() }
+        val max = (width - with(density) { (thumbSize + SlideInset * 2).toPx() }).coerceAtLeast(0f)
         var offset by remember { mutableFloatStateOf(0f) }
         var done by remember { mutableStateOf(false) }
         Text(label, style = WeftType.cardTitle, color = labelColor, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(start = thumbSize))
@@ -385,7 +464,7 @@ private fun SlideToDone(track: Color, thumb: Color, label: String, labelColor: C
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = Color.White, modifier = Modifier.size(IconSize))
         }
     }
 }

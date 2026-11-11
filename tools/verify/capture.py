@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Recaptures the design PNGs in design/ from the app, the way they have been taken since 2026-10-19.
 
-Sample data on Sunday 27 Sep, the status bar at 9:30 (demo mode), the default Amber accent and Lexend,
+Sample data on Sunday 27 Sep, the status bar at 9:30 (demo mode), the default Rust accent and Lexend,
 1080 x 2400 at 420 dpi. Needs a rootable emulator (a "default" system image, e.g. Sprout_API_35) to set
 the date, and the play debug build (it has the debug-only SheetPreviewActivity and DriveStateActivity).
 
@@ -112,7 +112,7 @@ def welcome():
 def more():
     d.nav("More")
     d.scroll_to_top()
-    save_full_length("more", 3582)
+    save_full_length("more", 3800)
 
 
 @screen
@@ -202,6 +202,73 @@ def filter_sheet():
 
 
 @screen
+def journal_empty():
+    """The Journal filtered to Vitamins, which has no notes (design 2026-11-09)."""
+    d.nav("Journal")
+    d.tap("Filter by habit")
+    d.tap("Vitamins")
+    d.tap("Show notes for 1 habit", contains=True)
+    assert d.exists("No Vitamins notes yet", timeout=4)
+    save("journal-empty")
+    d.tap("Show all notes")
+
+
+def journal_reset():
+    """Filters last while the app is open: restart it so the next screen starts unfiltered."""
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+    time.sleep(1.5)
+
+
+def journal_pick_habits(*names):
+    d.tap("Filter by habit")
+    for n in names:
+        d.tap(n)
+    d.tap("Show notes for", contains=True)
+    time.sleep(1)
+
+
+def journal_pick_dates(first, last):
+    d.tap("Filter by date")
+    d.tap(first)
+    d.tap(last)
+    d.tap("Show ", contains=True)
+    time.sleep(1)
+
+
+@screen
+def today_sample_data():
+    """Today on first run, with the Sample habits row (design 2026-11-11)."""
+    d.nav("Today")
+    d.scroll_to_top()
+    assert d.exists("Sample habits", timeout=5)
+    save("today-sample-data")
+
+
+@screen
+def journal():
+    """Compact note cards, one day's notes grouped (design 2026-11-11)."""
+    d.nav("Journal")
+    d.scroll_to_top()
+    save("journal")
+
+
+@screen
+def journal_filters():
+    """The Journal filtered by habits, by dates, and by both (journal-*-filter)."""
+    d.nav("Journal")
+    journal_pick_habits("Read", "No sugar")
+    save("journal-habit-filter")
+    journal_reset()
+    d.nav("Journal")
+    journal_pick_dates("21", "24")
+    save("journal-date-filter")
+    journal_pick_habits("No sugar", "Drink water")
+    save("journal-date-habit-filter")
+    journal_reset()
+
+
+@screen
 def date_range_sheet():
     d.nav("Journal")
     d.tap("Filter by date")
@@ -212,9 +279,11 @@ def date_range_sheet():
 @screen
 def reminder_time_sheet():
     d.nav("More")
-    d.scroll_to("Default reminder")
+    d.scroll_to("Reminders & alarms")
+    d.tap("Reminders & alarms")
     d.tap("Default reminder")
     save("reminder-time-sheet")
+    d.back()
     d.back()
 
 
@@ -284,6 +353,113 @@ def alarm_ringing():
     d.shell("input keyevent KEYCODE_WAKEUP")
     d.shell("wm dismiss-keyguard")
     time.sleep(1.5)
+
+
+def alarm_permissions(notifications, exact, full_screen, restart=True):
+    """Sets what alarms are allowed (1.6.2's Set up alarms), on a phone that passes for a OnePlus."""
+    if restart:
+        d.shell(f"am force-stop {d.PACKAGE}")
+        d.shell("setprop debug.weft.maker oneplus")
+    d.shell(f"pm {'grant' if notifications else 'revoke'} {d.PACKAGE} android.permission.POST_NOTIFICATIONS")
+    # Off the battery allow-list (root puts the app there): allow-listed apps may always set exact alarms.
+    d.shell(f"dumpsys deviceidle whitelist -{d.PACKAGE}")
+    d.shell(f"appops set {d.PACKAGE} SCHEDULE_EXACT_ALARM {'allow' if exact else 'deny'}")
+    d.shell(f"appops set {d.PACKAGE} USE_FULL_SCREEN_INTENT {'allow' if full_screen else 'deny'}")
+    if restart:
+        d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+        time.sleep(1.5)
+    else:
+        # Weft re-reads them when it comes back to the front, as after the system settings page.
+        d.shell("input keyevent KEYCODE_HOME")
+        time.sleep(1)
+        d.shell(f"am start -W -n {d.PACKAGE}/.MainActivity")
+        time.sleep(1.5)
+
+
+def alarm_permissions_reset():
+    d.shell(f"am force-stop {d.PACKAGE}")
+    d.shell("setprop debug.weft.maker ''")
+    alarm_permissions(True, True, True, restart=False)
+
+
+@screen
+def alarm_setup():
+    """Set up alarms (alarm-9a/b/c) and the Reminder card warning (alarm-10), from New habit."""
+    alarm_permissions(False, False, False)
+    d.nav("Today")
+    d.tap("New habit")
+    d.scroll_to("tap to set a time", contains=True)
+    d.tap("tap to set a time", contains=True)
+    d.tap("Alarm")  # nothing is allowed: Set up alarms opens over the Reminder sheet
+    assert d.exists("Set up alarms", timeout=5)
+    d.back()
+    d.tap("Set reminder")
+    # Set reminder asks for notifications; say no, to keep "nothing allowed".
+    if d.exists("DON’T ALLOW", timeout=3):
+        d.tap("DON’T ALLOW")
+    # The warning opens it over New habit itself, as in the design.
+    d.scroll_to("tap to fix", contains=True)
+    d.tap("tap to fix", contains=True)
+    assert d.exists("Set up alarms", timeout=5)
+    save("alarm-9a-setup-sheet-none")
+    alarm_permissions(True, True, False, restart=False)
+    assert d.exists("Set up alarms", timeout=5)
+    save("alarm-9b-setup-sheet-partly")
+    d.back()
+    d.scroll_to_top()
+    d.tap("Name")
+    d.shell("input text 'Wake%sup%sat%s7'")
+    d.back()  # the keyboard
+    time.sleep(0.5)
+    d.scroll_to("Tap the reminder to change its time and type.")
+    save("alarm-10-reminder-card-warning")
+    d.tap("tap to fix", contains=True)
+    assert d.exists("Set up alarms", timeout=5)
+    alarm_permissions(True, True, True, restart=False)
+    assert d.exists("Done", timeout=5)
+    save("alarm-9c-setup-sheet-all-set")
+    d.tap("Done")
+    d.back()
+    if d.exists("Discard", contains=True, timeout=1):
+        d.tap("Discard", contains=True)
+    alarm_permissions_reset()
+
+
+@screen
+def more_reminders_alarms():
+    """More with its Reminders & alarms row (full screen can't ring), the screen, the Alarm sound
+    sheet and Extra phone settings (design 2026-11-09), on a phone that passes for a OnePlus."""
+    alarm_permissions(True, True, False)
+    d.nav("More")
+    d.scroll_to_top()
+    save_full_length("more-reminders-alarms-row", 3800)
+    d.scroll_to("Reminders & alarms")
+    d.tap("Reminders & alarms")
+    assert d.exists("Allow Weft to", timeout=5)
+    save("more-reminders-alarms-screen")
+    d.tap("Extra phone settings")
+    assert d.exists("Turn both on in Weft’s app info", timeout=5)
+    save("extra-phone-settings-sheet")
+    d.tap("Done")
+    d.scroll_to("Alarm sound")
+    d.tap("Alarm sound")
+    d.tap("Weft")  # plays it: the row says "Playing"
+    save("alarm-11-sound-sheet")
+    d.back()
+    d.back()
+    alarm_permissions_reset()
+
+
+@screen
+def archive_habit_sheet():
+    """Archive asks first (2026-11-11, docs/DESIGN-RULES.md 10): the prompt over Habit detail."""
+    d.nav("Habits")
+    d.tap("Read")
+    d.tap("Archive")  # the header's round button (its description)
+    assert d.exists("Archive Read?", timeout=5)
+    save("archive-habit-sheet")
+    d.tap("Cancel")
+    d.back()
 
 
 @screen

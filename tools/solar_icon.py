@@ -21,10 +21,10 @@ ICONS = {
     "ic_check": "check", "ic_chevron_down": "alt-arrow-down", "ic_chevron_left": "alt-arrow-left",
     "ic_chevron_right": "alt-arrow-right", "ic_chevron_up": "alt-arrow-up", "ic_close": "close",
     "ic_cloud": "cloud", "ic_cloud_done": "cloud-check", "ic_cloud_upload": "cloud-upload",
-    "ic_code": "code", "ic_delete": "trash-bin-trash", "ic_download": "download-minimalistic",
+    "ic_code": "code", "ic_test_tube": "test-tube", "ic_delete": "trash-bin-trash", "ic_download": "download-minimalistic",
     "ic_drag": "reorder", "ic_error": "danger-circle", "ic_filter": "filter", "ic_habit_pen": "pen-new-square",
     "ic_heart": "heart", "ic_minus": "minus", "ic_more_horiz": "menu-dots", "ic_note": "notes",
-    "ic_open_external": "arrow-right-up", "ic_plus": "add", "ic_refresh": "refresh", "ic_search": "magnifier",
+    "ic_open_external": "arrow-right-up", "ic_music_note": "music-note-2", "ic_volume_loud": "volume-loud", "ic_plus": "add", "ic_refresh": "refresh", "ic_search": "magnifier",
     "ic_share": "share", "ic_skip": "forward", "ic_smartphone": "smartphone", "ic_star": "star",
     "ic_thumb_up": "like", "ic_translate": "translation", "ic_trending_down": "graph-down",
     "ic_trophy": "cup-star", "ic_undo": "undo-left",
@@ -35,7 +35,7 @@ ICONS = {
     # Habit icons
     "ic_sym_accessibility_new": "stretching", "ic_sym_account_balance_wallet": "wallet",
     "ic_sym_alarm": "alarm", "ic_sym_bed": "bed", "ic_sym_bedtime": "moon-sleep",
-    "ic_sym_breakfast_dining": "donut-bitten", "ic_sym_brush": "palette", "ic_sym_call": "phone",
+    "ic_sym_breakfast_dining": "donut-bitten", "ic_sym_brush": "paint-brush", "ic_sym_call": "phone",
     "ic_sym_child_friendly": "balloon", "ic_sym_cleaning_services": "smart-vacuum-cleaner-2", "ic_sym_code": "code-square",
     "ic_sym_dentistry": "custom:tooth", "ic_sym_directions_bike": "bicycling",
     "ic_sym_directions_run": "running", "ic_sym_directions_walk": "walking", "ic_sym_edit_note": "pen-new-square",
@@ -43,9 +43,9 @@ ICONS = {
     "ic_sym_fitness_center": "dumbbell-large-minimalistic", "ic_sym_folded_hands": "hand-stars",
     "ic_sym_group": "users-group-rounded", "ic_sym_headphones": "headphones-round", "ic_sym_hiking": "hiking",
     "ic_sym_laptop_mac": "laptop", "ic_sym_local_cafe": "cup-hot", "ic_sym_local_laundry_service": "washing-machine",
-    "ic_sym_mail": "letter", "ic_sym_medication": "pills", "ic_sym_menu_book": "book-minimalistic",
+    "ic_sym_mail": "letter", "ic_sym_medication": "jar-of-pills", "ic_sym_menu_book": "book-minimalistic",
     "ic_sym_mobile_off": "slash:smartphone", "ic_sym_monitor_weight": "scale", "ic_sym_music_note": "music-note",
-    "ic_sym_no_drinks": "slash:wineglass", "ic_sym_no_meals": "hourglass", "ic_sym_nutrition": "leaf",
+    "ic_sym_no_drinks": "slash:wineglass", "ic_sym_no_meals": "plate", "ic_sym_nutrition": "leaf",
     "ic_sym_park": "cloud-sun", "ic_sym_pets": "paw", "ic_sym_photo_camera": "camera", "ic_sym_piano": "music-notes",
     "ic_sym_pool": "swimming", "ic_sym_potted_plant": "custom:plant", "ic_sym_psychology": "brain",
     "ic_sym_recycling": "refresh-circle", "ic_sym_restaurant": "chef-hat-minimalistic",
@@ -56,8 +56,13 @@ ICONS = {
     "ic_sym_sports_cricket": "custom:cricket", "ic_sym_sports_martial_arts": "user-hand-up",
     "ic_sym_sports_soccer": "football", "ic_sym_sports_tennis": "tennis", "ic_sym_stairs": "custom:stairs",
     "ic_sym_task_alt": "check-circle", "ic_sym_translate": "earth", "ic_sym_tv_off": "slash:tv",
-    "ic_sym_volunteer_activism": "hand-heart", "ic_sym_water_drop": "waterdrop", "ic_sym_wb_sunny": "sunrise",
+    "ic_sym_volunteer_activism": "hand-heart", "ic_sym_water_drop": "bottle", "ic_sym_wb_sunny": "sunrise",
     "ic_sym_yard": "trellis",
+    # 1.6.2 (user, 2026-11-09): common habits the picker didn't cover, kept to ten.
+    "ic_sym_breathe": "wind", "ic_sym_gratitude": "heart-shine", "ic_sym_focus": "target",
+    "ic_sym_less_social_media": "slash:chat-round-dots", "ic_sym_less_coffee": "slash:cup-hot",
+    "ic_sym_no_sugar": "slash:donut-bitten", "ic_sym_sunlight": "sun-2", "ic_sym_speak": "microphone-2",
+    "ic_sym_weekly_review": "calendar-mark", "ic_sym_scripture": "book-bookmark",
 }
 
 # Solar has no tooth, cricket, stairs, potted plant or cigarette: drawn here in its Linear style

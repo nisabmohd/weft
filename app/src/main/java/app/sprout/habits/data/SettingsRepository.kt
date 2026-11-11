@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.sprout.habits.ui.theme.BodyFont
 import app.sprout.habits.ui.theme.DEFAULT_ACCENT_HUE
+import app.sprout.habits.ui.theme.OLD_AMBER_HUE
 import app.sprout.habits.ui.theme.ThemeMode
 import app.sprout.habits.ui.theme.ThemeSettings
 import java.time.DayOfWeek
@@ -75,7 +76,18 @@ data class Settings(
     val writingSuggestions: Boolean = true,
     /** Epoch millis of "Clear suggestion history": notes last written before it aren't learned from. */
     val suggestionsClearedAt: Long = 0,
+    /** What an alarm plays: an [AlarmSound] key ("weft", "weft_soft", "system") or a picked sound's URI. */
+    val alarmSound: String = AlarmSound.WEFT,
+    /** Alarms vibrate along with the sound (More → Alarms). */
+    val alarmVibrate: Boolean = true,
 )
+
+/** The alarm sound choices besides a sound picked from the phone (stored as its URI). */
+object AlarmSound {
+    const val WEFT = "weft"
+    const val WEFT_SOFT = "weft_soft"
+    const val SYSTEM = "system"
+}
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
@@ -138,7 +150,7 @@ class SettingsRepository(context: Context) {
     }
     /**
      * Also keeps the look of installs from before 1.2: they followed the wallpaper with a green
-     * fallback by default, and the new defaults (amber, dynamic color off) are for new installs.
+     * fallback by default, and the new defaults (rust, dynamic color off) are for new installs.
      */
     suspend fun markFirstOpen(now: Long = System.currentTimeMillis()) = store.edit {
         if (it[FIRST_OPEN_AT] == null) {
@@ -153,6 +165,11 @@ class SettingsRepository(context: Context) {
     }
     suspend fun setWritingSuggestions(enabled: Boolean) = store.edit { it[WRITING_SUGGESTIONS] = enabled }
     suspend fun clearSuggestionHistory(now: Long = System.currentTimeMillis()) = store.edit { it[SUGGESTIONS_CLEARED_AT] = now }
+
+    /** Undo for [clearSuggestionHistory]: puts back the time it had before. */
+    suspend fun setSuggestionsClearedAt(at: Long) = store.edit { it[SUGGESTIONS_CLEARED_AT] = at }
+    suspend fun setAlarmSound(sound: String) = store.edit { it[ALARM_SOUND] = sound }
+    suspend fun setAlarmVibrate(on: Boolean) = store.edit { it[ALARM_VIBRATE] = on }
     suspend fun addCheckIn() = store.edit { it[CHECK_INS] = (it[CHECK_INS] ?: 0) + 1 }
     suspend fun supportPromptShown(dismissed: Boolean, now: Long = System.currentTimeMillis()) = store.edit {
         it[PROMPT_SHOWN_AT] = now
@@ -168,6 +185,8 @@ class SettingsRepository(context: Context) {
         it[TEXT_SCALE] = settings.theme.textScale
         it[WEEK_START] = settings.weekStart.name
         it[DEFAULT_REMINDER] = settings.defaultReminderMinutes
+        it[ALARM_SOUND] = settings.alarmSound
+        it[ALARM_VIBRATE] = settings.alarmVibrate
     }
 
     private fun Preferences.toSettings(): Settings {
@@ -178,7 +197,7 @@ class SettingsRepository(context: Context) {
                 mode = enumOrDefault(this[THEME], theme.mode),
                 dynamicColor = this[DYNAMIC_COLOR] ?: theme.dynamicColor,
                 // Green (150) is no longer a swatch; Rose took its place (user, 2026-11-02).
-                accentHue = (this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE).let { if (it == 150f) 345f else it },
+                accentHue = (this[ACCENT_HUE] ?: DEFAULT_ACCENT_HUE).let { if (it == 150f) 345f else if (it == OLD_AMBER_HUE) DEFAULT_ACCENT_HUE else it },
                 font = enumOrDefault(this[FONT], theme.font),
                 textScale = this[TEXT_SCALE] ?: theme.textScale,
             ),
@@ -205,6 +224,8 @@ class SettingsRepository(context: Context) {
             sampleBannerHidden = this[SAMPLE_BANNER_HIDDEN] == true,
             writingSuggestions = this[WRITING_SUGGESTIONS] ?: defaults.writingSuggestions,
             suggestionsClearedAt = this[SUGGESTIONS_CLEARED_AT] ?: 0,
+            alarmSound = this[ALARM_SOUND] ?: defaults.alarmSound,
+            alarmVibrate = this[ALARM_VIBRATE] ?: defaults.alarmVibrate,
         )
     }
 
@@ -237,6 +258,8 @@ class SettingsRepository(context: Context) {
         val SAMPLE_BANNER_HIDDEN = booleanPreferencesKey("sampleBannerHidden")
         val WRITING_SUGGESTIONS = booleanPreferencesKey("writingSuggestions")
         val SUGGESTIONS_CLEARED_AT = longPreferencesKey("suggestionsClearedAt")
+        val ALARM_SOUND = stringPreferencesKey("alarmSound")
+        val ALARM_VIBRATE = booleanPreferencesKey("alarmVibrate")
 
         inline fun <reified E : Enum<E>> enumOrDefault(name: String?, default: E): E =
             name?.let { n -> enumValues<E>().firstOrNull { it.name == n } } ?: default

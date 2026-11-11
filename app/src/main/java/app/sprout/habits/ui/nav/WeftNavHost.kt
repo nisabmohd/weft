@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.nav
 
+import app.sprout.habits.ui.theme.AutoSizeStep
+import app.sprout.habits.ui.theme.IconSize
 import app.sprout.habits.ui.theme.NavLabelMinSize
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.unit.sp
@@ -73,6 +75,7 @@ import app.sprout.habits.AppContainer
 import app.sprout.habits.data.Settings
 import app.sprout.habits.ui.more.AboutScreen
 import app.sprout.habits.ui.more.BackupRestoreScreen
+import app.sprout.habits.ui.more.RemindersAlarmsScreen
 import app.sprout.habits.ui.more.LicencesScreen
 import app.sprout.habits.ui.more.MoreScreen
 import app.sprout.habits.R
@@ -149,7 +152,7 @@ fun WeftNavHost(
                     onOpenHabit = { id -> navController.navigate(HabitDetailRoute(id)) },
                     onAddNote = { day -> navController.navigate(WriteNoteRoute(epochDay = day)) },
                     hasSampleData = settings.sampleHabitIds.isNotEmpty() && !settings.sampleBannerHidden,
-                    onRemoveSampleData = { container.appScope.launch { SampleData.remove(container.repository, container.settings) } },
+                    onRemoveSampleData = { container.actions.removeSampleData() },
                 )
                 }
             }
@@ -159,13 +162,14 @@ fun WeftNavHost(
                     WriteNoteViewModel(
                         container.repository, route.noteId, route.habitId, route.epochDay.takeIf { it >= 0 }, createSavedStateHandle(),
                         container.settings.settings.map { it.suggestionsClearedAt }.distinctUntilChanged(),
+                        container.actions,
                     )
                 }
                 WriteNoteScreen(vm, settings.weekStart, settings.writingSuggestions, onClose = { navController.popBackStack() })
             }
             composable<EditHabitRoute> { entry ->
                 val id = entry.toRoute<EditHabitRoute>().habitId
-                val vm = viewModel { EditHabitViewModel(container.repository, container.settings, id) }
+                val vm = viewModel { EditHabitViewModel(container.repository, container.settings, id, container.actions) }
                 EditHabitScreen(
                     vm,
                     onClose = { navController.popBackStack() },
@@ -230,12 +234,16 @@ fun WeftNavHost(
                     container.settings,
                     container.drive,
                     onOpenBackup = { navController.navigate(BackupRoute) },
+                    onOpenAlarms = { navController.navigate(RemindersAlarmsRoute) },
                     onOpenAbout = { navController.navigate(AboutRoute) },
                 )
                 }
             }
             composable<BackupRoute> {
                 BackupRestoreScreen(settings, container.settings, container.backup, container.drive, onBack = { navController.popBackStack() })
+            }
+            composable<RemindersAlarmsRoute> {
+                RemindersAlarmsScreen(settings, container.settings, onBack = { navController.popBackStack() })
             }
             composable<AboutRoute> {
                 AboutScreen(container.updates, container.playUpdates, onBack = { navController.popBackStack() }, onOpenLicences = { navController.navigate(LicencesRoute) })
@@ -296,7 +304,7 @@ private fun WeftNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
             NavigationBarItem(
                 selected = selected,
                 onClick = { onSelect(tab) },
-                icon = { Icon(painterResource(tab.icon), contentDescription = null, Modifier.size(22.dp)) },
+                icon = { Icon(painterResource(tab.icon), contentDescription = null, Modifier.size(IconSize)) },
                 label = {
                     // Long translations ("Gewohnheiten", "Statistiques") shrink to fit instead of being cut off.
                     val style = if (selected) WeftType.captionStrong else WeftType.caption
@@ -304,7 +312,7 @@ private fun WeftNavigationBar(current: Tab, onSelect: (Tab) -> Unit) {
                         stringResource(tab.label),
                         maxLines = 1,
                         style = style.copy(color = LocalContentColor.current),
-                        autoSize = TextAutoSize.StepBased(minFontSize = NavLabelMinSize, maxFontSize = style.fontSize, stepSize = 0.5.sp),
+                        autoSize = TextAutoSize.StepBased(minFontSize = NavLabelMinSize, maxFontSize = style.fontSize, stepSize = AutoSizeStep),
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

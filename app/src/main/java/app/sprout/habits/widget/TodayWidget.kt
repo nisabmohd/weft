@@ -84,7 +84,7 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         GlanceModifier
             .fillMaxSize()
             .background(colors.widgetBackground)
-            .cornerRadius(28.dp)
+            .cornerRadius(WidgetCorner)
             .padding(layout.pad.dp),
         verticalAlignment = Alignment.Vertical.CenterVertically,
         horizontalAlignment = if (layout.showList) Alignment.Horizontal.Start else Alignment.Horizontal.CenterHorizontally,
@@ -103,7 +103,7 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
             }
         }
         if (!layout.showList) return@Row
-        Spacer(GlanceModifier.width(if (layout.pad < 16f) 10.dp else 16.dp))
+        Spacer(GlanceModifier.width(if (layout.pad < 16f) TodayRingGapSmall else TodayRingGap))
         Column(GlanceModifier.defaultWeight(), verticalAlignment = Alignment.Vertical.CenterVertically) {
             if (layout.nextLine) {
                 // Too short for a row: one line, like the strip.
@@ -127,14 +127,14 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
                         .fillMaxWidth()
                         .height(WidgetLayout.ROW.dp)
                         .background(ColorProvider(hc.soft, hc.soft))
-                        .cornerRadius(16.dp),
+                        .cornerRadius(TodayRowCorner),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                 ) {
                     Box(
                         GlanceModifier
                             .defaultWeight()
                             .fillMaxHeight()
-                            .padding(start = 14.dp)
+                            .padding(start = TodayRowTextStart)
                             .clickable(actionStartActivity(context.openHabitIntent(habit.id))),
                         contentAlignment = Alignment.CenterStart,
                     ) {
@@ -146,7 +146,7 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
                     }
                     Box(
                         GlanceModifier
-                            .size(48.dp)
+                            .size(TodayCircleTarget)
                             .clickable(actionRunCallback<MarkDoneAction>(actionParametersOf(MarkDoneAction.HabitIdKey to habit.id))),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -154,7 +154,7 @@ private fun TodayContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
                             ImageProvider(R.drawable.widget_circle),
                             contentDescription = context.getString(R.string.mark_done, habit.name),
                             colorFilter = ColorFilter.tint(ColorProvider(hc.solid, hc.solid)),
-                            modifier = GlanceModifier.size(34.dp),
+                            modifier = GlanceModifier.size(TodayCircleSize),
                         )
                     }
                 }

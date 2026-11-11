@@ -6,11 +6,14 @@
         <!-- Draw into the camera cutout too, as Android 15+ always does. -->
         <item name="android:windowLayoutInDisplayCutoutMode">always</item>
     </style>
-    <!-- The alarm ringing screen: see-through until its first frame, so it fades in finished
-         instead of flashing the page colour while the habit loads (2026-11-08). -->
+    <!-- The alarm ringing screen. It starts see-through, because Android 12+ puts its splash
+         screen (a blank page) in front of any opaque screen opened by an alarm, which flashed
+         white. AlarmActivity then makes it opaque at once (setTranslucent(false)): only an opaque
+         screen covers the lock screen (1.6.2 stayed see-through, and locked phones never showed
+         it). The habit's colour is painted before the first frame. -->
     <style name="Theme.Weft.Alarm">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 </resources>

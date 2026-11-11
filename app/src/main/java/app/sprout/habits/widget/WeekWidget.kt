@@ -64,8 +64,8 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
         GlanceModifier
             .fillMaxSize()
             .background(GlanceTheme.colors.widgetBackground)
-            .cornerRadius(28.dp)
-            .padding(16.dp),
+            .cornerRadius(WidgetCorner)
+            .padding(WidgetPadding),
     ) {
         // Only the header opens the app; each habit row opens that habit. Never nested.
         Row(GlanceModifier.fillMaxWidth().clickable(actionStartActivity(context.openAppIntent())), verticalAlignment = Alignment.Vertical.CenterVertically) {
@@ -79,7 +79,7 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
                 style = TextStyle(fontSize = if (layout.bigPercent) WidgetType.screenTitle else WidgetType.title, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.primary),
             )
         }
-        Spacer(GlanceModifier.height(8.dp))
+        Spacer(GlanceModifier.height(WeekHeaderGap))
         if (layout.showLetters) Row(GlanceModifier.fillMaxWidth()) {
             Spacer(GlanceModifier.defaultWeight())
             Row(GlanceModifier.width(marksWidth.dp)) {
@@ -98,7 +98,7 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
             }
         }
         if (data.habits.isEmpty()) {
-            Text(LocalContext.current.getString(R.string.no_habits_yet), modifier = GlanceModifier.padding(top = 12.dp), style = TextStyle(fontSize = WidgetType.supporting, color = GlanceTheme.colors.onSurfaceVariant))
+            Text(LocalContext.current.getString(R.string.no_habits_yet), modifier = GlanceModifier.padding(top = WeekEmptyTop), style = TextStyle(fontSize = WidgetType.supporting, color = GlanceTheme.colors.onSurfaceVariant))
         }
         LazyColumn(GlanceModifier.fillMaxWidth()) {
             items(data.habits, itemId = { it.id }) { habit ->
@@ -109,16 +109,16 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                 ) {
                     Box(
-                        GlanceModifier.size(28.dp).background(ColorProvider(hc.soft, hc.soft)).cornerRadius(9.dp),
+                        GlanceModifier.size(WeekTileSize).background(ColorProvider(hc.soft, hc.soft)).cornerRadius(WeekTileCorner),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Image(ImageProvider(habit.icon), contentDescription = null, modifier = GlanceModifier.size(16.dp), colorFilter = androidx.glance.ColorFilter.tint(ColorProvider(hc.ink, hc.ink)))
+                        Image(ImageProvider(habit.icon), contentDescription = null, modifier = GlanceModifier.size(WeekTileIconSize), colorFilter = androidx.glance.ColorFilter.tint(ColorProvider(hc.ink, hc.ink)))
                     }
                     if (layout.showNames) {
                         Text(
                             habit.name,
                             maxLines = 1,
-                            modifier = GlanceModifier.defaultWeight().padding(start = 10.dp),
+                            modifier = GlanceModifier.defaultWeight().padding(start = WeekNameGap),
                             style = TextStyle(fontSize = WidgetType.cardTitle, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                         )
                     } else {
@@ -128,7 +128,7 @@ private fun WeekContent(context: Context, data: WeekWidgetData, bitmaps: WidgetB
                     Image(
                         ImageProvider(bitmaps.marks(habit.marks, habit.hue, marksWidth, 20f)),
                         contentDescription = LocalContext.current.getString(R.string.habit_this_week, habit.name),
-                        modifier = GlanceModifier.width(marksWidth.dp).height(20.dp),
+                        modifier = GlanceModifier.width(marksWidth.dp).height(WeekMarksHeight),
                     )
                 }
             }

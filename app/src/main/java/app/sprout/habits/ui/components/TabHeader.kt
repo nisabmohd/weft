@@ -1,5 +1,13 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.TabHeaderPadding
+import app.sprout.habits.ui.theme.HeaderButtonSize
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TouchTarget
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,30 +43,29 @@ import androidx.compose.material3.Text
  * place on each: the 28sp title centred on the 48 dp round [actions] ([HeaderIconButton]), and an
  * optional [subtitle] (the date on Today) on the line below it.
  *
- * Tabs space their lists differently, so [listSpacing] is the list's own gap; the header adds the
- * rest so there are always 16 dp between the header and the first card.
+ * Each tab wraps it in [TabHeaderPadding], so there are always 16 dp between the header (or its
+ * filter chips) and the first card.
  */
 @Composable
 fun TabHeader(
     title: String,
     subtitle: String? = null,
-    listSpacing: Dp = 0.dp,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     Row(
-        Modifier.fillMaxWidth().padding(start = 4.dp, top = 8.dp, bottom = (16.dp - listSpacing).coerceAtLeast(0.dp)),
+        Modifier.fillMaxWidth().padding(start = SectionHeaderInset, top = Space8),
         verticalAlignment = Alignment.Top,
     ) {
         Column(Modifier.weight(1f)) {
-            Box(Modifier.heightIn(min = 48.dp), contentAlignment = Alignment.CenterStart) {
+            Box(Modifier.heightIn(min = HeaderButtonSize), contentAlignment = Alignment.CenterStart) {
                 Text(title, style = WeftType.screenTitle, color = colors.onBackground)
             }
             if (subtitle != null) {
                 Text(subtitle, style = WeftType.label, color = colors.onSurfaceVariant)
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), content = actions)
+        Row(horizontalArrangement = Arrangement.spacedBy(ItemGap), content = actions)
     }
 }
 
@@ -70,11 +77,11 @@ fun TabHeader(
 fun SmallClearButton(label: String, size: Dp, container: Color, content: Color, onClick: () -> Unit) {
     Box(Modifier.size(size), contentAlignment = Alignment.Center) {
         Box(
-            Modifier.requiredSize(48.dp).clip(CircleShape).clickable(onClickLabel = label, role = Role.Button, onClick = onClick).semantics { contentDescription = label },
+            Modifier.requiredSize(TouchTarget).clip(CircleShape).clickable(onClickLabel = label, role = Role.Button, onClick = onClick).semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
             Box(Modifier.size(size).background(container, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_close), contentDescription = null, tint = content, modifier = Modifier.size(14.dp))
+                Icon(painterResource(R.drawable.ic_close), contentDescription = null, tint = content, modifier = Modifier.size(IconSizeTiny))
             }
         }
     }

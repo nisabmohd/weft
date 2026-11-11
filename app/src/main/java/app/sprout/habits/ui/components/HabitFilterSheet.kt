@@ -1,5 +1,20 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.ChipHeight
+import app.sprout.habits.ui.theme.ChipShape
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.ActiveDotSize
+import app.sprout.habits.ui.theme.BorderThin
+import app.sprout.habits.ui.theme.ChipCorner
+import app.sprout.habits.ui.theme.HeaderButtonSize
+import app.sprout.habits.ui.theme.IconLabelGap
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeChip
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space8
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -10,6 +25,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,13 +40,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,15 +66,31 @@ import app.sprout.habits.ui.theme.habitColors
 @Immutable
 data class HabitFilterOption(val habitId: Long, val name: String, val icon: Int, val hue: Float)
 
+/** A habit chip in Filter by habit (filter-by-habit-sheet.png): 40 dp tall, 12 dp corners. */
+val HabitChipHeight = 40.dp
+val HabitChipShape = RoundedCornerShape(12.dp)
+/** The small habit tile inside a habit chip: 28 dp, 8 dp corners, 16 dp icon; 6 dp from the chip's edge centres it. */
+val HabitChipTileSize = 28.dp
+val HabitChipTileShape = RoundedCornerShape(ChipCorner)
+val HabitChipIconSize = 16.dp
+val HabitChipTileInset = (HabitChipHeight - HabitChipTileSize) / 2
+
+/** A filter chip's ✕ (24 dp, a 48 dp touch target) and the active habit filter's overlapping 18 dp colour dots. */
+val ChipClearSize = 24.dp
+val HabitDotSize = 18.dp
+val HabitDotOverlap = 6.dp
+
 /**
- * "Filter by habit", shared by Journal and Insights: tick any number of habits, Clear to
- * untick all, then apply. An empty selection means every habit.
+ * "Filter by habit", shared by Journal and Insights (filter-by-habit-sheet.png): every habit as a
+ * chip (tile + name, ✓ when picked), wrapping, then [helper] and one button. Clear unticks all;
+ * an empty selection means every habit. The sheet is only as tall as its chips.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HabitFilterSheet(
     options: List<HabitFilterOption>,
     selected: Set<Long>,
+    helper: String,
     applyLabel: (count: Int) -> String,
     onApply: (Set<Long>) -> Unit,
     onDismiss: () -> Unit,
@@ -67,34 +99,62 @@ fun HabitFilterSheet(
     var picked by remember { mutableStateOf(selected) }
     val haptics = LocalHapticFeedback.current
     WeftSheet(onDismissRequest = onDismiss) {
-        Row(Modifier.fillMaxWidth().padding(start = SheetTitleInset, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(start = SheetTitleInset, end = Space12), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.filter_by_habit), style = WeftType.title, color = colors.onSurface, modifier = Modifier.weight(1f))
             TextButton(onClick = { picked = emptySet() }, enabled = picked.isNotEmpty()) { Text(stringResource(R.string.clear), style = WeftType.label) }
         }
-        LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
-            items(options, key = { it.habitId }) { o ->
-                val hc = habitColors(o.hue)
+        FlowRow(
+            Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = SheetSidePadding).padding(top = Space12),
+            horizontalArrangement = Arrangement.spacedBy(ItemGap),
+            verticalArrangement = Arrangement.spacedBy(ItemGap),
+        ) {
+            options.forEach { o ->
                 val checked = o.habitId in picked
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 60.dp)
-                        .toggleable(checked, role = Role.Checkbox) { on -> haptics.toggle(on); picked = if (on) picked + o.habitId else picked - o.habitId }
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    HabitTile(o.icon, hc.soft, hc.ink)
-                    Text(o.name, style = WeftType.cardTitle, color = colors.onSurface, modifier = Modifier.weight(1f).padding(start = 12.dp))
-                    Checkbox(checked = checked, onCheckedChange = null)
-                }
+                HabitChip(o, checked) { on -> haptics.toggle(on); picked = if (on) picked + o.habitId else picked - o.habitId }
             }
         }
+        Text(
+            helper,
+            style = WeftType.supporting,
+            color = colors.onSurfaceVariant,
+            modifier = Modifier.padding(start = SheetTitleInset, end = SheetTitleInset, top = Space16),
+        )
         WeftButton(
             applyLabel(picked.size),
             ButtonRole.Primary,
             onClick = { onApply(picked) },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = SheetActionGap).sheetBottomPadding(),
         )
+    }
+}
+
+/** One habit chip: picked = secondaryContainer with a ✓ after the name; not picked = a 1 dp outline. */
+@Composable
+private fun HabitChip(option: HabitFilterOption, checked: Boolean, onToggle: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val hc = habitColors(option.hue)
+    Row(
+        Modifier
+            .heightIn(min = HabitChipHeight)
+            .clip(HabitChipShape)
+            .then(if (checked) Modifier.background(colors.secondaryContainer) else Modifier.border(BorderThin, colors.outlineVariant, HabitChipShape))
+            .toggleable(checked, role = Role.Checkbox, onValueChange = onToggle)
+            .padding(start = HabitChipTileInset, end = Space12),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        HabitTile(hc.soft, Modifier.size(HabitChipTileSize), HabitChipTileShape) {
+            Icon(painterResource(option.icon), contentDescription = null, tint = hc.ink, modifier = Modifier.size(HabitChipIconSize))
+        }
+        Text(
+            option.name,
+            style = WeftType.label,
+            color = if (checked) colors.onSecondaryContainer else colors.onSurface,
+            maxLines = 1,
+            modifier = Modifier.padding(start = IconLabelGap),
+        )
+        if (checked) {
+            Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(start = IconLabelGap).size(IconSizeChip))
+        }
     }
 }
 
@@ -118,7 +178,7 @@ fun HeaderIconButton(
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.size(48.dp),
+        modifier = Modifier.size(HeaderButtonSize),
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = when {
                 primary -> colors.primary
@@ -135,12 +195,12 @@ fun HeaderIconButton(
             disabledContentColor = colors.onSurface.copy(alpha = 0.38f),
         ),
     ) {
-        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(22.dp))
+        Icon(painterResource(icon), contentDescription = label, modifier = Modifier.size(IconSize))
     }
     // A plain 8 dp dot, 8 dp in from the top right, with no ring. No number: the chip under the
     // header says what is applied.
     if (active) {
-        Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(8.dp).background(colors.primary, CircleShape))
+        Box(Modifier.align(Alignment.TopEnd).padding(Space8).size(ActiveDotSize).background(colors.primary, CircleShape))
     }
     }
 }
@@ -153,7 +213,7 @@ fun HeaderIconButton(
 fun FilterChipRow(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
     Row(
         modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(ItemGap),
         verticalAlignment = Alignment.CenterVertically,
         content = content,
     )
@@ -168,14 +228,14 @@ fun DefaultRangeChip(label: String, openLabel: String, onOpen: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onOpen)
-            .padding(start = 8.dp, end = 12.dp),
+            .padding(start = Space8, end = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(end = 6.dp).size(18.dp))
+        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = colors.onSecondaryContainer, modifier = Modifier.padding(end = IconLabelGap).size(IconSizeChip))
         Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1)
     }
 }
@@ -189,15 +249,15 @@ fun CustomRangeChip(label: String, openLabel: String, clearLabel: String, onOpen
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onOpen)
-            .padding(start = 12.dp, end = 4.dp),
+            .padding(start = Space12, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = 6.dp))
-        SmallClearButton(clearLabel, 24.dp, Color.Transparent, colors.onSecondaryContainer, onClear)
+        Text(label, style = WeftType.label, color = colors.onSecondaryContainer, maxLines = 1, modifier = Modifier.padding(end = Space4))
+        SmallClearButton(clearLabel, ChipClearSize, Color.Transparent, colors.onSecondaryContainer, onClear)
     }
 }
 
@@ -210,16 +270,16 @@ fun HabitFilterChip(selected: List<HabitFilterOption>, label: String, removeLabe
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .heightIn(min = 32.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .heightIn(min = ChipHeight)
+            .clip(ChipShape)
             .background(colors.secondaryContainer)
             .clickable(role = Role.Button, onClick = onOpen)
-            .padding(start = 6.dp, end = 4.dp),
+            .padding(start = Space8, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy((-5).dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(-HabitDotOverlap)) {
             selected.take(5).forEach { option ->
-                Box(Modifier.size(18.dp).background(colors.secondaryContainer, CircleShape).padding(2.dp).background(habitColors(option.hue).solid, CircleShape))
+                Box(Modifier.size(HabitDotSize).background(colors.secondaryContainer, CircleShape).padding(Space2).background(habitColors(option.hue).solid, CircleShape))
             }
         }
         Text(
@@ -227,8 +287,8 @@ fun HabitFilterChip(selected: List<HabitFilterOption>, label: String, removeLabe
             style = WeftType.label,
             color = colors.onSecondaryContainer,
             maxLines = 1,
-            modifier = Modifier.padding(horizontal = 6.dp),
+            modifier = Modifier.padding(start = IconLabelGap, end = Space4),
         )
-        SmallClearButton(removeLabel, 24.dp, Color.Transparent, colors.onSecondaryContainer, onClear)
+        SmallClearButton(removeLabel, ChipClearSize, Color.Transparent, colors.onSecondaryContainer, onClear)
     }
 }

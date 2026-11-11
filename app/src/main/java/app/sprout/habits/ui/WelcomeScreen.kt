@@ -1,5 +1,23 @@
 package app.sprout.habits.ui
 
+import app.sprout.habits.ui.theme.FieldShape
+import app.sprout.habits.ui.theme.HabitCardCorner
+import app.sprout.habits.ui.theme.HabitCardMinHeight
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.IconSizeTiny
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.theme.LargeButtonHeight
+import app.sprout.habits.ui.components.ProgressRingStroke
+import app.sprout.habits.ui.theme.SheetCorner
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space32
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TouchTarget
+import app.sprout.habits.ui.components.TitleLineGap
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
@@ -138,10 +156,10 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding()) {
         if (page > 0) {
-            Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, end = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().padding(start = Space16, top = Space8, end = Space16), verticalAlignment = Alignment.CenterVertically) {
                 HeaderIconButton(R.drawable.ic_arrow_back, stringResource(R.string.action_back), onClick = { page-- })
             }
-            StepDots(page - 1, Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp, bottom = 16.dp))
+            StepDots(page - 1, Modifier.align(Alignment.CenterHorizontally).padding(top = Space4, bottom = Space16))
         }
         AnimatedContent(page, Modifier.weight(1f), transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "welcome") { p ->
             when (p) {
@@ -150,11 +168,11 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
                 else -> PracticeStep(practiceHabit(chosen(), suggestions), strings)
             }
         }
-        Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.fillMaxWidth().padding(Space16), horizontalArrangement = Arrangement.spacedBy(Space12)) {
             when (page) {
                 0 -> BottomButton(stringResource(R.string.welcome_start), Modifier.fillMaxWidth()) { page = 1 }
                 1 -> {
-                    FilledTonalButton(onClick = { picked.clear(); ownOff.clear(); ownOff.addAll(own); page = 2 }, modifier = Modifier.weight(1f).height(56.dp)) {
+                    FilledTonalButton(onClick = { picked.clear(); ownOff.clear(); ownOff.addAll(own); page = 2 }, modifier = Modifier.weight(1f).height(LargeButtonHeight)) {
                         Text(stringResource(R.string.welcome_skip), style = WeftType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     BottomButton(stringResource(R.string.welcome_continue), Modifier.weight(1f), enabled = chosen().isNotEmpty()) { page = 2 }
@@ -179,7 +197,7 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
                 style = WeftType.supporting,
                 color = colors.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = Space16, end = Space16, bottom = Space16),
             )
         }
     }
@@ -187,7 +205,7 @@ fun WelcomeScreen(container: AppContainer, onDone: suspend () -> Unit) {
 
 @Composable
 private fun BottomButton(text: String, modifier: Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    Button(onClick = onClick, enabled = enabled, modifier = modifier.height(56.dp)) {
+    Button(onClick = onClick, enabled = enabled, modifier = modifier.height(LargeButtonHeight)) {
         Text(text, style = WeftType.cardTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
@@ -210,49 +228,50 @@ internal fun Pitch() {
     val colors = MaterialTheme.colorScheme
     val strings = rememberStrings()
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Space16),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(Modifier.padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.padding(vertical = Space24), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Space12)) {
             HabitTile(R.drawable.ic_weft, colors.primaryContainer, colors.onPrimaryContainer)
             Text(stringResource(R.string.app_name), style = WeftType.title, color = colors.onBackground)
         }
         val read = SampleData.habits(strings)[1]
         Column(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(colors.primaryContainer).padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(SheetCorner)).background(colors.primaryContainer).padding(Space20),
+            verticalArrangement = Arrangement.spacedBy(Space12),
         ) {
             // A partial card: the fill and the ring both at 75%.
             PreviewCard(Modifier.fillMaxWidth().rotate(-1.5f), fill = 0.75f, hue = read.colorHue.toFloat()) {
                 HabitTile(HabitIcon.fromKey(read.icon).drawable, read.colorHue.toFloat())
-                Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                Column(Modifier.weight(1f).padding(horizontal = Space12)) {
                     Text(read.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(TodayViewModel.amountOf(read, 15.0, strings), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 ProgressRing(0.75f, read.colorHue.toFloat(), stringResource(R.string.percent, 75))
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Space12)) {
                 val wake = SampleData.habits(strings)[0]
                 PreviewCard(Modifier.weight(1f).rotate(1f), column = true) {
                     habitColors(wake.colorHue.toFloat()).let { HabitTile(R.drawable.ic_check, it.solid, it.on) }
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(Space12))
                     Text(wake.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(stringResource(R.string.done_at, TodayViewModel.formatTime(6 * 60 + 52)), style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                val calm = SampleData.habits(strings)[3]
+                // The streak card is Vitamins (user, 2026-11-09).
+                val vitamins = SampleData.habits(strings)[5]
                 PreviewCard(Modifier.weight(1f).rotate(2f), column = true) {
-                    HabitTile(HabitIcon.fromKey(calm.icon).drawable, calm.colorHue.toFloat())
-                    Spacer(Modifier.height(12.dp))
+                    HabitTile(HabitIcon.fromKey(vitamins.icon).drawable, vitamins.colorHue.toFloat())
+                    Spacer(Modifier.height(Space12))
                     Text(pluralStringResource(R.plurals.streak_days, 11, 11), style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(calm.name, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(vitamins.name, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(Space32))
         Text(stringResource(R.string.welcome_title), style = WeftType.display, color = colors.onBackground, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(12.dp))
-        Text(stringResource(R.string.welcome_body), style = WeftType.body, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp))
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(Space12))
+        Text(stringResource(R.string.welcome_body), style = WeftType.body, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = Space8))
+        Spacer(Modifier.height(Space16))
     }
 }
 
@@ -260,10 +279,10 @@ internal fun Pitch() {
 @Composable
 private fun PreviewCard(modifier: Modifier, fill: Float = 0f, hue: Float = 0f, column: Boolean = false, content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    Box(modifier.clip(RoundedCornerShape(22.dp)).background(colors.surfaceContainerLowest)) {
+    Box(modifier.clip(RoundedCornerShape(HabitCardCorner)).background(colors.surfaceContainerLowest)) {
         if (fill > 0f) Box(Modifier.matchParentSize()) { Box(Modifier.fillMaxHeight().fillMaxWidth(fill).background(habitColors(hue).soft)) }
-        if (column) Column(Modifier.padding(16.dp)) { content() }
-        else Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) { content() }
+        if (column) Column(Modifier.padding(Space16)) { content() }
+        else Row(Modifier.fillMaxWidth().padding(Space12), verticalAlignment = Alignment.CenterVertically) { content() }
     }
 }
 
@@ -273,9 +292,9 @@ private fun PreviewCard(modifier: Modifier, fill: Float = 0f, hue: Float = 0f, c
 @Composable
 private fun StepDots(current: Int, modifier: Modifier) {
     val colors = MaterialTheme.colorScheme
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(ItemGap)) {
         repeat(STEPS) { i ->
-            Box(Modifier.size(width = if (i == current) 24.dp else 8.dp, height = 8.dp).clip(CircleShape).background(if (i == current) colors.primary else colors.outline))
+            Box(Modifier.size(width = if (i == current) Space24 else Space8, height = Space8).clip(CircleShape).background(if (i == current) colors.primary else colors.outline))
         }
     }
 }
@@ -285,11 +304,11 @@ private fun StepDots(current: Int, modifier: Modifier) {
 private fun ColumnScope.StepHeading(step: Int, title: Int, line: Int) {
     val colors = MaterialTheme.colorScheme
     Text(stringResource(R.string.welcome_step_of, step, STEPS), style = WeftType.label, color = colors.primary)
-    Spacer(Modifier.height(4.dp))
+    Spacer(Modifier.height(Space4))
     Text(stringResource(title), style = WeftType.screenTitle, color = colors.onBackground)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(Space8))
     Text(stringResource(line), style = WeftType.supporting, color = colors.onSurfaceVariant)
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(Space16))
 }
 
 /**
@@ -300,7 +319,7 @@ private fun ColumnScope.StepHeading(step: Int, title: Int, line: Int) {
 internal fun PickStep(suggestions: List<Habit>, picked: MutableList<Int>, own: MutableList<String>, ownOff: MutableList<String>) {
     val strings = rememberStrings()
     var adding by rememberSaveable { mutableStateOf(false) }
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Space16)) {
         StepHeading(1, R.string.welcome_pick_title, R.string.welcome_pick_body)
         val rows = suggestions.indices.map { it to null } + own.map { null to it }
         Column(verticalArrangement = Arrangement.spacedBy(GroupGap)) {
@@ -314,7 +333,7 @@ internal fun PickStep(suggestions: List<Habit>, picked: MutableList<Int>, own: M
             }
             AddOwnRow(groupedShape(rows.size, rows.size + 1)) { adding = true }
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(Space16))
     }
     if (adding) {
         OwnHabitSheet(ownHabit("", own.size), onAdd = { name ->
@@ -331,15 +350,15 @@ private fun AddOwnRow(shape: RoundedCornerShape, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest).clickable(role = Role.Button, onClick = onClick)
-            .heightIn(min = 68.dp).padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+            .heightIn(min = HabitCardMinHeight).padding(start = Space12, top = Space12, end = Space16, bottom = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(R.drawable.ic_plus, colors.surfaceContainerHigh, colors.onSurface)
-        Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(horizontal = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(stringResource(R.string.welcome_own_row), style = WeftType.cardTitle, color = colors.onSurface)
             Text(stringResource(R.string.welcome_own_row_desc), style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
-        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSizeSmall))
     }
 }
 
@@ -355,9 +374,9 @@ private fun OwnHabitSheet(preview: Habit, onAdd: (String) -> Unit, onDismiss: ()
     LaunchedEffect(Unit) { delay(300); focus.requestFocus() }
     fun add() { name.trim().takeIf { it.isNotEmpty() }?.let(onAdd) }
     WeftSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding().imePadding()) {
+        Column(Modifier.padding(horizontal = Space20).navigationBarsPadding().imePadding()) {
             Text(stringResource(R.string.welcome_own_hint), style = WeftType.title, color = colors.onSurface)
-            Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.padding(top = Space16), verticalAlignment = Alignment.CenterVertically) {
                 HabitTile(HabitIcon.fromKey(preview.icon).drawable, preview.colorHue.toFloat())
                 OutlinedTextField(
                     value = name,
@@ -365,16 +384,16 @@ private fun OwnHabitSheet(preview: Habit, onAdd: (String) -> Unit, onDismiss: ()
                     label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
                     textStyle = WeftType.cardTitle,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = FieldShape,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { add() }),
-                    modifier = Modifier.weight(1f).padding(start = 12.dp).focusRequester(focus),
+                    modifier = Modifier.weight(1f).padding(start = Space12).focusRequester(focus),
                 )
             }
             Button(
                 onClick = { add() },
                 enabled = name.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 16.dp).height(48.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = Space24, bottom = Space16).height(TouchTarget),
             ) {
                 Text(stringResource(R.string.welcome_own_add), style = WeftType.label)
             }
@@ -399,11 +418,11 @@ private fun PickRow(habit: Habit, line: String, on: Boolean, shape: RoundedCorne
     Row(
         Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest)
             .toggleable(on, role = Role.Checkbox) { haptics.toggle(it); onChange(it) }
-            .heightIn(min = 68.dp).padding(start = 12.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+            .heightIn(min = HabitCardMinHeight).padding(start = Space12, end = Space8, top = Space12, bottom = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(HabitIcon.fromKey(habit.icon).drawable, habit.colorHue.toFloat())
-        Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(horizontal = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(habit.name, style = WeftType.cardTitle, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
@@ -459,7 +478,7 @@ internal fun PracticeStep(habit: Habit, strings: Strings) {
         hasNote = note.isNotEmpty(),
     )
     Box(Modifier.fillMaxSize()) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Space16)) {
         StepHeading(2, R.string.welcome_try_title, R.string.welcome_try_body)
         SwipeableHabitCard(
             habit = row,
@@ -476,7 +495,7 @@ internal fun PracticeStep(habit: Habit, strings: Strings) {
             onLongPress = { sheetOpen = true },
             onClick = {},
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(Space16))
         val gestures = listOf(
             Triple(Gesture.RIGHT, R.string.welcome_try_right, R.string.outcome_done),
             Triple(Gesture.LEFT, R.string.welcome_try_left, R.string.welcome_try_left_desc),
@@ -506,9 +525,9 @@ internal fun PracticeStep(habit: Habit, strings: Strings) {
                 onOpen = null,
             )
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(Space16))
     }
-        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
+        UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = Space8))
     }
     if (sheetOpen) {
         val goal = if (measured) habit.measure(habit.target) else null
@@ -556,7 +575,7 @@ private fun GestureRow(gesture: Gesture, title: String, line: String, tried: Boo
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(hue)
     Row(
-        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest).heightIn(min = 68.dp).padding(start = 12.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+        Modifier.fillMaxWidth().clip(shape).background(colors.surfaceContainerLowest).heightIn(min = HabitCardMinHeight).padding(start = Space12, top = Space12, end = Space16, bottom = Space12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(hc.soft) {
@@ -568,10 +587,10 @@ private fun GestureRow(gesture: Gesture, title: String, line: String, tried: Boo
                 Gesture.NOTE -> Icon(painterResource(R.drawable.ic_note), contentDescription = null, tint = hc.ink, modifier = glyph)
                 Gesture.UNDO -> Icon(painterResource(R.drawable.ic_undo), contentDescription = null, tint = hc.ink, modifier = glyph)
                 // A small partial ring, the sign for "part of it".
-                Gesture.HOLD -> Canvas(glyph) { drawRing(0.6f, hc.solid, hc.mid, 3.dp.toPx()) }
+                Gesture.HOLD -> Canvas(glyph) { drawRing(0.6f, hc.solid, hc.mid, ProgressRingStroke.toPx()) }
             }
         }
-        Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(horizontal = Space12), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(title, style = WeftType.cardTitle, color = colors.onSurface)
             Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
@@ -584,12 +603,12 @@ private fun RowScope.TriedMark(tried: Boolean) {
     val colors = MaterialTheme.colorScheme
     val label = stringResource(R.string.welcome_tried)
     Box(
-        Modifier.size(24.dp).clip(CircleShape).background(if (tried) colors.primary else colors.surfaceContainerHigh),
+        Modifier.size(Space24).clip(CircleShape).background(if (tried) colors.primary else colors.surfaceContainerHigh),
         contentAlignment = Alignment.Center,
     ) {
-        if (tried) Icon(painterResource(R.drawable.ic_check), contentDescription = label, tint = colors.onPrimary, modifier = Modifier.size(16.dp))
+        if (tried) Icon(painterResource(R.drawable.ic_check), contentDescription = label, tint = colors.onPrimary, modifier = Modifier.size(IconSizeTiny))
     }
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(Space4))
 }
 
 private fun intListSaver() = androidx.compose.runtime.saveable.listSaver<MutableList<Int>, Int>(

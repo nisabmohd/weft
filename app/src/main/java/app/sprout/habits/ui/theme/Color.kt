@@ -6,6 +6,10 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
+/** The logo's green tile, and the mint of its themed icon: the green accent's primary and primaryContainer (light). */
+private val LOGO_GREEN = Color(0xFF2A6F52)
+private val LOGO_MINT = Color(0xFFD9EDE3)
+
 /** `hsl(hue s% l%)`, the notation used in design/TOKENS.md. */
 private fun tone(hue: Float, saturation: Int, lightness: Number): Color =
     Color.hsl(hue, saturation / 100f, lightness.toFloat() / 100f)
@@ -50,11 +54,12 @@ fun seedColorScheme(hue: Float, dark: Boolean): ColorScheme = if (dark) {
     val bg = tone(hue, 30, 96)
     val text = tone(hue, 15, 11)
     lightColorScheme(
-        primary = tone(hue, 55, 40f),
+        // The logo green uses the logo's own colours (design 2026-11-09); every other hue the usual tones.
+        primary = if (hue == LOGO_HUE) LOGO_GREEN else tone(hue, 55, 40f),
         onPrimary = Color.White,
-        primaryContainer = tone(hue, 88, 91f),
+        primaryContainer = if (hue == LOGO_HUE) LOGO_MINT else tone(hue, 88, 91f),
         onPrimaryContainer = tone(hue, 62, 19f),
-        secondary = tone(hue, 55, 40f),
+        secondary = if (hue == LOGO_HUE) LOGO_GREEN else tone(hue, 55, 40f),
         onSecondary = Color.White,
         secondaryContainer = tone(hue, 34, 87f),
         onSecondaryContainer = tone(hue, 30, 17f),

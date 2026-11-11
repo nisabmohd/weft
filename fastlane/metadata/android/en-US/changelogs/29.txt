@@ -1,0 +1,6 @@
+• Alarms ring full screen, even on a locked phone; snooze up to 3 times.
+• Reminders & alarms: clear switches that open the right settings on every phone.
+• Journal notes open with the habit, its outcome and time, then your note.
+• Archive, delete and clear ask first, then offer Undo.
+• Alarm sound: Weft's own tone, a softer one, or any sound on your phone.
+• Filter by habit with chips; ten new habit icons; Rust default accent.

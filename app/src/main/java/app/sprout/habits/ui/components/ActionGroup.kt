@@ -1,5 +1,10 @@
 package app.sprout.habits.ui.components
 
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +43,7 @@ val ActionIconSize = 20.dp
 fun ActionGroup(modifier: Modifier = Modifier, rows: @Composable () -> Unit) {
     Column(
         // 20 dp under the title block: the header leaves 16, this adds 4.
-        modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 4.dp),
+        modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = Space4),
         verticalArrangement = Arrangement.spacedBy(GroupGap),
     ) { rows() }
 }
@@ -71,30 +76,31 @@ fun ActionRow(
             .clickable(onClick = onClick)
             .heightIn(min = if (line != null) ActionRowTwoLineHeight else ActionRowHeight)
             // 16 dp inside, like every card and grouped row.
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = CardPadding, vertical = Space8),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(TileTextGap),
     ) {
         Box(
             Modifier
                 .size(ActionTileSize)
                 .clip(HabitTileShape)
-                .background(tileColor ?: if (destructive) colors.errorContainer else colors.secondaryContainer),
+                // primaryContainer, like "Help translate Weft": secondaryContainer blended into the row (2026-11-09).
+                .background(tileColor ?: if (destructive) colors.errorContainer else colors.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                tint = iconColor ?: if (destructive) colors.error else colors.onSecondaryContainer,
+                tint = iconColor ?: if (destructive) colors.error else colors.onPrimaryContainer,
                 modifier = Modifier.size(ActionIconSize),
             )
         }
-        Column(Modifier.weight(1f)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(label, style = WeftType.cardTitle, color = content)
             if (line != null) Text(line, style = WeftType.supporting, color = colors.onSurfaceVariant)
         }
         if (chevron) {
-            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(IconSizeSmall))
         }
     }
 }

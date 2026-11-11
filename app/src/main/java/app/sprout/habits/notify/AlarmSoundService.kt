@@ -9,6 +9,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.os.VibrationEffect
@@ -19,8 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 
 /**
- * Plays the ringing alarm: the phone's alarm sound on the alarm stream, looped, and vibration,
- * until the alarm is answered. Its foreground notification is the alarm notification itself, so
+ * Plays the ringing alarm: the chosen alarm sound (Weft's tone by default, More → Alarms → Alarm
+ * sound) on the alarm stream, looped, and vibration (unless turned off), until it is answered. Its foreground notification is the alarm notification itself, so
  * nothing extra shows. The sound used to come from the notification channel, but some phones
  * mute a channel's sound (Android's cooldown on notifications in a row, ColorOS), and the alarm
  * didn't ring (user, 2026-11-08). Only [AlarmRinger] starts and stops it.
@@ -28,12 +29,16 @@ import androidx.core.content.IntentCompat
 class AlarmSoundService : Service() {
     private var player: MediaPlayer? = null
     private var vibrator: Vibrator? = null
+    private var sound: Uri? = null
+    private var vibrate = true
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val id = intent?.getIntExtra(EXTRA_ID, 0) ?: 0
         val notification = intent?.let { IntentCompat.getParcelableExtra(it, EXTRA_NOTIFICATION, Notification::class.java) }
+        intent?.let { IntentCompat.getParcelableExtra(it, EXTRA_SOUND, Uri::class.java) }?.let { sound = it }
+        vibrate = intent?.getBooleanExtra(EXTRA_VIBRATE, true) ?: true
         if (notification == null) {
             stopSelf()
             return START_NOT_STICKY
@@ -60,20 +65,12 @@ class AlarmSoundService : Service() {
 
     private fun play() {
         if (player == null) {
-            val uri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-            player = runCatching {
-                MediaPlayer().apply {
-                    setAudioAttributes(ALARM_AUDIO)
-                    setDataSource(this@AlarmSoundService, uri)
-                    isLooping = true
-                    prepare()
-                    start()
-                }
-            }.getOrNull()
+            // A sound picked from the phone may be gone or unreadable: Weft's tone plays instead.
+            player = listOfNotNull(sound, AlarmSounds.weft(this)).firstNotNullOfOrNull { uri -> loop(this, uri) }
+            // In a call it rings quietly, near in-call volume, so it doesn't blast the ear (design 2026-11-08, 12).
+            if (AlarmScreenFallback.inCall(this)) player?.setVolume(IN_CALL_VOLUME, IN_CALL_VOLUME)
         }
-        if (vibrator == null) {
+        if (vibrate && vibrator == null) {
             vibrator = (
                 if (Build.VERSION.SDK_INT >= 31) getSystemService(VibratorManager::class.java).defaultVibrator
                 else @Suppress("DEPRECATION") getSystemService(Vibrator::class.java)
@@ -108,7 +105,11 @@ class AlarmSoundService : Service() {
     companion object {
         private const val EXTRA_ID = "id"
         private const val EXTRA_NOTIFICATION = "notification"
+        private const val EXTRA_SOUND = "sound"
+        private const val EXTRA_VIBRATE = "vibrate"
         private val VIBRATION = longArrayOf(0, 600, 400, 600, 400)
+        /** The player's volume during a call, as a share of the alarm volume. */
+        private const val IN_CALL_VOLUME = 0.2f
         private val ALARM_AUDIO: AudioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -120,8 +121,25 @@ class AlarmSoundService : Service() {
         private var wanted: Int? = null
         private var running: AlarmSoundService? = null
 
-        /** Rings with [notification] (posted under [id]) as the service's own notification. */
-        fun start(context: Context, id: Int, notification: Notification) {
+        /** [uri] looped on the alarm stream, playing; null if it can't be played. */
+        private fun loop(context: Context, uri: Uri): MediaPlayer? {
+            val player = MediaPlayer()
+            return runCatching {
+                player.apply {
+                    setAudioAttributes(ALARM_AUDIO)
+                    setDataSource(context, uri)
+                    isLooping = true
+                    prepare()
+                    start()
+                }
+            }.getOrElse { player.release(); null }
+        }
+
+        /**
+         * Rings with [notification] (posted under [id]) as the service's own notification, playing
+         * [sound] (Weft's tone if it can't be played), vibrating if [vibrate].
+         */
+        fun start(context: Context, id: Int, notification: Notification, sound: Uri, vibrate: Boolean) {
             synchronized(lock) {
                 if (wanted == id && running != null) return
                 wanted = id
@@ -131,7 +149,9 @@ class AlarmSoundService : Service() {
                     context,
                     Intent(context, AlarmSoundService::class.java)
                         .putExtra(EXTRA_ID, id)
-                        .putExtra(EXTRA_NOTIFICATION, notification),
+                        .putExtra(EXTRA_NOTIFICATION, notification)
+                        .putExtra(EXTRA_SOUND, sound)
+                        .putExtra(EXTRA_VIBRATE, vibrate),
                 )
             } catch (e: RuntimeException) {
                 // Android 12+ refuses a foreground service from the background unless the alarm
@@ -139,9 +159,7 @@ class AlarmSoundService : Service() {
                 synchronized(lock) {
                     fallback?.stop()
                     fallback = runCatching {
-                        val uri = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
-                            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                        RingtoneManager.getRingtone(context, uri)?.apply {
+                        RingtoneManager.getRingtone(context, sound)?.apply {
                             audioAttributes = ALARM_AUDIO
                             if (Build.VERSION.SDK_INT >= 28) isLooping = true
                             play()

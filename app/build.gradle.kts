@@ -16,8 +16,8 @@ android {
         applicationId = "app.sprout.habits"
         minSdk = 26
         targetSdk = 36
-        versionCode = 28
-        versionName = "1.6.1"
+        versionCode = 29
+        versionName = "1.6.2"
         // Component tests (app/src/androidTest): ./gradlew :app:connectedFossDebugAndroidTest
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Where the About screen's links point. Set once the GitHub repo exists.

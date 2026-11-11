@@ -1,5 +1,16 @@
 package app.sprout.habits.widget
 
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.SectionHeaderInset
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.HabitCardMinHeight
+import app.sprout.habits.ui.theme.CardShape
+import app.sprout.habits.ui.theme.HabitCardPadding
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.components.HabitTile
+import androidx.compose.foundation.layout.heightIn
 import app.sprout.habits.ui.theme.WeftType
 import android.appwidget.AppWidgetManager
 import android.content.Intent
@@ -68,11 +79,11 @@ class StreakWidgetConfigActivity : ComponentActivity() {
                 }
                 LazyColumn(
                     Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(ScreenPadding),
+                    verticalArrangement = Arrangement.spacedBy(CardGap),
                 ) {
                     item {
-                        Text(stringResource(R.string.pick_a_habit), style = WeftType.title, modifier = Modifier.padding(4.dp, 8.dp, 4.dp, 12.dp))
+                        Text(stringResource(R.string.pick_a_habit), style = WeftType.title, modifier = Modifier.padding(SectionHeaderInset, Space8, SectionHeaderInset, Space12))
                     }
                     items(habits.orEmpty(), key = { it.id }) { habit -> HabitRow(habit) { pick(appWidgetId, habit.id) } }
                 }
@@ -99,16 +110,15 @@ private fun HabitRow(habit: Habit, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .height(64.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .heightIn(min = HabitCardMinHeight)
+            .clip(CardShape)
             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
+            .padding(HabitCardPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(40.dp).background(hc.soft, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-            Icon(painterResource(HabitIcon.fromKey(habit.icon).drawable), contentDescription = null, tint = hc.ink, modifier = Modifier.size(20.dp))
-        }
-        Text(habit.name, style = WeftType.cardTitle, modifier = Modifier.padding(start = 14.dp))
+        // The same habit row as everywhere: the 44 dp tile, 12 dp to the name.
+        HabitTile(HabitIcon.fromKey(habit.icon).drawable, hc.soft, hc.ink)
+        Text(habit.name, style = WeftType.cardTitle, modifier = Modifier.padding(start = TileTextGap))
     }
 }

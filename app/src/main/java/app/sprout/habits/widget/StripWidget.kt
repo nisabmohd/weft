@@ -65,8 +65,8 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         GlanceModifier
             .fillMaxSize()
             .background(colors.widgetBackground)
-            .cornerRadius(28.dp)
-            .padding(horizontal = 18.dp, vertical = layout.padV.dp)
+            .cornerRadius(WidgetCorner)
+            .padding(horizontal = StripSidePadding, vertical = layout.padV.dp)
             .clickable(actionStartActivity(context.openAppIntent())),
         verticalAlignment = Alignment.Vertical.CenterVertically,
     ) {
@@ -82,7 +82,7 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
             Text(count, maxLines = 1, style = TextStyle(fontSize = WidgetType.supporting, fontWeight = FontWeight.Bold, color = colors.onSurface))
             if (layout.showNext) {
-                Spacer(GlanceModifier.width(12.dp))
+                Spacer(GlanceModifier.width(StripTextGap))
                 // Glance's Text can't ellipsize, so shorten "Next: …" to the room left after the count.
                 val room = width - 12f - textWidthDp(context, count, WidgetType.supporting.value, bold = true)
                 Text(
@@ -94,11 +94,11 @@ private fun StripContent(data: TodayWidgetData, bitmaps: WidgetBitmaps) {
             }
         }
         if (!layout.showBar) return@Column
-        Spacer(GlanceModifier.height(10.dp))
+        Spacer(GlanceModifier.height(StripBarGap))
         Image(
             ImageProvider(bitmaps.strip(data.today, width, 10f, track = color(colors.outline).copy(alpha = 0.35f), skip = color(colors.surfaceVariant))),
             contentDescription = LocalContext.current.getString(R.string.widget_habits_done_today, data.done, data.total),
-            modifier = GlanceModifier.fillMaxWidth().height(10.dp),
+            modifier = GlanceModifier.fillMaxWidth().height(StripBarHeight),
         )
     }
 }

@@ -1,5 +1,20 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.RowPadding
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.CardGap
+import app.sprout.habits.ui.theme.ListEndPadding
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.TabHeaderPadding
+import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.LocalUndoableActions
+import app.sprout.habits.ui.components.PromptSheet
+import androidx.compose.ui.graphics.Color
+import app.sprout.habits.ui.alarm.rememberAlarmSetup
 import app.sprout.habits.ui.components.SectionGapAbove
 import app.sprout.habits.ui.components.tick
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -54,10 +69,11 @@ import app.sprout.habits.ui.components.TabHeader
 import app.sprout.habits.ui.components.CappedFontScale
 import app.sprout.habits.data.Settings
 import app.sprout.habits.data.SettingsRepository
-import app.sprout.habits.notify.Notifications
 import app.sprout.habits.ui.components.ColorSwatchRow
 import app.sprout.habits.ui.components.Swatch
 import app.sprout.habits.ui.theme.ThemeMode
+import app.sprout.habits.ui.theme.DEFAULT_ACCENT_HUE
+import app.sprout.habits.ui.theme.LOGO_HUE
 import app.sprout.habits.ui.theme.seedColorScheme
 import app.sprout.habits.ui.today.TodayViewModel
 import java.time.DayOfWeek
@@ -65,13 +81,15 @@ import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import app.sprout.habits.ui.components.TimePickerSheet
 
-/** Accent choices when dynamic color is off: the original Weft swatches, with Rose in Green's place; Amber (last) is the default. */
-private val ACCENT_HUES = listOf(345f, 192f, 215f, 275f, 330f, 12f, 38f)
+/**
+ * Accent choices when dynamic color is off: Rose, Teal, Blue, Purple, Plum, Rust (the default) and
+ * the logo green, last (design 2026-11-09; it took Amber's place, the second brown).
+ */
+private val ACCENT_HUES = listOf(345f, 192f, 215f, 275f, 330f, DEFAULT_ACCENT_HUE, LOGO_HUE)
 private val ACCENT_NAMES = mapOf(
     345f to R.string.color_rose, 192f to R.string.color_teal, 215f to R.string.color_blue, 275f to R.string.color_purple,
-    330f to R.string.color_pink, 12f to R.string.color_rust, 38f to R.string.color_gold,
+    330f to R.string.color_pink, DEFAULT_ACCENT_HUE to R.string.color_rust, LOGO_HUE to R.string.color_green,
 )
 
 private val TEXT_SCALES = listOf(0.85f to R.string.text_small, 1f to R.string.text_default, 1.15f to R.string.text_large, 1.3f to R.string.text_largest)
@@ -83,14 +101,17 @@ fun MoreScreen(
     repository: SettingsRepository,
     drive: DriveBackup,
     onOpenBackup: () -> Unit,
+    onOpenAlarms: () -> Unit,
     onOpenAbout: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
+    PendingUndoHost(snackbar)
+    val actions = LocalUndoableActions.current
+    var clearingSuggestions by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val theme = settings.theme
     var pickingWeekStart by remember { mutableStateOf(false) }
-    var pickingReminder by remember { mutableStateOf(false) }
     var pickingLanguage by remember { mutableStateOf(false) }
     var pickingFont by remember { mutableStateOf(false) }
     fun save(block: suspend SettingsRepository.() -> Unit) { scope.launch { repository.block() } }
@@ -98,14 +119,14 @@ fun MoreScreen(
     Box(Modifier.fillMaxSize()) {
         // The header stays put while the list scrolls under it, so its buttons are always in reach.
         Column(Modifier.fillMaxSize()) {
-        Box(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-                TabHeader(stringResource(R.string.tab_more), listSpacing = 8.dp)
+        Box(Modifier.padding(TabHeaderPadding)) {
+                TabHeader(stringResource(R.string.tab_more))
             
         }
         LazyColumn(
             Modifier.weight(1f).fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(start = ScreenPadding, end = ScreenPadding, bottom = ListEndPadding),
+            verticalArrangement = Arrangement.spacedBy(CardGap),
         ) {
 
             item(key = "backup") {
@@ -119,7 +140,7 @@ fun MoreScreen(
                 }
                 SettingsCard {
                     SettingsRow(stringResource(R.string.backups), backupsRowLine(settings, drive.enabled, backingUp), icon = icon, onClick = onOpenBackup) {
-                        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                        Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                     }
                 }
             }
@@ -129,7 +150,7 @@ fun MoreScreen(
                 val dynamicSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 SettingsGroup(
                     {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(Modifier.padding(Space16), verticalArrangement = Arrangement.spacedBy(Space12)) {
                             Text(stringResource(R.string.theme), style = WeftType.cardTitle)
                             // Each segment is a fixed share of the row, so labels stop scaling at 1.3x.
                             CappedFontScale {
@@ -161,7 +182,7 @@ fun MoreScreen(
                     {
                         SettingsRow(stringResource(R.string.font), onClick = { pickingFont = true }) {
                             TrailingValue(fontName(theme.font))
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                         }
                     },
                     { TextSizeRow(theme.textScale) { scale -> save { setTextScale(scale) } } },
@@ -175,7 +196,7 @@ fun MoreScreen(
                         SettingsRow(stringResource(R.string.language), onClick = { pickingLanguage = true }) {
                             val tag = AppLanguage.current(context)
                             TrailingValue(AppLanguage.LANGUAGES.firstOrNull { it.tag == tag }?.nativeName ?: stringResource(R.string.language_system))
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.padding(start = Space4).size(IconSizeSmall))
                         }
                     },
                     {
@@ -184,17 +205,21 @@ fun MoreScreen(
                         }
                     },
                     {
-                        SettingsRow(stringResource(R.string.default_reminder), stringResource(R.string.default_reminder_desc), onClick = { pickingReminder = true }) {
-                            TrailingValue(TodayViewModel.formatTime(settings.defaultReminderMinutes))
-                        }
+                        // Reminders & alarms (more-reminders-alarms-row.png): what's wrong, in plain
+                        // words and the error colour; everything about reminders is on its screen.
+                        val alarms = rememberAlarmSetup()
+                        SettingsRow(
+                            stringResource(R.string.reminders_alarms),
+                            remindersLine(alarms),
+                            onClick = onOpenAlarms,
+                            subtitleColor = if (alarms.allSet) Color.Unspecified else MaterialTheme.colorScheme.error,
+                        ) { Chevron() }
                     },
-                    { SettingsRow(stringResource(R.string.notifications), onClick = { Notifications.openSettings(context) }) { TrailingValue(stringResource(R.string.system_settings)) } },
                 )
             }
 
             item(key = "journal") {
                 SectionLabel(stringResource(R.string.journal_title))
-                val cleared = stringResource(R.string.suggestion_history_cleared)
                 SettingsGroup(
                     {
                         SwitchRow(stringResource(R.string.writing_suggestions), stringResource(R.string.writing_suggestions_desc), settings.writingSuggestions) { on ->
@@ -205,17 +230,14 @@ fun MoreScreen(
                         SettingsRow(
                             stringResource(R.string.clear_suggestion_history),
                             stringResource(R.string.clear_suggestion_history_desc),
-                            onClick = {
-                                save { clearSuggestionHistory() }
-                                scope.launch { snackbar.showSnackbar(cleared) }
-                            },
+                            onClick = { clearingSuggestions = true },
                         )
                     },
                 )
             }
 
             item(key = "about") {
-                Box(Modifier.padding(top = SectionGapAbove - 8.dp)) {
+                Box(Modifier.padding(top = SectionGapAbove - CardGap)) {
                     SettingsCard {
                         val update = settings.availableUpdate?.takeIf { isNewerVersion(it, BuildConfig.VERSION_NAME) }
                         SettingsRow(
@@ -225,7 +247,7 @@ fun MoreScreen(
                             onClick = onOpenAbout,
                             badge = if (update != null) { { UpdateBadge() } } else null,
                         ) {
-                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(IconSizeSmall))
                         }
                     }
                 }
@@ -233,6 +255,16 @@ fun MoreScreen(
         }
         }
         UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+    }
+
+    if (clearingSuggestions) {
+        PromptSheet(
+            title = stringResource(R.string.clear_suggestions_title),
+            text = stringResource(R.string.clear_suggestions_text),
+            action = stringResource(R.string.action_clear),
+            onAction = { clearingSuggestions = false; actions.clearSuggestionHistory() },
+            onDismiss = { clearingSuggestions = false },
+        )
     }
 
     if (pickingLanguage) {
@@ -265,21 +297,12 @@ fun MoreScreen(
         }
     }
 
-    if (pickingReminder) {
-        TimePickerSheet(
-            title = stringResource(R.string.default_reminder),
-            initialMinutes = settings.defaultReminderMinutes,
-            onApply = { minutes -> save { setDefaultReminderMinutes(minutes) }; pickingReminder = false },
-            onDismiss = { pickingReminder = false },
-            line = stringResource(R.string.default_reminder_desc),
-        )
-    }
 }
 
 @Composable
 private fun AccentPicker(selectedHue: Float, onSelect: (Float) -> Unit) {
-    Column(Modifier.padding(horizontal = 8.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(stringResource(R.string.accent), style = WeftType.cardTitle, modifier = Modifier.padding(start = 8.dp))
+    Column(Modifier.padding(horizontal = Space8, vertical = Space8), verticalArrangement = Arrangement.spacedBy(Space4)) {
+        Text(stringResource(R.string.accent), style = WeftType.cardTitle, modifier = Modifier.padding(start = Space8))
         ColorSwatchRow(
             swatches = ACCENT_HUES.map { hue ->
                 val scheme = seedColorScheme(hue, false)
@@ -296,7 +319,7 @@ private fun TextSizeRow(scale: Float, onChange: (Float) -> Unit) {
     // Unknown saved value → show "Default"; index 0 (Small) is a real choice.
     val index = TEXT_SCALES.indexOfFirst { it.first == scale }.takeIf { it >= 0 } ?: 1
     val label = stringResource(TEXT_SCALES[index].second)
-    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(Modifier.padding(RowPadding)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.text_size), style = WeftType.cardTitle, modifier = Modifier.weight(1f))
             Text(label, style = WeftType.supporting, color = MaterialTheme.colorScheme.onSurfaceVariant)

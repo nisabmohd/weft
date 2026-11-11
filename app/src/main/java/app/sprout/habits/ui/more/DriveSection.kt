@@ -1,5 +1,9 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space32
+import app.sprout.habits.ui.theme.Space48
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -97,6 +101,7 @@ fun DriveBackupContent(
     var formatSheet by remember { mutableStateOf(false) }
     var restoreSheet by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var confirmDisconnect by remember { mutableStateOf(false) }
     var backups by remember { mutableStateOf<List<DriveBackupInfo>?>(null) }
     var restoreToken by remember { mutableStateOf<String?>(null) }
 
@@ -284,15 +289,26 @@ fun DriveBackupContent(
                     accountSheet = false
                     start(DriveStep.CONNECT)
                 })
-                ActionRow(R.drawable.ic_link, stringResource(R.string.drive_disconnect), 1, 3, {
-                    accountSheet = false
-                    // Says so straight away; Google removes the access in the background.
-                    scope.launch { drive.disconnect() }
-                    onMessage(context.getString(R.string.drive_disconnected))
-                })
+                ActionRow(R.drawable.ic_link, stringResource(R.string.drive_disconnect), 1, 3, { accountSheet = false; confirmDisconnect = true })
                 ActionRow(R.drawable.ic_delete, stringResource(R.string.drive_delete_backups), 2, 3, { accountSheet = false; confirmDelete = true }, destructive = true)
             }
         }
+    }
+
+    if (confirmDisconnect) {
+        PromptSheet(
+            title = stringResource(R.string.drive_disconnect_title),
+            text = stringResource(R.string.drive_disconnect_text),
+            action = stringResource(R.string.drive_disconnect),
+            onAction = {
+                confirmDisconnect = false
+                // Says so straight away; Google removes the access in the background. No Undo:
+                // connecting again needs the Google sign-in.
+                scope.launch { drive.disconnect() }
+                onMessage(context.getString(R.string.drive_disconnected))
+            },
+            onDismiss = { confirmDisconnect = false },
+        )
     }
 
     if (confirmDelete) {
@@ -400,19 +416,19 @@ private fun RestoreSheet(
                 },
                 enabled = chosen != null,
                 loading = loading,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = 12.dp).sheetBottomPadding(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = SheetSidePadding).padding(top = Space12).sheetBottomPadding(),
             )
         },
     ) {
         when {
-            backups == null -> Box(Modifier.fillMaxWidth().heightIn(min = 120.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(Modifier.size(32.dp))
+            backups == null -> Box(Modifier.fillMaxWidth().heightIn(min = Space48 + Space48 + Space24), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(Modifier.size(Space32))
             }
             backups.isEmpty() -> Text(
                 stringResource(R.string.drive_no_backup),
                 style = WeftType.body,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = SheetTitleInset, vertical = 24.dp),
+                modifier = Modifier.padding(horizontal = SheetTitleInset, vertical = Space24),
             )
             else -> backups.forEach { info ->
                 val habits = pluralStringResource(R.plurals.habit_count, info.habits, info.habits)

@@ -1,5 +1,15 @@
 package app.sprout.habits.ui.edit
 
+import app.sprout.habits.ui.theme.BorderThick
+import app.sprout.habits.ui.components.HabitTileShape
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.components.SheetActionGap
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space2
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TouchTarget
 import app.sprout.habits.ui.theme.WeftType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -80,7 +90,7 @@ fun IconPickerSheet(
                 value = query,
                 onValueChange = { query = it },
                 placeholder = { Text(stringResource(R.string.search_icons), style = WeftType.body) },
-                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(20.dp)) },
+                leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null, modifier = Modifier.size(IconSizeSmall)) },
                 singleLine = true,
                 textStyle = WeftType.body,
                 shape = CircleShape,
@@ -95,9 +105,9 @@ fun IconPickerSheet(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(6),
                 modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                contentPadding = PaddingValues(vertical = Space8),
+                horizontalArrangement = Arrangement.spacedBy(Space8),
+                verticalArrangement = Arrangement.spacedBy(Space8),
             ) {
                 IconGroup.entries.forEach { group ->
                     val icons = matches.filter { it.group == group }
@@ -107,7 +117,7 @@ fun IconPickerSheet(
                             stringResource(group.label),
                             style = WeftType.captionStrong,
                             color = scheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp),
+                            modifier = Modifier.padding(top = Space12, bottom = Space2),
                         )
                     }
                     items(icons, key = { it.key }) { icon ->
@@ -122,7 +132,7 @@ fun IconPickerSheet(
                             stringResource(R.string.no_icons_match, query.trim()),
                             style = WeftType.supporting,
                             color = scheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = 24.dp),
+                            modifier = Modifier.padding(vertical = Space24),
                         )
                     }
                 }
@@ -131,7 +141,7 @@ fun IconPickerSheet(
                 stringResource(R.string.use_this_icon),
                 ButtonRole.Primary,
                 onClick = { onPick(picked) },
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = SheetActionGap),
             )
         }
     }
@@ -142,15 +152,15 @@ fun IconPickerSheet(
  * habit's soft colour and border.
  */
 @Composable
-fun IconTile(icon: HabitIcon, selected: Boolean, colors: HabitColors, modifier: Modifier = Modifier.size(48.dp), onClick: () -> Unit) {
+fun IconTile(icon: HabitIcon, selected: Boolean, colors: HabitColors, modifier: Modifier = Modifier.size(TouchTarget), onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(14.dp)
+    val shape = HabitTileShape
     val label = stringResource(icon.label)
     Box(
         modifier
             .clip(shape)
             .background(if (selected) colors.soft else scheme.surfaceContainerLowest)
-            .then(if (selected) Modifier.border(2.dp, colors.solid, shape) else Modifier)
+            .then(if (selected) Modifier.border(BorderThick, colors.solid, shape) else Modifier)
             .clickable(role = Role.RadioButton, onClick = onClick)
             .semantics { contentDescription = label; this.selected = selected },
         contentAlignment = Alignment.Center,
@@ -159,7 +169,7 @@ fun IconTile(icon: HabitIcon, selected: Boolean, colors: HabitColors, modifier: 
             painterResource(icon.drawable),
             contentDescription = null,
             tint = if (selected) colors.ink else scheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(IconSize),
         )
     }
 }

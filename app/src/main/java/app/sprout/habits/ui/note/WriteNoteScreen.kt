@@ -1,5 +1,27 @@
 package app.sprout.habits.ui.note
 
+import app.sprout.habits.ui.components.ActionRowHeight
+import app.sprout.habits.ui.theme.CardPadding
+import app.sprout.habits.ui.theme.HabitCardCorner
+import app.sprout.habits.ui.theme.HabitCardMinHeight
+import app.sprout.habits.ui.theme.IconSize
+import app.sprout.habits.ui.theme.IconSizeSmall
+import app.sprout.habits.ui.theme.ItemGap
+import app.sprout.habits.ui.components.NoteMarkGap
+import app.sprout.habits.ui.components.NoteMarkSize
+import app.sprout.habits.ui.theme.ScreenPadding
+import app.sprout.habits.ui.theme.SheetCorner
+import app.sprout.habits.ui.theme.Space12
+import app.sprout.habits.ui.theme.Space16
+import app.sprout.habits.ui.theme.Space20
+import app.sprout.habits.ui.theme.Space24
+import app.sprout.habits.ui.theme.Space4
+import app.sprout.habits.ui.theme.Space8
+import app.sprout.habits.ui.theme.TileTextGap
+import app.sprout.habits.ui.theme.TopBarHeight
+import app.sprout.habits.ui.theme.TopBarTitleGap
+import app.sprout.habits.ui.theme.TopBarTopPadding
+import app.sprout.habits.ui.components.TitleLineGap
 import app.sprout.habits.data.Entry
 import app.sprout.habits.data.EntryStatus
 import app.sprout.habits.data.Habit
@@ -148,7 +170,7 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
 
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(
-            Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            Modifier.fillMaxWidth().height(TopBarHeight).padding(start = ScreenPadding, end = ScreenPadding, top = TopBarTopPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderIconButton(R.drawable.ic_close, stringResource(R.string.action_close), onClick = onClose)
@@ -156,11 +178,11 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
                 stringResource(if (form.isNew) R.string.new_note else R.string.edit_note),
                 style = WeftType.title,
                 color = colors.onBackground,
-                modifier = Modifier.weight(1f).padding(start = 12.dp),
+                modifier = Modifier.weight(1f).padding(start = TopBarTitleGap),
             )
             if (!form.isNew) {
                 HeaderIconButton(R.drawable.ic_delete, stringResource(R.string.action_delete), danger = true) { confirmDelete = true }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(ItemGap))
             }
             HeaderIconButton(R.drawable.ic_check, stringResource(R.string.action_save), primary = true, enabled = form.canSave, onClick = viewModel::save)
         }
@@ -169,17 +191,17 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
             // One card: the habit row on top, then the note, with no outline.
             Column(
                 cardModifier
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
-                    .clip(RoundedCornerShape(28.dp))
+                    .padding(start = ScreenPadding, end = ScreenPadding, top = Space8)
+                    .clip(RoundedCornerShape(SheetCorner))
                     .background(colors.surfaceContainerLowest)
-                    .padding(8.dp),
+                    .padding(Space8),
             ) {
                 if (habit == null) {
                     Text(
                         stringResource(R.string.note_no_habits),
                         style = WeftType.body,
                         color = colors.onSurfaceVariant,
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(CardPadding),
                     )
                 } else {
                     HabitRow(habit, entry, form.date, onPickHabit = { pickingHabit = true }, onPickDate = { pickingDate = true })
@@ -201,12 +223,12 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
 
         if (!writingSuggestions) {
             // Without suggestions the card reaches down to the keyboard, as it always did.
-            noteCard(Modifier.fillMaxSize().padding(bottom = 16.dp), Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 20.dp))
+            noteCard(Modifier.fillMaxSize().padding(bottom = Space16), Modifier.fillMaxSize().padding(start = CardPadding, end = CardPadding, top = Space20))
         } else {
             // The card is only as tall as the writing area; the suggestions sit under it and the
             // page scrolls, so the field stays in view above the keyboard.
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-                noteCard(Modifier, Modifier.fillMaxWidth().height(NoteFieldHeight).padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 12.dp))
+                noteCard(Modifier, Modifier.fillMaxWidth().height(NoteFieldHeight).padding(start = CardPadding, end = CardPadding, top = Space20, bottom = Space12))
                 if (suggest && habit != null) {
                     NoteSuggestions(
                         data = suggestions,
@@ -223,7 +245,7 @@ fun WriteNoteScreen(viewModel: WriteNoteViewModel, weekStart: DayOfWeek, writing
                         onAddEnding = { apply(insertEnding(field.text, cursor, it)) },
                     )
                 }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Space24))
             }
         }
     }
@@ -271,18 +293,18 @@ private fun HabitPickerSheet(
     // Fully open right away so every habit is visible; the list scrolls if there are many.
     WeftSheet(onDismissRequest = onDismiss) {
         SheetHeader(stringResource(R.string.choose_habit))
-        LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp)) {
+        LazyColumn(Modifier.weight(1f, fill = false), contentPadding = PaddingValues(start = Space12, end = Space12, bottom = Space24)) {
             items(habits, key = { it.id }) { h ->
                 val c = habitColors(h.colorHue.toFloat())
                 val selected = h.id == selectedId
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 60.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .heightIn(min = ActionRowHeight)
+                        .clip(RoundedCornerShape(Space16))
                         .background(if (selected) c.soft else colors.surfaceContainerLowest)
                         .selectable(selected, role = Role.RadioButton) { onPick(h.id) }
-                        .padding(horizontal = 12.dp),
+                        .padding(horizontal = Space12),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     HabitTile(HabitIcon.fromKey(h.icon).drawable, c.soft, c.ink)
@@ -290,10 +312,10 @@ private fun HabitPickerSheet(
                         h.name,
                         style = WeftType.cardTitle,
                         color = colors.onSurface,
-                        modifier = Modifier.weight(1f).padding(start = 12.dp),
+                        modifier = Modifier.weight(1f).padding(start = TileTextGap),
                     )
                     if (selected) {
-                        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = c.solid, modifier = Modifier.size(20.dp))
+                        Icon(painterResource(R.drawable.ic_check), contentDescription = null, tint = c.solid, modifier = Modifier.size(IconSizeSmall))
                     }
                 }
             }
@@ -320,33 +342,33 @@ private fun HabitRow(habit: Habit, entry: Entry?, date: LocalDate, onPickHabit: 
     Row(
         Modifier
             .fillMaxWidth()
-            .height(68.dp)
-            .clip(RoundedCornerShape(22.dp))
+            .height(HabitCardMinHeight)
+            .clip(RoundedCornerShape(HabitCardCorner))
             .background(hc.soft)
             .clickable(onClickLabel = stringResource(R.string.choose_habit), onClick = onPickHabit)
-            .padding(start = 12.dp, end = 4.dp),
+            .padding(start = Space12, end = Space4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         HabitTile(HabitIcon.fromKey(habit.icon).drawable, hc.mid, hc.ink)
-        Column(Modifier.weight(1f).padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f).padding(start = TileTextGap), verticalArrangement = Arrangement.spacedBy(TitleLineGap)) {
             Text(habit.name, style = WeftType.cardTitle, color = hc.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Row(
                 Modifier.clickable(onClickLabel = stringResource(R.string.change_date), onClick = onPickDate),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                DayMarkView(mark, hc, MarkColors(colors.outlineVariant, colors.onSurfaceVariant, colors.outline), Modifier.size(16.dp))
+                DayMarkView(mark, hc, MarkColors(colors.outlineVariant, colors.onSurfaceVariant, colors.outline), Modifier.size(NoteMarkSize))
                 Text(
                     "$outcome · ${date.format(datePattern("EEEE, d MMM"))}",
                     style = WeftType.supporting,
                     color = hc.ink.copy(alpha = 0.8f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(start = 6.dp),
+                    modifier = Modifier.padding(start = NoteMarkGap),
                 )
             }
         }
         IconButton(onClick = onPickHabit) {
-            Icon(painterResource(R.drawable.ic_chevron_down), contentDescription = stringResource(R.string.choose_habit), tint = hc.ink, modifier = Modifier.size(22.dp))
+            Icon(painterResource(R.drawable.ic_chevron_down), contentDescription = stringResource(R.string.choose_habit), tint = hc.ink, modifier = Modifier.size(IconSize))
         }
     }
 }

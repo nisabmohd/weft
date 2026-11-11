@@ -50,8 +50,7 @@
     <string name="insights_lowest">最も低いスコア</string>
     <string name="insights_weekly_rhythm">週のリズム</string>
     <string name="insights_breakdown">習慣ごと</string>
-    <string name="journal_empty_range">%1$sのメモはありません</string>
-    <string name="journal_empty_habits">これらの習慣のメモはありません</string>
+    <string name="journal_empty_range">%1$s のメモはありません</string>
     <string name="journal_empty_earlier">以前のメモは残っています。</string>
     <string name="journal_empty_hint">習慣からメモを追加するか、「メモを追加」をタップしてください。</string>
     <string name="insights_streak_short">%1$d日</string>
@@ -169,9 +168,7 @@
     <string name="general">一般</string>
     <string name="week_starts_on">週の始まり</string>
     <string name="default_reminder">標準のリマインダー</string>
-    <string name="default_reminder_desc">新しいリマインダーのおすすめ時刻</string>
-    <string name="notifications">通知</string>
-    <string name="system_settings">システム設定</string>
+    <string name="default_reminder_desc">新しい習慣用</string>
     <string name="about_weft">Weft について</string>
     <string name="version_open_source">バージョン %1$s・オープンソース</string>
     <string name="accent">アクセントカラー</string>
@@ -224,7 +221,6 @@
     <string name="drive_delete_text">%1$s にある Weft のバックアップをすべて削除します。この端末のデータは残ります。</string>
     <string name="drive_deleted">ドライブのバックアップを削除しました</string>
     <string name="drive_connected_to">%1$s に接続しました</string>
-    <string name="about_licence_text_drive">GNU GPL v3 ライセンス。Weft には広告も追跡もありません。習慣とメモは、書き出すかバックアップしない限りこの端末から出ません。ドライブのバックアップはあなた自身の Google アカウントに保存されます。</string>
     <string name="drive_backed_up">Google ドライブにバックアップしました</string>
     <string name="drive_failed">Google ドライブにつながりません。もう一度お試しください</string>
     <string name="drive_refused">バックアップの保存には Google ドライブが必要です。もう一度接続して Google ドライブにチェックを入れてください</string>
@@ -240,7 +236,6 @@
     <string name="about">このアプリについて</string>
     <string name="version_build">バージョン %1$s（ビルド %2$d）</string>
     <string name="free_open_source">無料のオープンソース</string>
-    <string name="about_licence_text">GNU GPL v3 ライセンス。Weft には広告も追跡もありません。習慣とメモは、書き出さない限りこの端末から出ません。</string>
     <string name="rate_on_play">Play ストアで評価</string>
     <string name="rate_desc">10 秒で終わり、とても助かります</string>
     <string name="source_code">ソースコード</string>
@@ -386,8 +381,6 @@
     <string name="maybe_later">あとで</string>
     <string name="channel_reminders">習慣のリマインダー</string>
     <string name="channel_reminders_desc">習慣ごとに設定した時刻のリマインダー。</string>
-    <string name="channel_notes">メモのリマインダー</string>
-    <string name="channel_notes_desc">メモを求める習慣をスキップしたとき、夜にメモを促すお知らせ。</string>
     <string name="nudge_title">%1$s・今日はどうでしたか？</string>
     <string name="nudge_text">今日のことをメモしましょう。</string>
     <string name="reminder_check">チェックする時間です。</string>
@@ -477,23 +470,23 @@
     <string name="sample_wake">7時に起きる</string>
     <string name="sample_read">読書</string>
     <string name="sample_water">水を飲む</string>
-    <string name="sample_calm">落ち着く</string>
+    <string name="sample_no_sugar">砂糖なし</string>
     <string name="sample_workout">運動</string>
     <string name="sample_vitamins">ビタミン</string>
     <string name="sample_walk">外を歩く</string>
     <string name="sample_journal">夜の日記</string>
     <string name="sample_unit_pages">ページ</string>
     <string name="sample_unit_glasses">杯</string>
-    <string name="sample_note_calm_today">つらい朝だったけど、いつもより早く気づけた。</string>
+    <string name="sample_note_sugar_today">職場の誕生日ケーキ。小さく一切れだけにした。</string>
     <string name="sample_note_read">8ページだけ。寝落ちした。22時前に始める。</string>
     <string name="sample_note_workout">脚の日。調子が良く、スクワットを5kg増やした。</string>
     <string name="sample_note_journal">今週のことを1ページ書いた。思ったより落ち着いている。</string>
-    <string name="sample_note_calm">デプロイが失敗して同僚にきつく当たった。疲れていて何も食べていなかった。</string>
+    <string name="sample_note_sugar">長い一日で、帰り道にチョコを買った。昼ごはんを食べていなかった。</string>
     <string name="sample_note_walk">仕事のあと湖のほとりを長く散歩。スマホはポケットのまま。</string>
     <string name="sample_note_water">忙しい日で、ボトルを家に忘れた。</string>
-    <string name="sample_card_title">これはサンプルの習慣です</string>
-    <string name="sample_card_body">スワイプ、長押し、ノートの追加を試してみてください。自分の習慣を追加するときに削除できます。</string>
-    <string name="sample_remove">サンプルデータを削除</string>
+    <string name="sample_card_title">サンプルの習慣</string>
+    <string name="sample_card_body">スワイプや長押しで試せます</string>
+    <string name="sample_remove">削除</string>
     <plurals name="days_kept">
         <item quantity="other">%2$d 日中 %1$d 日</item>
     </plurals>
@@ -626,8 +619,6 @@
     <string name="reminder_type_notification_desc">通知でそっとお知らせ</string>
     <string name="reminder_type_alarm">アラーム</string>
     <string name="reminder_type_alarm_desc">操作するまで全画面で鳴ります</string>
-    <string name="reminder_alarm_allow">設定でアラームを許可してください</string>
-    <string name="reminder_fullscreen_allow">設定で全画面アラームを許可してください</string>
     <string name="set_reminder">リマインダーを設定</string>
     <string name="reminder_card_line">%1$s · 上の曜日 · タップで変更</string>
     <string name="reminder_card_off">オフ · タップして時刻を設定</string>
@@ -641,4 +632,89 @@
     <string name="alarm_goal">目標 %1$s</string>
     <string name="alarm_skip_today">今日はスキップ</string>
     <string name="alarm_position">%1$d / %2$d</string>
+
+    <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
+    <string name="action_done">完了</string>
+    <string name="set_up_alarms">アラームの設定</string>
+    <string name="alarm_need_notifications">通知を送る</string>
+    <string name="alarm_need_notifications_desc">リマインダー用。タップしてバナー、音、ロック画面を選べます。</string>
+    <string name="alarm_need_notifications_banners_off">バナーがオフなので、リマインダーが表示されません。タップしてオンにしてください。</string>
+    <string name="alarm_need_exact">アラームを時間どおりに鳴らす</string>
+    <string name="alarm_need_exact_desc">オフだと、Android が数分遅れて鳴らすことがあります。</string>
+    <string name="alarm_need_full_screen">アラームを全画面で表示</string>
+    <string name="alarm_need_full_screen_desc">ロック中でも、アラームが画面いっぱいに表示されます。</string>
+    <string name="alarm_overlay">他のアプリの上に表示</string>
+    <string name="alarm_overlay_desc">任意 · アラームを他のアプリの上に表示できます</string>
+    <string name="alarm_lock_screen">ロック画面とポップアップ</string>
+    <string name="alarm_lock_screen_desc">Weft のアプリ情報で両方をオンに</string>
+    <string name="alarm_battery">バッテリー</string>
+    <string name="alarm_battery_desc">アラームが止められないよう「制限しない」に設定</string>
+    <string name="alarm_use_notification">代わりに通知を使う</string>
+    <string name="alarms_sound_section">サウンド</string>
+    <string name="alarm_sound">アラーム音</string>
+    <string name="alarm_vibrate">バイブレーション</string>
+    <string name="alarm_vibrate_desc">アラームが鳴るとき</string>
+    <string name="alarm_sound_weft">Weft</string>
+    <string name="alarm_sound_weft_desc">デフォルト</string>
+    <string name="alarm_sound_weft_soft">Weft · ソフト</string>
+    <string name="alarm_sound_weft_soft_desc">やさしい音</string>
+    <string name="alarm_sound_phone">スマートフォンのアラーム音</string>
+    <string name="alarm_sound_picked_desc">スマートフォンから</string>
+    <string name="alarm_sound_playing">再生中</string>
+    <string name="alarm_sound_choose">スマートフォンから選ぶ</string>
+    <string name="alarm_sound_choose_desc">スマートフォンの好きな音</string>
+    <string name="reminder_card_fix">アラーム · %1$s · タップして修正</string>
+    <string name="reminder_card_fix_notification">通知 · %1$s · タップして修正</string>
+    <string name="reminder_fix_notifications">通知がオフです</string>
+    <string name="reminder_fix_exact">遅れて鳴ることがあります</string>
+    <string name="reminder_fix_full_screen">全画面で鳴らせません</string>
+    <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
+    <string name="reminders_alarms">リマインダーとアラーム</string>
+    <string name="reminders_section">リマインダー</string>
+    <string name="allow_weft_to">Weft に許可すること</string>
+    <string name="extra_phone_settings">端末の追加設定</string>
+    <string name="extra_phone_settings_desc">一部の端末でのみ必要</string>
+    <string name="extra_phone_settings_text">端末によってはアラームを勝手に止めることがあります。Android からはこれらがオンか分からないので、一度確認してください。</string>
+    <string name="notification_sound">通知音</string>
+    <string name="notification_sound_desc">スマートフォンの設定で変更</string>
+    <string name="reminders_all_allowed">通知とアラームは許可済み</string>
+    <string name="reminders_off_notifications">通知がオフです</string>
+    <string name="reminders_off_exact">アラームが遅れて鳴ることがあります</string>
+    <string name="reminders_off_full_screen">アラームを全画面で鳴らせません</string>
+    <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
+    <string name="filter_helper_journal">習慣をタップすると、そのメモだけを表示します。</string>
+    <string name="filter_helper_insights">習慣をタップすると、そのスコアだけを表示します。</string>
+    <string name="journal_empty_one_habit">%1$s のメモはまだありません</string>
+    <string name="journal_empty_one_habit_text">%1$s を記録するときに書いたメモがここに表示されます。</string>
+    <string name="journal_empty_filters">この条件のメモはありません</string>
+    <plurals name="journal_empty_n_habits">
+        <item quantity="other">%d 件の習慣のメモはありません</item>
+    </plurals>
+    <!-- 1.6.2: new habit icons -->
+    <string name="icon_breathe">呼吸</string>
+    <string name="icon_gratitude">感謝</string>
+    <string name="icon_focus">集中</string>
+    <string name="icon_less_social_media">SNS を控える</string>
+    <string name="icon_less_coffee">コーヒーを控える</string>
+    <string name="icon_no_sugar">砂糖なし</string>
+    <string name="icon_sunlight">日光</string>
+    <string name="icon_speak">話す</string>
+    <string name="icon_weekly_review">週の振り返り</string>
+    <string name="icon_scripture">聖典</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">消去</string>
+    <string name="action_remove">削除</string>
+    <string name="archive_habit_title">「%1$s」をアーカイブしますか?</string>
+    <string name="archive_habit_text">今日、ウィジェット、リマインダーから外れます。日々の記録とノートは残り、「習慣を管理」から元に戻せます。</string>
+    <string name="habit_archived">「%1$s」をアーカイブしました</string>
+    <string name="habit_restored">「%1$s」を元に戻しました</string>
+    <string name="habit_deleted">「%1$s」を削除しました</string>
+    <string name="sample_remove_title">サンプルデータを削除しますか?</string>
+    <string name="sample_remove_text">サンプルの習慣が、その記録とノートとともに削除されます。ご自身の習慣は残ります。</string>
+    <string name="sample_data_removed">サンプルデータを削除しました</string>
+    <string name="clear_suggestions_title">候補の履歴を消去しますか?</string>
+    <string name="clear_suggestions_text">これまでに書いたノートから書き込み候補を学ばなくなります。ノートは残ります。</string>
+    <string name="drive_disconnect_title">Google ドライブとの接続を解除しますか?</string>
+    <string name="drive_disconnect_text">自動バックアップが止まります。バックアップはドライブに残ります。</string>
+    <string name="about_open_source_line">広告なし · トラッキングなし · GPL v3</string>
 </resources>

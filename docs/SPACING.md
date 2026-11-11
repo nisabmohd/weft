@@ -1,5 +1,7 @@
 # Weft spacing and size rule (applies to every screen)
 
+**Every value below is a named token** in `ui/theme/Dimens.kt` or next to its component in `ui/components/`; screens never use a raw number, and `NoRawSizesTest` fails the build if one appears (user, 2026-11-11). The full list with values: the rules zip's `SIZES.md`, generated from the code.
+
 Everything sits on a **4dp grid**. Use only the values below, so no screen feels tighter or looser than another.
 When in doubt, copy the same element on the **Today** screen.
 
@@ -12,7 +14,6 @@ When in doubt, copy the same element on the **Today** screen.
 | Header to content | 8dp under the fixed tab header, then the list starts | All five tabs |
 | Title to filter chips | 12dp | Journal, Insights |
 | Between cards | 8dp | Habit cards on Today, Week, Overall; Manage habits |
-| Card title to its paragraph | 8dp | Sample habits banner, About → Free and open source |
 | Between rows of a grouped list | 2dp | Journal notes of one day, Insights → By habit, every settings group (More, About, New habit switches). Never a divider line |
 | Between sections without a header | 16dp | Score card → habit cards, Insights summary card, habit detail stats → calendar |
 | Above a section header | 20dp (none for the first one under the screen header) | Every section header, on every screen: Journal days, Insights, More, habit detail "Notes", New habit, Manage habits "Archived" |
@@ -22,7 +23,7 @@ When in doubt, copy the same element on the **Today** screen.
 | Inside a card | 16dp padding on all sides | Every card and grouped-list row |
 | Tile → text in a card | 12dp | Every habit card and row |
 | Name → line under it | 2dp | Every habit card and row |
-| Card header → card content | 12dp | Week marks, heatmap, note text, score bar |
+| Card header → card content | 12dp | Week marks, heatmap, score bar |
 | Text → switch or value on its right | at least 12dp | Every settings and form row |
 | Header buttons | 8dp apart | Every header |
 
@@ -47,6 +48,7 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 | Title row and full-width choice rows' text | 24dp | `SheetTitleInset`, `SheetHeader`, `ChoiceRow` |
 | Header: title (`title` 22sp) → muted line (`supporting`) | 4dp | `SheetHeader` |
 | Header → content | 16dp (20dp to an action list) | `SheetHeader`, `ActionGroup` |
+| List → its one full-width button (Set up alarms) | 20dp | `SheetActionGap` |
 | Under the last element | 16dp + the navigation bar's inset | `Modifier.sheetBottomPadding()` |
 | Buttons | 48dp, fully rounded, `cardTitle` 16sp label; a pair is two equal buttons 8dp apart | `WeftButton`, `ButtonPair`, `ButtonHeight`, `ButtonPairGap` |
 | Action rows | 60dp (68dp with a second line), surfaceContainerHigh, grouped 2dp apart, 16dp inside, 40dp tile with 14dp corners and a 20dp icon, 16dp tile → text | `ActionGroup`, `ActionRow` |
@@ -57,15 +59,24 @@ Every sheet is `WeftSheet` and is built from the same pieces, in `ui/components/
 
 | Element | Size |
 | --- | --- |
-| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Journal, Insights, the filter sheet and the habit picker |
-| Habit tile in the habit detail header | 56dp, 18dp corners |
-| Header icon button | 48dp circle, 22dp icon |
+| Habit tile | 44dp, 14dp corners, 22dp icon (`HabitTile` in `ui/components/HabitTile.kt`; never hand-built). Everywhere a habit is listed: Today, Week, Overall, Journal, Insights and the habit picker |
+| Habit tile in the habit detail and New habit headers | 56dp, 16dp corners, 28dp icon (`DetailTile*`) |
+| Header icon button | 48dp circle, 22dp icon (`HeaderButtonSize`, `IconSize`) |
+| Icons | 22dp in header buttons and tiles, 20dp chevrons and action tiles, 18dp in chips, 16dp in small marks (`IconSize`, `IconSizeSmall`, `IconSizeChip`, `IconSizeTiny`) |
+| Top bar of a full-screen form | 64dp, 8dp from the status bar, the title 12dp from the button (`TopBarHeight`, `TopBarTitleGap`) |
+| Add note button | 16dp corners, 16dp from the edges; lists end 96dp up; it lifts 72dp while the Undo bar shows (`FabShape`, `FabListEndPadding`, `SnackbarLift`) |
+| Calendar day | 40dp in the date sheet and habit detail (`CalendarDaySize`) |
+| Small pill button | 40dp (Remove, Undo, Check for updates; `SmallButtonHeight`) |
 | Touch target | at least 48dp |
 | Card corners | 24dp (habit cards on Today 22dp); grouped rows 24dp outside, 6dp between |
 | Sheet and dialog corners | 28dp |
 | Filter chip | 32dp tall, 8dp corners |
-| Day mark | 32dp in Week, 16dp next to an outcome line |
-| Progress bar and score segments | 6dp tall |
+| Habit chip (Filter by habit sheet) | 40dp tall, 12dp corners, the 28dp tile (8dp corners, 16dp icon) centred 6dp from the left, 12dp right, chips 8dp apart both ways (`HabitChip*` in `HabitFilterSheet.kt`) |
+| Journal empty state | text column at most 300dp wide (24dp inside); front note card 156 × 112dp, 16dp corners (`EmptyArt` in `JournalScreen.kt`); 32dp to the title, 8dp to the line, 24dp to the button |
+| Day mark | 32dp in Week, 16dp next to text (an outcome line, a note card's name) |
+| Info row (About's Free and open source, Today's Sample habits) | at least 64dp, primaryContainer, 24dp corners, the row padding (16dp sides, 12dp right of a button, 12dp top and bottom), 12dp from the tile; a 40dp white tile (14dp corners, 20dp icon); an optional 40dp white pill button, 16dp sides, `label` (`InfoRow*` in `InfoRow.kt`) |
+| Note card (Journal, habit detail) | the habit row on top (44dp tile, 12dp, the name and 2dp under it the 16dp mark 8dp before "outcome · time"), the note 12dp under the row at full width, 16dp inside (`Note*` in `NoteCard.kt`, design 2026-11-11b) |
+| Progress bar and score segments | 8dp tall, 4dp apart (`SegmentBarHeight`) |
 
 ## Exceptions (only these)
 - The month calendar cards (habit detail, date sheets) use 12dp side padding for the same reason.

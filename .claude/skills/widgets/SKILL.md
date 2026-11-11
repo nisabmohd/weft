@@ -19,6 +19,8 @@ then tap "Add to home screen", screenshot the home screen, tap a circle in the T
 
 **Smoke:** `python3 tools/verify/smoke.py widget launcher` pins each widget (it clears the launcher's home screen: test emulator only) and checks every change shows within 4 s, cold and killed starts, the midnight rollover (needs `adb root`), dark mode, language, an old-day edit, "Nothing due today" and the long-press widget list. Force stop resets widgets to the loading layout until Weft is opened (Android's rule); the check is that opening redraws them.
 
+**Picker previews (`previewImage`):** `tools/widget_previews.py` draws `widget_preview_{today,week,strip,streak}.webp` into `drawable-nodpi` (light) and `drawable-night-nodpi` (dark) from HTML in Lexend, like Burrow's: the sample habits, sized to the content, clear rounded corners, every single-line text cut with "…". Rerun it (`/usr/bin/python3`, it needs Pillow and Chrome) when a widget's look, the sample habits or the colours change. They used to be screen crops with a dark ring at the corners (2026-11-11).
+
 **Pitfalls:** an action can start the process, so `MarkDoneAction` refreshes widgets itself; the launcher doesn't run the configure step for pinned widgets.
 
 ## Sizes (1.5.0)

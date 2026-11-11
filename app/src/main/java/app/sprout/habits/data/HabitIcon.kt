@@ -14,7 +14,7 @@ enum class IconGroup(@StringRes val label: Int) {
 }
 
 /**
- * The bundled habit icons: Material Symbols Rounded, one vector drawable each. [key] is what
+ * The bundled habit icons: Solar Linear (tools/solar_icon.py), one vector drawable each. [key] is what
  * `habit.icon` stores (the symbol's name), so backups keep working when drawables change.
  */
 enum class HabitIcon(val key: String, @StringRes val label: Int, val group: IconGroup, @DrawableRes val drawable: Int) {
@@ -34,12 +34,16 @@ enum class HabitIcon(val key: String, @StringRes val label: Int, val group: Icon
     MOOD("sentiment_satisfied", R.string.icon_mood, IconGroup.HEALTH, R.drawable.ic_sym_sentiment_satisfied),
     BREAKFAST("breakfast_dining", R.string.icon_breakfast, IconGroup.HEALTH, R.drawable.ic_sym_breakfast_dining),
     FASTING("no_meals", R.string.icon_fasting, IconGroup.HEALTH, R.drawable.ic_sym_no_meals),
+    NO_SUGAR("no_sugar", R.string.icon_no_sugar, IconGroup.HEALTH, R.drawable.ic_sym_no_sugar),
+    LESS_COFFEE("less_coffee", R.string.icon_less_coffee, IconGroup.HEALTH, R.drawable.ic_sym_less_coffee),
+    SUNLIGHT("sunlight", R.string.icon_sunlight, IconGroup.HEALTH, R.drawable.ic_sym_sunlight),
 
     RUN("directions_run", R.string.icon_run, IconGroup.FITNESS, R.drawable.ic_sym_directions_run),
     WALK("directions_walk", R.string.icon_walk, IconGroup.FITNESS, R.drawable.ic_sym_directions_walk),
     CYCLE("directions_bike", R.string.icon_cycle, IconGroup.FITNESS, R.drawable.ic_sym_directions_bike),
     GYM("fitness_center", R.string.icon_gym, IconGroup.FITNESS, R.drawable.ic_sym_fitness_center),
     MEDITATE("self_improvement", R.string.icon_meditate, IconGroup.FITNESS, R.drawable.ic_sym_self_improvement),
+    BREATHE("breathe", R.string.icon_breathe, IconGroup.FITNESS, R.drawable.ic_sym_breathe),
     OUTDOORS("park", R.string.icon_outdoors, IconGroup.FITNESS, R.drawable.ic_sym_park),
     SWIM("pool", R.string.icon_swim, IconGroup.FITNESS, R.drawable.ic_sym_pool),
     HIKE("hiking", R.string.icon_hike, IconGroup.FITNESS, R.drawable.ic_sym_hiking),
@@ -63,13 +67,19 @@ enum class HabitIcon(val key: String, @StringRes val label: Int, val group: Icon
     PHOTOGRAPHY("photo_camera", R.string.icon_photography, IconGroup.MIND, R.drawable.ic_sym_photo_camera),
     INSTRUMENT("piano", R.string.icon_instrument, IconGroup.MIND, R.drawable.ic_sym_piano),
     PRAY("folded_hands", R.string.icon_pray, IconGroup.MIND, R.drawable.ic_sym_folded_hands),
+    SCRIPTURE("scripture", R.string.icon_scripture, IconGroup.MIND, R.drawable.ic_sym_scripture),
+    GRATITUDE("gratitude", R.string.icon_gratitude, IconGroup.MIND, R.drawable.ic_sym_gratitude),
+    SPEAK("speak", R.string.icon_speak, IconGroup.MIND, R.drawable.ic_sym_speak),
     PUZZLES("extension", R.string.icon_puzzles, IconGroup.MIND, R.drawable.ic_sym_extension),
     LISTEN("headphones", R.string.icon_listen, IconGroup.MIND, R.drawable.ic_sym_headphones),
 
     WORK("laptop_mac", R.string.icon_work, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_laptop_mac),
     CODE("code", R.string.icon_code, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_code),
+    FOCUS("focus", R.string.icon_focus, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_focus),
+    WEEKLY_REVIEW("weekly_review", R.string.icon_weekly_review, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_weekly_review),
     MONEY("savings", R.string.icon_money, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_savings),
     LESS_PHONE("mobile_off", R.string.icon_less_phone, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_mobile_off),
+    LESS_SOCIAL_MEDIA("less_social_media", R.string.icon_less_social_media, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_less_social_media),
     CLEAN("cleaning_services", R.string.icon_clean, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_cleaning_services),
     COOK("skillet", R.string.icon_cook, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_skillet),
     TEA_OR_COFFEE("local_cafe", R.string.icon_tea_or_coffee, IconGroup.WORK_AND_HOME, R.drawable.ic_sym_local_cafe),
