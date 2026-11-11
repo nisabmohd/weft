@@ -56,7 +56,12 @@ class MainActivity : ComponentActivity() {
                 } else {
                     // Held until Get started is done, then opened.
                     val link by pendingLink.collectAsStateWithLifecycle()
-                    WeftNavHost(container, current, link = link, onLinkHandled = { pendingLink.value = null })
+                    androidx.compose.runtime.CompositionLocalProvider(
+                        app.sprout.habits.ui.components.LocalPendingUndo provides container.pendingUndo,
+                        app.sprout.habits.ui.LocalUndoableActions provides container.actions,
+                    ) {
+                        WeftNavHost(container, current, link = link, onLinkHandled = { pendingLink.value = null })
+                    }
                     UpdatePrompt(container.updates, container.playUpdates)
                 }
             }

@@ -672,21 +672,24 @@
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
     <string name="action_done">Listo</string>
     <string name="set_up_alarms">Configurar alarmas</string>
-    <string name="alarm_need_notifications">Mostrar recordatorios</string>
-    <string name="alarm_need_pop_up">Notificaciones de banner</string>
-    <string name="alarm_need_pop_up_progress">%1$d de %2$d activadas</string>
-    <string name="alarm_need_exact">Sonar en el minuto exacto</string>
-    <string name="alarm_need_full_screen">Sonar a pantalla completa con bloqueo</string>
+    <string name="alarm_need_notifications">Enviar notificaciones</string>
+    <string name="alarm_need_notifications_desc">Para los recordatorios. Toca para elegir banners, sonido y pantalla de bloqueo.</string>
+    <string name="alarm_need_notifications_banners_off">Los banners están desactivados, así que los recordatorios no aparecerán. Toca para activarlos.</string>
+    <string name="alarm_need_exact">Sonar a la hora</string>
+    <string name="alarm_need_exact_desc">Sin esto, Android puede hacerlas sonar unos minutos tarde.</string>
+    <string name="alarm_need_full_screen">Alarmas a pantalla completa</string>
+    <string name="alarm_need_full_screen_desc">Una alarma ocupa toda la pantalla, aunque el teléfono esté bloqueado.</string>
     <string name="alarm_overlay">Mostrar sobre otras apps</string>
-    <string name="alarm_overlay_desc">Opcional · ayuda a abrir la alarma</string>
+    <string name="alarm_overlay_desc">Opcional · una alarma puede abrirse sobre otras apps</string>
     <string name="alarm_lock_screen">Pantalla de bloqueo y ventanas emergentes</string>
-    <string name="alarm_lock_screen_desc">Activa ambos</string>
+    <string name="alarm_lock_screen_desc">Activa ambos en la información de la app Weft</string>
     <string name="alarm_battery">Batería</string>
-    <string name="alarm_battery_desc">Elige “Sin restricciones”</string>
+    <string name="alarm_battery_desc">Elige «Sin restricciones» para que no se detengan las alarmas</string>
     <string name="alarm_use_notification">Usar una notificación</string>
     <string name="alarms_sound_section">Sonido</string>
     <string name="alarm_sound">Sonido de alarma</string>
     <string name="alarm_vibrate">Vibrar</string>
+    <string name="alarm_vibrate_desc">Cuando suena una alarma</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">Predeterminado</string>
     <string name="alarm_sound_weft_soft">Weft · Suave</string>
@@ -701,7 +704,6 @@
     <string name="reminder_fix_notifications">las notificaciones están desactivadas</string>
     <string name="reminder_fix_exact">puede sonar tarde</string>
     <string name="reminder_fix_full_screen">no puede sonar a pantalla completa</string>
-    <string name="reminder_fix_pop_up">los banners están desactivados</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Recordatorios y alarmas</string>
     <string name="reminders_section">Recordatorios</string>
@@ -710,9 +712,9 @@
     <string name="extra_phone_settings_desc">Solo hace falta en algunos teléfonos</string>
     <string name="extra_phone_settings_text">Algunos teléfonos detienen las alarmas por su cuenta. Android no nos dice si estos ajustes están activados, así que revísalos una vez.</string>
     <string name="notification_sound">Sonido de notificación</string>
+    <string name="notification_sound_desc">Cámbialo en los ajustes del teléfono</string>
     <string name="reminders_all_allowed">Notificaciones y alarmas permitidas</string>
     <string name="reminders_off_notifications">Las notificaciones están desactivadas</string>
-    <string name="reminders_off_pop_up">Las notificaciones de banner están desactivadas</string>
     <string name="reminders_off_exact">Las alarmas pueden sonar tarde</string>
     <string name="reminders_off_full_screen">Las alarmas no pueden sonar a pantalla completa</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
@@ -736,4 +738,19 @@
     <string name="icon_speak">Hablar</string>
     <string name="icon_weekly_review">Repaso semanal</string>
     <string name="icon_scripture">Escrituras</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">Borrar</string>
+    <string name="action_remove">Quitar</string>
+    <string name="archive_habit_title">¿Archivar %1$s?</string>
+    <string name="archive_habit_text">Sale de Hoy, los widgets y los recordatorios. Sus días y notas se quedan, y puedes restaurarlo desde Gestionar hábitos.</string>
+    <string name="habit_archived">%1$s archivado</string>
+    <string name="habit_restored">%1$s restaurado</string>
+    <string name="habit_deleted">%1$s eliminado</string>
+    <string name="sample_remove_title">¿Quitar los datos de ejemplo?</string>
+    <string name="sample_remove_text">Los hábitos de ejemplo se eliminan con sus días y notas. Tus hábitos se quedan.</string>
+    <string name="sample_data_removed">Datos de ejemplo quitados</string>
+    <string name="clear_suggestions_title">¿Borrar el historial de sugerencias?</string>
+    <string name="clear_suggestions_text">Las sugerencias de escritura dejan de aprender de las notas que ya escribiste. Tus notas se quedan.</string>
+    <string name="drive_disconnect_title">¿Desconectar Google Drive?</string>
+    <string name="drive_disconnect_text">Las copias automáticas se detienen. Tus copias se quedan en Drive.</string>
 </resources>

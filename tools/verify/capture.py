@@ -383,7 +383,7 @@ def more_reminders_alarms():
     assert d.exists("Allow Weft to", timeout=5)
     save("more-reminders-alarms-screen")
     d.tap("Extra phone settings")
-    assert d.exists("Turn both on", timeout=5)
+    assert d.exists("Turn both on in Weft’s app info", timeout=5)
     save("extra-phone-settings-sheet")
     d.tap("Done")
     d.scroll_to("Alarm sound")
@@ -393,6 +393,18 @@ def more_reminders_alarms():
     d.back()
     d.back()
     alarm_permissions_reset()
+
+
+@screen
+def archive_habit_sheet():
+    """Archive asks first (2026-11-11, docs/DESIGN-RULES.md 10): the prompt over Habit detail."""
+    d.nav("Habits")
+    d.tap("Read")
+    d.tap("Archive")  # the header's round button (its description)
+    assert d.exists("Archive Read?", timeout=5)
+    save("archive-habit-sheet")
+    d.tap("Cancel")
+    d.back()
 
 
 @screen

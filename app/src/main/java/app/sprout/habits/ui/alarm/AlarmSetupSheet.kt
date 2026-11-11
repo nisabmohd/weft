@@ -42,6 +42,7 @@ import app.sprout.habits.R
 import app.sprout.habits.notify.AlarmNeed
 import app.sprout.habits.notify.AlarmSetup
 import app.sprout.habits.notify.Notifications
+import app.sprout.habits.notify.SystemPages
 import app.sprout.habits.ui.components.ButtonRole
 import app.sprout.habits.ui.components.ChoiceSheet
 import app.sprout.habits.ui.components.SheetActionGap
@@ -64,11 +65,12 @@ class AlarmSetupState(
     val missing: List<AlarmNeed>,
     /** The optional Show over other apps; never counted in [missing]. */
     val showOverApps: Boolean,
-    /** Banner notifications: how many of Weft's channels show as banners, of how many ("1 of 2 on"). */
-    val bannersOn: Pair<Int, Int>,
+    /** Notifications are on but don't pop up as banners (some phones set new apps that way). */
+    val bannersOff: Boolean,
     val open: (AlarmNeed) -> Unit,
     val openShowOverApps: () -> Unit,
     val openPhoneSettings: () -> Unit,
+    val openBattery: () -> Unit,
 ) {
     val allSet: Boolean get() = missing.isEmpty()
 }
@@ -79,12 +81,12 @@ fun rememberAlarmSetup(): AlarmSetupState {
     var needs by remember { mutableStateOf(AlarmSetup.needs(context)) }
     var missing by remember { mutableStateOf(AlarmSetup.missing(context)) }
     var overApps by remember { mutableStateOf(AlarmSetup.canShowOverApps(context)) }
-    var banners by remember { mutableStateOf(Notifications.popUpProgress(context)) }
+    var bannersOff by remember { mutableStateOf(Notifications.canPost(context) && !Notifications.canPopUp(context)) }
     fun refresh() {
         needs = AlarmSetup.needs(context)
         missing = AlarmSetup.missing(context)
         overApps = AlarmSetup.canShowOverApps(context)
-        banners = Notifications.popUpProgress(context)
+        bannersOff = Notifications.canPost(context) && !Notifications.canPopUp(context)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh() }
     var askedAt by remember { mutableLongStateOf(0L) }
@@ -97,7 +99,7 @@ fun rememberAlarmSetup(): AlarmSetupState {
         needs = needs,
         missing = missing,
         showOverApps = overApps,
-        bannersOn = banners,
+        bannersOff = bannersOff,
         open = { need ->
             val askable = need == AlarmNeed.NOTIFICATIONS && Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -110,6 +112,7 @@ fun rememberAlarmSetup(): AlarmSetupState {
         },
         openShowOverApps = { AlarmSetup.openShowOverApps(context) },
         openPhoneSettings = { AlarmSetup.openAppDetails(context) },
+        openBattery = { SystemPages.battery(context) },
     )
 }
 
@@ -117,7 +120,6 @@ fun rememberAlarmSetup(): AlarmSetupState {
 fun alarmNeedTitle(need: AlarmNeed): String = stringResource(
     when (need) {
         AlarmNeed.NOTIFICATIONS -> R.string.alarm_need_notifications
-        AlarmNeed.POP_UP -> R.string.alarm_need_pop_up
         AlarmNeed.EXACT_ALARMS -> R.string.alarm_need_exact
         AlarmNeed.FULL_SCREEN -> R.string.alarm_need_full_screen
     },
@@ -175,20 +177,22 @@ private fun RowText(title: String, text: String?, modifier: Modifier) {
     }
 }
 
-/** The permission rows of [state] (one line each), each its own composable so a screen can group them. */
+/** What a row is for, under its title. Notifications that don't pop up ask for banners instead. */
+@Composable
+private fun alarmNeedLine(need: AlarmNeed, state: AlarmSetupState): String = stringResource(
+    when (need) {
+        AlarmNeed.NOTIFICATIONS ->
+            if (state.bannersOff && need !in state.missing) R.string.alarm_need_notifications_banners_off else R.string.alarm_need_notifications_desc
+        AlarmNeed.EXACT_ALARMS -> R.string.alarm_need_exact_desc
+        AlarmNeed.FULL_SCREEN -> R.string.alarm_need_full_screen_desc
+    },
+)
+
+/** The permission rows of [state], each its own composable so a screen can group them. */
 fun permissionRows(state: AlarmSetupState, padding: PaddingValues): List<@Composable () -> Unit> =
     state.needs.map { need ->
-        @Composable {
-            // Banners are one switch per channel in Android: say how far along it is ("1 of 2 on"),
-            // and each tap opens the next one still off.
-            val (on, total) = state.bannersOn
-            val line = if (need == AlarmNeed.POP_UP && on in 1 until total) stringResource(R.string.alarm_need_pop_up_progress, on, total) else null
-            SetupSwitchRow(alarmNeedTitle(need), line, need !in state.missing, padding) { state.open(need) }
-        }
+        @Composable { SetupSwitchRow(alarmNeedTitle(need), alarmNeedLine(need, state), need !in state.missing, padding) { state.open(need) } }
     }
-
-/** True on phones whose maker adds its own switches (not on a Pixel): the Extra phone settings row shows. */
-val needsExtraPhoneSettings: Boolean get() = AlarmSetup.showLockScreenRow || AlarmSetup.showBatteryRow
 
 /** "Extra phone settings · Only needed on some phones" ↗: opens [ExtraPhoneSettingsSheet]. */
 @Composable
@@ -196,8 +200,7 @@ fun ExtraPhoneSettingsRow(padding: PaddingValues, onOpen: () -> Unit) =
     SetupLinkRow(stringResource(R.string.extra_phone_settings), stringResource(R.string.extra_phone_settings_desc), padding, onOpen)
 
 /**
- * Set up alarms (alarm-9a/b/c-setup-sheet-*.png): the three switches, Extra phone settings on the
- * phones that need it, then **Use a notification instead** while a switch is off, or **Done**.
+ * Set up alarms (alarm-9a/b/c-setup-sheet-*.png): the switches, Extra phone settings, then **Use a notification instead** while a switch is off, or **Done**.
  * [onUseNotification] null: the button only closes.
  */
 @Composable
@@ -220,7 +223,7 @@ fun AlarmSetupSheet(onDismiss: () -> Unit, onUseNotification: (() -> Unit)? = nu
         },
     ) {
         permissionRows(state, SheetRowPadding).forEach { it() }
-        if (needsExtraPhoneSettings) ExtraPhoneSettingsRow(SheetRowPadding) { extra = true }
+        ExtraPhoneSettingsRow(SheetRowPadding) { extra = true }
     }
     if (extra) ExtraPhoneSettingsSheet(state, onDismiss = { extra = false })
 }
@@ -245,12 +248,9 @@ fun ExtraPhoneSettingsSheet(state: AlarmSetupState, onDismiss: () -> Unit) {
             )
         },
     ) {
-        if (AlarmSetup.showLockScreenRow) {
-            SetupSwitchRow(stringResource(R.string.alarm_overlay), stringResource(R.string.alarm_overlay_desc), state.showOverApps, SheetRowPadding, state.openShowOverApps)
-            SetupLinkRow(stringResource(R.string.alarm_lock_screen), stringResource(R.string.alarm_lock_screen_desc), SheetRowPadding, state.openPhoneSettings)
-        }
-        if (AlarmSetup.showBatteryRow) {
-            SetupLinkRow(stringResource(R.string.alarm_battery), stringResource(R.string.alarm_battery_desc), SheetRowPadding, state.openPhoneSettings)
-        }
+        // The same rows on every phone: Android reports only the first; the others are on Weft's app page.
+        SetupSwitchRow(stringResource(R.string.alarm_overlay), stringResource(R.string.alarm_overlay_desc), state.showOverApps, SheetRowPadding, state.openShowOverApps)
+        SetupLinkRow(stringResource(R.string.alarm_lock_screen), stringResource(R.string.alarm_lock_screen_desc), SheetRowPadding, state.openPhoneSettings)
+        SetupLinkRow(stringResource(R.string.alarm_battery), stringResource(R.string.alarm_battery_desc), SheetRowPadding, state.openBattery)
     }
 }

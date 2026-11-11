@@ -54,3 +54,13 @@ Habit colours (`hab()`) are only for a habit's own content: its tile, progress, 
 ## 9. Keep the app's look
 - Prefer the existing components (`HabitTile`, `ChoiceRow`, grouped rows, section headers) over new ones.
 - Change one thing at a time. Try new ideas on a copy first; once one is picked, it replaces the original, so there are no duplicates.
+
+## 10. Ask first, then offer Undo (user, 2026-11-11)
+- A change that removes something or takes it out of sight asks first with a `PromptSheet` (Cancel | action): Archive habit, Delete habit, Delete note (from Edit note and from the Journal's long-press sheet), Remove sample data, Clear suggestion history, Disconnect Google Drive, Delete backups from Drive, Restore / Import (replaces data).
+- Once it's done, the Undo snackbar says so ("Read archived · Undo") on the screen the person is on, or the one they land on when the change closes the screen (`PendingUndo` + `PendingUndoHost`, `ui/UndoableActions.kt`). Undo puts it back exactly: a deleted habit returns with its days and notes.
+- Reversible changes that lose nothing don't ask (Restore an archived habit, toggles, logging a day) but still get the snackbar where they already did.
+- No Undo when it can't be undone from the app: Disconnect (needs the Google sign-in again) shows a plain message.
+
+## 11. Android's settings pages
+- Open them only through `notify/SystemPages.kt`: inside Weft's task (never `FLAG_ACTIVITY_NEW_TASK`, which can bring back a Settings page left open instead of the one asked for), with fallbacks from the exact page to the app's notification page to its app info, so every phone opens something right. No lists of phone makers for these rows.
+- A row that opens a page says under its title what it is for and where it goes.

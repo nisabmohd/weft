@@ -150,7 +150,7 @@ fun WeftNavHost(
                     onOpenHabit = { id -> navController.navigate(HabitDetailRoute(id)) },
                     onAddNote = { day -> navController.navigate(WriteNoteRoute(epochDay = day)) },
                     hasSampleData = settings.sampleHabitIds.isNotEmpty() && !settings.sampleBannerHidden,
-                    onRemoveSampleData = { container.appScope.launch { SampleData.remove(container.repository, container.settings) } },
+                    onRemoveSampleData = { container.actions.removeSampleData() },
                 )
                 }
             }
@@ -160,13 +160,14 @@ fun WeftNavHost(
                     WriteNoteViewModel(
                         container.repository, route.noteId, route.habitId, route.epochDay.takeIf { it >= 0 }, createSavedStateHandle(),
                         container.settings.settings.map { it.suggestionsClearedAt }.distinctUntilChanged(),
+                        container.actions,
                     )
                 }
                 WriteNoteScreen(vm, settings.weekStart, settings.writingSuggestions, onClose = { navController.popBackStack() })
             }
             composable<EditHabitRoute> { entry ->
                 val id = entry.toRoute<EditHabitRoute>().habitId
-                val vm = viewModel { EditHabitViewModel(container.repository, container.settings, id) }
+                val vm = viewModel { EditHabitViewModel(container.repository, container.settings, id, container.actions) }
                 EditHabitScreen(
                     vm,
                     onClose = { navController.popBackStack() },

@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.more
 
+import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.LocalUndoableActions
+import app.sprout.habits.ui.components.PromptSheet
 import androidx.compose.ui.graphics.Color
 import app.sprout.habits.ui.alarm.rememberAlarmSetup
 import app.sprout.habits.ui.components.SectionGapAbove
@@ -93,6 +96,9 @@ fun MoreScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
+    PendingUndoHost(snackbar)
+    val actions = LocalUndoableActions.current
+    var clearingSuggestions by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val theme = settings.theme
     var pickingWeekStart by remember { mutableStateOf(false) }
@@ -204,7 +210,6 @@ fun MoreScreen(
 
             item(key = "journal") {
                 SectionLabel(stringResource(R.string.journal_title))
-                val cleared = stringResource(R.string.suggestion_history_cleared)
                 SettingsGroup(
                     {
                         SwitchRow(stringResource(R.string.writing_suggestions), stringResource(R.string.writing_suggestions_desc), settings.writingSuggestions) { on ->
@@ -215,10 +220,7 @@ fun MoreScreen(
                         SettingsRow(
                             stringResource(R.string.clear_suggestion_history),
                             stringResource(R.string.clear_suggestion_history_desc),
-                            onClick = {
-                                save { clearSuggestionHistory() }
-                                scope.launch { snackbar.showSnackbar(cleared) }
-                            },
+                            onClick = { clearingSuggestions = true },
                         )
                     },
                 )
@@ -243,6 +245,16 @@ fun MoreScreen(
         }
         }
         UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+    }
+
+    if (clearingSuggestions) {
+        PromptSheet(
+            title = stringResource(R.string.clear_suggestions_title),
+            text = stringResource(R.string.clear_suggestions_text),
+            action = stringResource(R.string.action_clear),
+            onAction = { clearingSuggestions = false; actions.clearSuggestionHistory() },
+            onDismiss = { clearingSuggestions = false },
+        )
     }
 
     if (pickingLanguage) {

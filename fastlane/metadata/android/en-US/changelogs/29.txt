@@ -1,6 +1,5 @@
-• Alarms now show on a locked phone, with no white flash.
-• Set up alarms: three switches show what alarms need and open the right settings.
-• More → Reminders & alarms: default time, permissions, alarm sound and vibrate in one place.
+• Alarms show on a locked phone; one alarm at a time, reminders wait quietly.
+• Set up alarms and More → Reminders & alarms: clear switches that open the right settings on every phone.
+• Archive, delete and clear ask first, then offer Undo.
 • Alarm sound: Weft's own tone, a softer one, or any sound on your phone.
-• Filter by habit with chips; ten new habit icons.
-• Green accent; Rust is the new default.
+• Filter by habit with chips; ten new habit icons; green accent, Rust default.

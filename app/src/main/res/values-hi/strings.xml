@@ -657,21 +657,24 @@
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
     <string name="action_done">हो गया</string>
     <string name="set_up_alarms">अलार्म सेट करें</string>
-    <string name="alarm_need_notifications">रिमाइंडर दिखाना</string>
-    <string name="alarm_need_pop_up">बैनर सूचनाएँ</string>
-    <string name="alarm_need_pop_up_progress">%2$d में से %1$d चालू</string>
-    <string name="alarm_need_exact">ठीक समय पर बजना</string>
-    <string name="alarm_need_full_screen">लॉक होने पर फ़ुल स्क्रीन बजना</string>
+    <string name="alarm_need_notifications">सूचनाएँ भेजें</string>
+    <string name="alarm_need_notifications_desc">रिमाइंडर के लिए। बैनर, आवाज़ और लॉक स्क्रीन चुनने के लिए टैप करें।</string>
+    <string name="alarm_need_notifications_banners_off">बैनर बंद हैं, इसलिए रिमाइंडर स्क्रीन पर नहीं आएँगे। चालू करने के लिए टैप करें।</string>
+    <string name="alarm_need_exact">अलार्म समय पर बजाएँ</string>
+    <string name="alarm_need_exact_desc">इसके बिना Android इन्हें कुछ मिनट देर से बजा सकता है।</string>
+    <string name="alarm_need_full_screen">अलार्म पूरी स्क्रीन पर दिखाएँ</string>
+    <string name="alarm_need_full_screen_desc">फ़ोन लॉक होने पर भी अलार्म पूरी स्क्रीन पर आता है।</string>
     <string name="alarm_overlay">दूसरे ऐप के ऊपर दिखाएँ</string>
-    <string name="alarm_overlay_desc">वैकल्पिक · अलार्म खुलने में मदद करता है</string>
+    <string name="alarm_overlay_desc">वैकल्पिक · अलार्म दूसरे ऐप्स के ऊपर खुल सकता है</string>
     <string name="alarm_lock_screen">लॉक स्क्रीन और पॉप-अप</string>
-    <string name="alarm_lock_screen_desc">दोनों चालू करें</string>
+    <string name="alarm_lock_screen_desc">Weft की ऐप जानकारी में दोनों चालू करें</string>
     <string name="alarm_battery">बैटरी</string>
-    <string name="alarm_battery_desc">“प्रतिबंधित न करें” चुनें</string>
+    <string name="alarm_battery_desc">“प्रतिबंधित न करें” चुनें ताकि अलार्म बंद न हों</string>
     <string name="alarm_use_notification">इसके बजाय सूचना दें</string>
     <string name="alarms_sound_section">आवाज़</string>
     <string name="alarm_sound">अलार्म की आवाज़</string>
     <string name="alarm_vibrate">कंपन</string>
+    <string name="alarm_vibrate_desc">जब अलार्म बजे</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">डिफ़ॉल्ट</string>
     <string name="alarm_sound_weft_soft">Weft · हल्की</string>
@@ -686,7 +689,6 @@
     <string name="reminder_fix_notifications">सूचनाएँ बंद हैं</string>
     <string name="reminder_fix_exact">देर से बज सकता है</string>
     <string name="reminder_fix_full_screen">फ़ुल स्क्रीन पर नहीं बज सकता</string>
-    <string name="reminder_fix_pop_up">बैनर बंद हैं</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">रिमाइंडर और अलार्म</string>
     <string name="reminders_section">रिमाइंडर</string>
@@ -695,9 +697,9 @@
     <string name="extra_phone_settings_desc">सिर्फ़ कुछ फ़ोन पर ज़रूरी</string>
     <string name="extra_phone_settings_text">कुछ फ़ोन अपने आप अलार्म रोक देते हैं। Android यह नहीं बता सकता कि ये चालू हैं या नहीं, इसलिए इन्हें एक बार देख लें।</string>
     <string name="notification_sound">सूचना की आवाज़</string>
+    <string name="notification_sound_desc">फ़ोन की सेटिंग में बदलें</string>
     <string name="reminders_all_allowed">सूचनाएं और अलार्म की अनुमति है</string>
     <string name="reminders_off_notifications">सूचनाएं बंद हैं</string>
-    <string name="reminders_off_pop_up">बैनर सूचनाएँ बंद हैं</string>
     <string name="reminders_off_exact">अलार्म देर से बज सकते हैं</string>
     <string name="reminders_off_full_screen">अलार्म फ़ुल स्क्रीन नहीं बज सकते</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
@@ -721,4 +723,19 @@
     <string name="icon_speak">बोलना</string>
     <string name="icon_weekly_review">साप्ताहिक समीक्षा</string>
     <string name="icon_scripture">धर्मग्रंथ</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">मिटाएँ</string>
+    <string name="action_remove">हटाएँ</string>
+    <string name="archive_habit_title">%1$s को संग्रह करें?</string>
+    <string name="archive_habit_text">यह आज, विजेट और रिमाइंडर से हट जाएगी। इसके दिन और नोट बने रहेंगे, और आप इसे आदतें प्रबंधित करें से वापस ला सकते हैं।</string>
+    <string name="habit_archived">%1$s संग्रहित</string>
+    <string name="habit_restored">%1$s वापस लाई गई</string>
+    <string name="habit_deleted">%1$s हटाई गई</string>
+    <string name="sample_remove_title">सैंपल डेटा हटाएँ?</string>
+    <string name="sample_remove_text">सैंपल आदतें उनके दिनों और नोट्स के साथ हट जाएँगी। आपकी अपनी आदतें रहेंगी।</string>
+    <string name="sample_data_removed">सैंपल डेटा हटाया गया</string>
+    <string name="clear_suggestions_title">सुझावों का इतिहास मिटाएँ?</string>
+    <string name="clear_suggestions_text">लिखने के सुझाव अब तक लिखे नोट्स से नहीं सीखेंगे। आपके नोट्स रहेंगे।</string>
+    <string name="drive_disconnect_title">Google Drive डिस्कनेक्ट करें?</string>
+    <string name="drive_disconnect_text">अपने-आप बैकअप रुक जाएँगे। आपके बैकअप Drive में रहेंगे।</string>
 </resources>

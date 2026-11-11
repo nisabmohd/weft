@@ -2,7 +2,6 @@ package app.sprout.habits.notify
 
 import android.app.AlarmManager
 import android.content.Context
-import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -15,25 +14,21 @@ import app.sprout.habits.data.AlarmSound
  * What an alarm needs from Android (features/FEATURE-ALARM-REMINDERS.md 7): the rows of Set up
  * alarms and More → Alarms, most important first (the Reminder card names the first one missing).
  */
-enum class AlarmNeed { NOTIFICATIONS, POP_UP, EXACT_ALARMS, FULL_SCREEN }
+enum class AlarmNeed { NOTIFICATIONS, EXACT_ALARMS, FULL_SCREEN }
 
 object AlarmSetup {
     /**
-     * The rows this phone shows: notifications on 13+ (and before, only while they're off), exact
-     * alarms on 12+, full screen on 14+.
+     * The rows this phone shows: notifications on every phone (the row also opens Weft's
+     * notification settings, where banners and sound are chosen), exact alarms on 12+, full screen on 14+.
      */
     fun needs(context: Context): List<AlarmNeed> = buildList {
-        if (Build.VERSION.SDK_INT >= 33 || !Notifications.canPost(context)) add(AlarmNeed.NOTIFICATIONS)
-        // Pop-ups: on the makers that turn them off for new apps (ColorOS did, OnePlus 13s,
-        // 2026-11-09), and anywhere they are off. Without them an alarm can't open full screen.
-        if (Notifications.canPost(context) && (showLockScreenRow || !Notifications.canPopUp(context))) add(AlarmNeed.POP_UP)
+        add(AlarmNeed.NOTIFICATIONS)
         if (Build.VERSION.SDK_INT >= 31) add(AlarmNeed.EXACT_ALARMS)
         if (Build.VERSION.SDK_INT >= 34) add(AlarmNeed.FULL_SCREEN)
     }
 
     fun isAllowed(context: Context, need: AlarmNeed): Boolean = when (need) {
         AlarmNeed.NOTIFICATIONS -> Notifications.canPost(context)
-        AlarmNeed.POP_UP -> Notifications.canPopUp(context)
         AlarmNeed.EXACT_ALARMS -> Build.VERSION.SDK_INT < 31 || context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
         AlarmNeed.FULL_SCREEN -> Notifications.canUseFullScreen(context)
     }
@@ -44,7 +39,6 @@ object AlarmSetup {
     /** Opens the system page for [need]. */
     fun open(context: Context, need: AlarmNeed) = when (need) {
         AlarmNeed.NOTIFICATIONS -> Notifications.openSettings(context)
-        AlarmNeed.POP_UP -> Notifications.openPopUpSettings(context)
         AlarmNeed.EXACT_ALARMS -> Notifications.openExactAlarmSettings(context)
         AlarmNeed.FULL_SCREEN -> Notifications.openFullScreenSettings(context)
     }
@@ -52,12 +46,7 @@ object AlarmSetup {
     /** The optional "Show over other apps" (never counted as missing): Weft may open the ringing screen itself. */
     fun canShowOverApps(context: Context): Boolean = Settings.canDrawOverlays(context)
 
-    fun openShowOverApps(context: Context) {
-        context.startActivity(
-            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
-    }
+    fun openShowOverApps(context: Context) = SystemPages.overlay(context)
 
     /**
      * The phone's maker. Debug builds can pretend to be another (`adb shell setprop debug.weft.maker
@@ -69,11 +58,8 @@ object AlarmSetup {
         Class.forName("android.os.SystemProperties").getMethod("get", String::class.java).invoke(null, "debug.weft.maker") as String
     }.getOrNull()?.takeIf { it.isNotBlank() }
 
-    /** Makers whose own settings can keep an alarm off the lock screen (ColorOS, MIUI / HyperOS, Funtouch, EMUI). */
-    private val lockScreenMakers = setOf("oneplus", "oppo", "realme", "xiaomi", "redmi", "poco", "vivo", "iqoo", "huawei", "honor")
-
-    /** The "Show over other apps" and "Lock screen & pop-ups" rows: only on phones whose maker adds its own switches. */
-    val showLockScreenRow: Boolean get() = maker in lockScreenMakers
+    /** Makers known to hold back plain exact alarms (ColorOS, MIUI / HyperOS, Funtouch, EMUI): a head start for [delaysExactAlarms]. */
+    private val lateAlarmMakers = setOf("oneplus", "oppo", "realme", "xiaomi", "redmi", "poco", "vivo", "iqoo", "huawei", "honor")
 
     /**
      * Phones that hold back a plain exact alarm: ColorOS stretched them into windows of up to an
@@ -83,7 +69,7 @@ object AlarmSetup {
      * the status bar's alarm icon. Known makers start that way; any other phone switches the
      * first time a reminder arrives late ([noteLateness]).
      */
-    fun delaysExactAlarms(context: Context): Boolean = maker in lockScreenMakers || device(context).getBoolean(KEY_DELAYS, false)
+    fun delaysExactAlarms(context: Context): Boolean = maker in lateAlarmMakers || device(context).getBoolean(KEY_DELAYS, false)
 
     /**
      * A plain exact reminder meant for [at] just arrived. More than [LATE_MS] late (and not so late
@@ -108,19 +94,11 @@ object AlarmSetup {
     private const val LATE_MS = 2 * 60_000L
     private const val MAX_LATE_MS = 6 * 60 * 60_000L
 
-    /** The "Battery" row: those makers, plus Samsung, whose battery saver puts apps to sleep. */
-    val showBatteryRow: Boolean get() = maker in lockScreenMakers || maker == "samsung"
-
     /**
-     * Weft's page in the phone's settings, where these makers keep the lock screen, pop-up and
-     * battery switches. Android can't tell whether they are on, so these rows never get a tick.
+     * Weft's app info page, where phone makers keep their own lock screen, pop-up and battery
+     * switches. Android can't tell whether they are on, so these rows never get a tick.
      */
-    fun openAppDetails(context: Context) {
-        context.startActivity(
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
-    }
+    fun openAppDetails(context: Context) = SystemPages.appDetails(context)
 }
 
 /** Turns the stored alarm sound into something to play and a name to show. */

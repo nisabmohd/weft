@@ -1598,7 +1598,7 @@ def alarm_without_exact_alarms_opens_setup():
         d.tap("Alarm")
         # 1.6.2: picking Alarm opens Set up alarms with every need, not a settings page.
         assert d.exists("Set up alarms", timeout=3), "picking Alarm without exact alarms doesn't open Set up alarms"
-        assert d.exists("Ring on the minute"), "Set up alarms has no Ring on the minute row"
+        assert d.exists("Ring alarms on time"), "Set up alarms has no Ring alarms on time row"
         assert d.exists("Use a notification instead"), "Set up alarms offers no way out while something is missing"
         d.back()  # keep Alarm: the card warns
         d.tap("Set reminder")
@@ -1620,8 +1620,8 @@ def more_reminders_alarms_screen():
     assert not d.exists("Default reminder", timeout=1), "Default reminder is still in More → General"
     assert d.scroll_to("Reminders & alarms"), "no Reminders & alarms row in More"
     d.tap("Reminders & alarms")
-    for label in ("Reminders", "Default reminder", "Allow Weft to", "Show reminders", "Ring on the minute",
-                  "Ring full screen when locked", "Sound", "Alarm sound", "Vibrate", "Notification sound"):
+    for label in ("Reminders", "Default reminder", "Allow Weft to", "Send notifications", "Ring alarms on time",
+                  "Show alarms full screen", "Sound", "Alarm sound", "Vibrate", "Notification sound"):
         assert d.scroll_to(label), f"Reminders & alarms is missing {label!r}"
     d.tap("Alarm sound")
     for label in ("Weft", "Weft · Soft", "Phone’s alarm sound", "Choose from phone"):
@@ -1842,6 +1842,57 @@ def alarms_at_the_same_time_while_phone_in_use():
     d.shell("cmd statusbar collapse")
     assert not ringing(), "alarms left after answering both"
     assert entry(wake) == "" and entry(workout) == ""
+
+
+def reminder_records():
+    """The posted reminder notifications' record lines. A quiet one (NotificationCompat.setSilent)
+    is in the "silent" group, which never alerts: groupKey=silent."""
+    out = d.shell("dumpsys notification --noredact")
+    return [l for l in out.splitlines() if "NotificationRecord(" in l and d.PACKAGE in l and "channel=reminders_popup" in l]
+
+
+@check
+def notification_and_alarm_at_the_same_time():
+    """User, 2026-11-11: a notification reminder and another habit's alarm at the same minute both
+    popped up, a second apart. The alarm alone pops up and sounds; the reminder waits in the shade
+    quietly, whichever arrives first."""
+    (wake,) = make_alarms("Wake up at 7")
+    read = habit_id("Read")
+    sql(f"update habit set reminderType='NOTIFICATION', reminderMinutes=390 where id={read}; "
+        f"delete from entry where habitId={read} and date={_epoch_day()}")
+    screen(True)
+    d.home()
+    # The notification a second before the alarm (what the user saw).
+    fire(read)
+    records = reminder_records()
+    assert records, "the reminder isn't in the shade"
+    assert "groupKey=silent" in records[0], f"the reminder popped up although an alarm is due now: {records[0]}"
+    fire(wake)
+    assert alarm_cards() == 1 and sound_playing(), "the alarm didn't ring"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    d.tap("Dismiss")
+    time.sleep(2)
+    d.shell("cmd statusbar collapse")
+    # The other order: the alarm is ringing when the reminder arrives.
+    d.shell(f"am force-stop {d.PACKAGE}")
+    fire(wake)
+    assert sound_playing(), "the alarm didn't ring the second time"
+    fire(read)
+    records = reminder_records()
+    assert records and "groupKey=silent" in records[0], f"the reminder popped up over a ringing alarm: {records}"
+    d.shell("cmd statusbar expand-notifications")
+    time.sleep(1.5)
+    d.tap("Dismiss")
+    time.sleep(2)
+    d.shell("cmd statusbar collapse")
+    # Alone, the same reminder still pops up.
+    d.shell(f"am force-stop {d.PACKAGE}")
+    sql(f"update habit set reminderType='NOTIFICATION' where id={wake}; delete from entry where habitId={wake} and date={_epoch_day()}")
+    fire(read)
+    records = reminder_records()
+    assert records and "groupKey=silent" not in records[0], f"a reminder with no alarm due was quiet: {records}"
+    assert entry(wake) == "" and entry(read) == ""
 
 
 @check

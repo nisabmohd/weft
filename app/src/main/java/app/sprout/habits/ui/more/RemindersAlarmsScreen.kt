@@ -32,7 +32,6 @@ import app.sprout.habits.ui.alarm.CardRowPadding
 import app.sprout.habits.ui.alarm.ExtraPhoneSettingsRow
 import app.sprout.habits.ui.alarm.ExtraPhoneSettingsSheet
 import app.sprout.habits.ui.alarm.SetupLinkRow
-import app.sprout.habits.ui.alarm.needsExtraPhoneSettings
 import app.sprout.habits.ui.alarm.permissionRows
 import app.sprout.habits.ui.alarm.rememberAlarmSetup
 import app.sprout.habits.ui.components.TimePickerSheet
@@ -41,8 +40,8 @@ import kotlinx.coroutines.launch
 
 /**
  * More → Reminders & alarms (more-reminders-alarms-screen.png), built like Backup & restore:
- * Reminders (Default reminder), Allow Weft to (the three switches with the real state, then Extra
- * phone settings on the phones that need it) and Sound (Alarm sound, Vibrate, Notification sound ↗).
+ * Reminders (Default reminder), Allow Weft to (the switches with the real state, then Extra
+ * phone settings) and Sound (Alarm sound, Vibrate, Notification sound ↗).
  * No status card: the switches show the state.
  */
 @Composable
@@ -70,8 +69,7 @@ fun RemindersAlarmsScreen(settings: Settings, repository: SettingsRepository, on
             }
 
             SectionLabel(stringResource(R.string.allow_weft_to))
-            val allow = permissionRows(state, CardRowPadding) +
-                if (needsExtraPhoneSettings) listOf(@Composable { ExtraPhoneSettingsRow(CardRowPadding) { extra = true } }) else emptyList()
+            val allow = permissionRows(state, CardRowPadding) + listOf(@Composable { ExtraPhoneSettingsRow(CardRowPadding) { extra = true } })
             SettingsGroup(*allow.asCardRows())
 
             SectionLabel(stringResource(R.string.alarms_sound_section))
@@ -83,11 +81,11 @@ fun RemindersAlarmsScreen(settings: Settings, repository: SettingsRepository, on
                     }
                 },
                 {
-                    SwitchRow(stringResource(R.string.alarm_vibrate), null, settings.alarmVibrate) { on ->
+                    SwitchRow(stringResource(R.string.alarm_vibrate), stringResource(R.string.alarm_vibrate_desc), settings.alarmVibrate) { on ->
                         scope.launch { repository.setAlarmVibrate(on) }
                     }
                 },
-                { SetupLinkRow(stringResource(R.string.notification_sound), null, CardRowPadding) { Notifications.openSettings(context) } },
+                { SetupLinkRow(stringResource(R.string.notification_sound), stringResource(R.string.notification_sound_desc), CardRowPadding) { Notifications.openSettings(context) } },
             )
         }
     }
@@ -126,7 +124,6 @@ fun remindersLine(state: AlarmSetupState): String = stringResource(
     when (state.missing.firstOrNull()) {
         null -> R.string.reminders_all_allowed
         AlarmNeed.NOTIFICATIONS -> R.string.reminders_off_notifications
-        AlarmNeed.POP_UP -> R.string.reminders_off_pop_up
         AlarmNeed.EXACT_ALARMS -> R.string.reminders_off_exact
         AlarmNeed.FULL_SCREEN -> R.string.reminders_off_full_screen
     },

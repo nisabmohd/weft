@@ -1,5 +1,6 @@
 package app.sprout.habits.ui.habits
 
+import app.sprout.habits.ui.components.PendingUndoHost
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
 import app.sprout.habits.ui.components.tick
@@ -78,6 +79,7 @@ fun HabitsScreen(
     val colors = MaterialTheme.colorScheme
     val snackbar = remember { SnackbarHostState() }
     DayLogHost(viewModel.logger, snackbar)
+    PendingUndoHost(snackbar)
 
     Box(Modifier.fillMaxSize()) {
     // The header stays put while the list scrolls under it, so its buttons are always in reach.

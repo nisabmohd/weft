@@ -56,24 +56,26 @@ Designs: `alarm-7-two-alarms-1-of-2.png`, `alarm-8-two-alarms-2-of-2.png`.
 - A small chip above the tile shows the position: "1 of 2" (13sp SemiBold, habit `mid` / `ink`). Under the time, "Next: Workout" names the next one (14sp, `ink` at 75%).
 - Answering the first (slide, Skip today, Log amount → Save, or Dismiss) shows the next habit straight away with "2 of 2", in its own habit colour, without ringing again. The last screen has no "Next" line.
 - **Snooze** snoozes only the habit on screen and moves on to the next one. **Open Weft** opens the app on Today and leaves the rest unanswered (their notifications stay).
+- **A notification reminder at the same minute** (another habit, reminder type Notification): the alarm is the only thing that pops up and sounds; the reminder goes into the shade quietly (no banner, no sound, no `NotificationChime`), whichever arrives first: while an alarm rings or waits (`AlarmRinger` queue), or when another habit's alarm is due at that minute today and isn't done or skipped (`ReminderNotifier.alarmDueWith`). Alone, a reminder pops up as usual (user, 2026-11-11: a reminder and an alarm came a second apart on a OnePlus 13s). Tests: `AlarmTogetherTest`, smoke `notification_and_alarm_at_the_same_time`.
 
 ## 7. Set up alarms sheet (`alarm-9a/b/c-setup-sheet-*.png`)
 Plain language, short, and built like the app's other sheets.
 
 - Title "Set up alarms" (no subtitle).
-- Three one-line rows, each with the app switch (on = allowed, off = missing; tapping opens that system page; the switch updates on return, `ON_RESUME`):
-  - **Show reminders**: notifications (Android 13+)
-  - **Ring on the minute**: exact alarms (Android 12+)
-  - **Ring full screen when locked**: full-screen intent (Android 14+)
+- Rows with the app switch and a line saying what each is for (on = allowed, off = missing; tapping opens that system page; the switch updates on return, `ON_RESUME`) (user, 2026-11-11):
+  - **Send notifications** · "For reminders. Tap to choose banners, sound and lock screen." Every phone. Tapping asks for the permission (13+) or opens Weft's notification settings, where the person picks how they show. No separate Banner toggle (user, 2026-11-11, like Instagram); while banners are off it says "Banners are off, so reminders won't pop up. Tap to turn them on."
+  - **Ring alarms on time** · "Without this, Android may ring them a few minutes late." (exact alarms, Android 12+)
+  - **Show alarms full screen** · "An alarm fills the screen, even when the phone is locked." (full-screen intent, Android 14+)
   - Hide rows this Android version doesn't need. The labels say what the person gets, not Android's permission names.
-- **Extra phone settings** ↗ ("Only needed on some phones"): one row, shown only on phones whose maker adds its own switches (ColorOS / OnePlus / Oppo / Realme, Xiaomi / HyperOS, Vivo, Huawei, Samsung battery). It opens the Extra phone settings sheet.
+- **Extra phone settings** ↗ ("Only needed on some phones"): one row, on every phone (no list of phone makers, user 2026-11-11). It opens the Extra phone settings sheet.
+- System pages open through `notify/SystemPages.kt`: inside Weft's task, never with `FLAG_ACTIVITY_NEW_TASK` (with it, a Settings task left on another page could come back instead of the page asked for), each with fallbacks (app notifications, then Weft's app info) for phones that lack the exact page.
 - Bottom `WeftButton`: secondary **Use a notification instead** while a switch is off, primary **Done** when all three are on.
 - Opens when Alarm is picked and something is missing, and from the Reminder card warning.
 
 ## 7b. Extra phone settings sheet (`extra-phone-settings-sheet.png`, opened from Reminders & alarms or Set up alarms)
 - Title, plus one muted line: "Some phones stop alarms on their own. Android can't tell us if these are on, so check them once."
-- **Show over other apps** switch ("Optional · helps the alarm open", `SYSTEM_ALERT_WINDOW`, the real state). It's optional: it's never counted, never blocks Done and never triggers a warning.
-- **Lock screen & pop-ups** ↗ ("Turn both on") and **Battery** ↗ ("Set to "Don't restrict""). They open the maker's pages and never show a state.
+- **Show over other apps** switch ("Optional · lets an alarm open over other apps", `SYSTEM_ALERT_WINDOW`, the real state). It's optional: it's never counted, never blocks Done and never triggers a warning. Android 11+ opens the list of apps (Android ignores the app named in the public intent); Weft tries AOSP's per-app page first.
+- **Lock screen & pop-ups** ↗ ("Turn both on in Weft's app info") and **Battery** ↗ ("Set to "Don't restrict" so alarms aren't stopped"). They open Weft's app info and never show a state.
 - Primary **Done**.
 
 ## 8. Reminder card warning (`alarm-10-reminder-card-warning.png`)
@@ -95,8 +97,8 @@ Plain language, short, and built like the app's other sheets.
   - Never "All set" or "N things to allow".
 - It opens one simple screen, "Reminders & alarms", built like Backup & restore. Everything about reminders lives here:
   - **Reminders**: Default reminder › 9:00 AM ("For new habits"). This **moves here from More → General**, so General is Language, Week starts on, then Reminders & alarms.
-  - **Allow Weft to**: Show reminders / Ring on the minute / Ring full screen when locked (switches), then **Extra phone settings** ↗ (only on phones that need it; opens 7b).
-  - **Sound**: Alarm sound › Weft (opens the sound sheet), Vibrate (switch, on by default), Notification sound ↗ (Android's notification settings for Weft).
+  - **Allow Weft to**: Send notifications / Ring alarms on time / Show alarms full screen (switches with a line each, see 7), then **Extra phone settings** ↗ (opens 7b).
+  - **Sound**: Alarm sound › Weft (opens the sound sheet), Vibrate ("When an alarm rings", on by default), Notification sound ↗ ("Change it in your phone's settings").
   - There's no status card and no "Needed / On some phones" split. The switches show the state.
 - `NotificationSetupSheet` is no longer needed. More opens the screen.
 
@@ -111,7 +113,7 @@ Plain language, short, and built like the app's other sheets.
 - Built (2026-11-08): the screen is its own task, so closing it returns to the app underneath. Back is Dismiss only while the phone is unlocked; on the lock screen it still does nothing. In a call (or while one rings in), the Show over other apps fallback doesn't open the screen and the sound plays at 20 % (`IN_CALL_VOLUME`).
 
 ## Exact time (applies to notification reminders too)
-- "Ring on the minute" is Android's exact-alarm permission: Settings → Apps → Special app access → Alarms & reminders (`SCHEDULE_EXACT_ALARM`; `USE_EXACT_ALARM` is allowed for alarm-clock apps on Android 13+).
+- "Ring alarms on time" is Android's exact-alarm permission: Settings → Apps → Special app access → Alarms & reminders (`SCHEDULE_EXACT_ALARM`; `USE_EXACT_ALARM` is allowed for alarm-clock apps on Android 13+).
 - It is used for **every** reminder, notification or alarm: schedule with `AlarmManager.setAlarmClock()` for alarms and `setExactAndAllowWhileIdle()` for notification reminders.
 - If it's off, fall back to `setAndAllowWhileIdle()`. Reminders still come, but can be a few minutes late in Doze. Check `canScheduleExactAlarms()` on each app start and listen for `ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED` to reschedule.
 - Possible rename (not decided): "Remind at the exact time" / "Otherwise reminders can be a few minutes late".
@@ -138,6 +140,6 @@ Plain language, short, and built like the app's other sheets.
 
 - ColorOS creates every new Weft channel at default importance with no sound and no vibration, whatever Weft asks for. A default-importance alarm never opens full screen (Android needs a pop-up channel), and reminders arrived silently in the shade.
 - Channels are now `reminders_popup` (reminders and the evening note nudge, so one switch less) and `alarms_popup`, both high importance; the old ones are deleted. The alarm channel's own sound is half a second of silence, so no phone files it as Silent; `AlarmSoundService` still plays the alarm.
-- Set up alarms and Reminders & alarms get **Banner notifications** (user's name for it) after Show reminders: always on the phone makers with Extra phone settings, elsewhere only while off. Each tap opens the next channel still off, on its own page; the row says "1 of 2 on" in between. The Reminder card says "banners are off", More says "Banner notifications are off". The fallback buzz is marked as a notification vibration: Android drops a plain one from an app in the background.
+- The Banner notifications row (1.6.2) was removed on 2026-11-11 (user: one notifications row is enough): Send notifications opens Weft's notification settings and its line asks for banners while a channel doesn't pop up. The fallback buzz is marked as a notification vibration: Android drops a plain one from an app in the background.
 - When a reminder's channel has no sound, Weft plays the phone's notification sound and vibrates itself (`NotificationChime`), except in silent mode (vibrate mode: buzz only), Do Not Disturb, a call, or for a channel the user set Silent or off. A +step update doesn't alert again.
 - ColorOS also stretches a plain exact alarm into a window of up to an hour (measured: 80 s for one 2 minutes away, an hour for one 3 hours away), with battery limits off. On the makers in `AlarmSetup.delaysExactAlarms` notification reminders and the 9 PM note nudge are scheduled as alarm clocks, which stay on the minute; the status bar shows the alarm icon (user's choice, 2026-11-09). Other phones keep plain exact alarms.

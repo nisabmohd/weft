@@ -656,21 +656,24 @@
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
     <string name="action_done">Fertig</string>
     <string name="set_up_alarms">Wecker einrichten</string>
-    <string name="alarm_need_notifications">Erinnerungen anzeigen</string>
-    <string name="alarm_need_pop_up">Banner-Benachrichtigungen</string>
-    <string name="alarm_need_pop_up_progress">%1$d von %2$d an</string>
-    <string name="alarm_need_exact">Auf die Minute klingeln</string>
-    <string name="alarm_need_full_screen">Bei Sperre im Vollbild klingeln</string>
+    <string name="alarm_need_notifications">Benachrichtigungen senden</string>
+    <string name="alarm_need_notifications_desc">Für Erinnerungen. Tippen, um Banner, Ton und Sperrbildschirm zu wählen.</string>
+    <string name="alarm_need_notifications_banners_off">Banner sind aus, Erinnerungen erscheinen also nicht. Tippen zum Einschalten.</string>
+    <string name="alarm_need_exact">Wecker pünktlich klingeln lassen</string>
+    <string name="alarm_need_exact_desc">Sonst klingelt Android sie vielleicht ein paar Minuten zu spät.</string>
+    <string name="alarm_need_full_screen">Wecker im Vollbild zeigen</string>
+    <string name="alarm_need_full_screen_desc">Ein Wecker füllt den Bildschirm, auch wenn das Handy gesperrt ist.</string>
     <string name="alarm_overlay">Über anderen Apps anzeigen</string>
-    <string name="alarm_overlay_desc">Optional · hilft, den Wecker zu öffnen</string>
+    <string name="alarm_overlay_desc">Optional · der Wecker kann sich über anderen Apps öffnen</string>
     <string name="alarm_lock_screen">Sperrbildschirm &amp; Pop-ups</string>
-    <string name="alarm_lock_screen_desc">Beides einschalten</string>
+    <string name="alarm_lock_screen_desc">Beides in den App-Infos von Weft einschalten</string>
     <string name="alarm_battery">Akku</string>
-    <string name="alarm_battery_desc">Auf „Nicht einschränken“ stellen</string>
+    <string name="alarm_battery_desc">Auf „Nicht einschränken“ stellen, damit Wecker nicht gestoppt werden</string>
     <string name="alarm_use_notification">Stattdessen Benachrichtigung</string>
     <string name="alarms_sound_section">Ton</string>
     <string name="alarm_sound">Weckton</string>
     <string name="alarm_vibrate">Vibrieren</string>
+    <string name="alarm_vibrate_desc">Wenn ein Wecker klingelt</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">Standard</string>
     <string name="alarm_sound_weft_soft">Weft · Sanft</string>
@@ -685,7 +688,6 @@
     <string name="reminder_fix_notifications">Benachrichtigungen sind aus</string>
     <string name="reminder_fix_exact">klingelt evtl. zu spät</string>
     <string name="reminder_fix_full_screen">kein Vollbild möglich</string>
-    <string name="reminder_fix_pop_up">Banner sind aus</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Erinnerungen &amp; Wecker</string>
     <string name="reminders_section">Erinnerungen</string>
@@ -694,9 +696,9 @@
     <string name="extra_phone_settings_desc">Nur auf manchen Handys nötig</string>
     <string name="extra_phone_settings_text">Manche Handys stoppen Wecker von selbst. Android kann nicht sagen, ob diese an sind – prüfe sie also einmal.</string>
     <string name="notification_sound">Benachrichtigungston</string>
+    <string name="notification_sound_desc">In den Einstellungen deines Handys ändern</string>
     <string name="reminders_all_allowed">Benachrichtigungen und Wecker erlaubt</string>
     <string name="reminders_off_notifications">Benachrichtigungen sind aus</string>
-    <string name="reminders_off_pop_up">Banner-Benachrichtigungen sind aus</string>
     <string name="reminders_off_exact">Wecker klingeln evtl. zu spät</string>
     <string name="reminders_off_full_screen">Wecker können nicht im Vollbild klingeln</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
@@ -720,4 +722,19 @@
     <string name="icon_speak">Sprechen</string>
     <string name="icon_weekly_review">Wochenrückblick</string>
     <string name="icon_scripture">Heilige Schrift</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">Löschen</string>
+    <string name="action_remove">Entfernen</string>
+    <string name="archive_habit_title">%1$s archivieren?</string>
+    <string name="archive_habit_text">Sie verschwindet aus Heute, Widgets und Erinnerungen. Tage und Notizen bleiben, und du kannst sie unter Gewohnheiten verwalten wiederherstellen.</string>
+    <string name="habit_archived">%1$s archiviert</string>
+    <string name="habit_restored">%1$s wiederhergestellt</string>
+    <string name="habit_deleted">%1$s gelöscht</string>
+    <string name="sample_remove_title">Beispieldaten entfernen?</string>
+    <string name="sample_remove_text">Die Beispiel-Gewohnheiten werden mit ihren Tagen und Notizen gelöscht. Deine eigenen bleiben.</string>
+    <string name="sample_data_removed">Beispieldaten entfernt</string>
+    <string name="clear_suggestions_title">Vorschlagsverlauf löschen?</string>
+    <string name="clear_suggestions_text">Schreibvorschläge lernen nicht mehr aus deinen bisherigen Notizen. Deine Notizen bleiben.</string>
+    <string name="drive_disconnect_title">Google Drive trennen?</string>
+    <string name="drive_disconnect_text">Automatische Sicherungen stoppen. Deine Sicherungen bleiben in Drive.</string>
 </resources>

@@ -4,10 +4,11 @@
 
 Added:
 
-- Set up alarms: picking Alarm for a reminder shows what an alarm needs on your phone in one sheet, as three switches that show whether each is allowed and open the right settings page: Show reminders, Ring on the minute, Ring full screen when locked. "Use a notification instead" if you'd rather not. The Reminder card says when an alarm can't ring properly ("Alarm · can't ring full screen · tap to fix").
-- More → Reminders & alarms: one place for everything about reminders: the default reminder time (moved here from More), the same three switches, alarm sound, vibrate and notification sound. The row says in plain words when something is off ("Alarms may ring late").
+- Set up alarms: picking Alarm for a reminder shows what an alarm needs on your phone in one sheet, as switches that show whether each is allowed and open the right settings page, each with a line saying what it's for: Send notifications, Ring alarms on time, Show alarms full screen. "Use a notification instead" if you'd rather not. The Reminder card says when an alarm can't ring properly ("Alarm · can't ring full screen · tap to fix").
+- More → Reminders & alarms: one place for everything about reminders: the default reminder time (moved here from More), the same switches, alarm sound, vibrate and notification sound. The row says in plain words when something is off ("Alarms may ring late").
 - Alarm sound: Weft's own tone (the new default) or a softer one, the phone's alarm sound, or any sound on your phone. Tap one to hear it. Backups keep the choice.
-- Extra phone settings, on OnePlus, Oppo, Realme, Xiaomi, Vivo, Huawei, Honor and Samsung phones: an optional "Show over other apps" switch, so Weft can open a ringing alarm when the phone doesn't, and shortcuts to the lock screen and battery settings these phones add.
+- Extra phone settings, on every phone: an optional "Show over other apps" switch, so Weft can open a ringing alarm when the phone doesn't, and shortcuts to Weft's app info (where many phones keep lock screen and pop-up switches) and its battery page.
+- Ask first, then Undo: archiving or deleting a habit, deleting a note from the Journal, removing the sample data, clearing suggestion history and disconnecting Google Drive ask before they happen. Afterwards the Undo bar says what happened ("Read archived · Undo"), even on the screen you land on, and Undo puts it back exactly: a deleted habit comes back with its days and notes.
 - Ten new habit icons: No sugar, Less coffee, Sunlight, Breathe, Scripture, Gratitude, Speak, Focus, Weekly review and Less social media. Water, Medicine, Fasting and Art have clearer icons.
 - A green accent, the logo's colour, in place of amber. Rust is the new default; if you had amber, you now have rust.
 
@@ -17,6 +18,8 @@ Changed:
 - When a filter leaves the Journal empty, it says which ("No Vitamins notes yet") and offers Show all notes.
 - With "Show over other apps" on, a ringing alarm fills the screen while you're using the phone too, not only on the lock screen. Answering it takes you back to the app you were in, and there Back is Dismiss (on the lock screen Back still does nothing). During a call it stays a notification and rings quietly.
 - The sample habits have No sugar in place of Stay calm.
+- Notifications: one "Send notifications" row opens Weft's notification settings, where you choose banners, sound and lock screen. The separate Banner notifications switch is gone; the row says when banners are off.
+- The widget previews in the home screen's widget list are drawn fresh, in light and dark, with no empty space and no dark edge at the corners.
 
 Fixed:
 
@@ -27,6 +30,9 @@ Fixed:
 - The second of two alarms at the same time ("2 of 2") opened with its slider already on the right.
 - The next alarm's notification popped up over the ringing screen and hid Open Weft.
 - "Snooze 10 min" was cut off ("Snooze 10 m…") at a large text size: button text now shrinks to fit.
+- The switches on Reminders & alarms could open the wrong settings page (on OnePlus, the lock screen notifications page): a Settings page left open in the background came back instead. Each opens its own page now, on every phone, and Back returns to Weft.
+- A notification reminder and another habit's alarm at the same minute both popped up a second apart. The alarm alone pops up and rings now; the reminder waits quietly in the notification shade.
+- Clear suggestion history and Archive happened at once, with no way back.
 
 ## 1.6.1
 

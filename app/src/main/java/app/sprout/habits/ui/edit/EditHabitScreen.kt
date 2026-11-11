@@ -1,5 +1,6 @@
 package app.sprout.habits.ui.edit
 
+import app.sprout.habits.ui.manage.ArchiveHabitSheet
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
@@ -103,6 +104,7 @@ fun EditHabitScreen(viewModel: EditHabitViewModel, onClose: () -> Unit, onDelete
     LaunchedEffect(viewModel) { viewModel.deleted.collect { onDeleted() } }
     if (!form.loaded) return
     var deleting by rememberSaveable { mutableStateOf(false) }
+    var archiving by rememberSaveable { mutableStateOf(false) }
     EditHabitContent(
         form = form,
         onEdit = viewModel::edit,
@@ -110,11 +112,15 @@ fun EditHabitScreen(viewModel: EditHabitViewModel, onClose: () -> Unit, onDelete
         onSave = viewModel::save,
         onClose = onClose,
         archiveLabel = stringResource(if (viewModel.isArchived) R.string.restore else R.string.archive),
-        onArchive = viewModel::archive,
+        // Archiving asks first; restoring just happens. Both offer Undo.
+        onArchive = { if (viewModel.isArchived) viewModel.archive() else archiving = true },
         onDelete = { deleting = true },
     )
     if (deleting) {
         DeleteHabitSheet(form.name, onDelete = { deleting = false; viewModel.delete() }, onDismiss = { deleting = false })
+    }
+    if (archiving) {
+        ArchiveHabitSheet(form.name, onArchive = { archiving = false; viewModel.archive() }, onDismiss = { archiving = false })
     }
 }
 
@@ -326,9 +332,8 @@ private fun EditHabitContent(
 
             // alarm-10-reminder-card-warning.png: the most important thing an alarm still needs.
             val alarmWarning = form.reminderOn && form.reminderType == ReminderType.ALARM && !alarmSetup.allSet
-            // A notification reminder needs only notifications and pop-ups (any phone that turns
-            // pop-ups off for new apps, ColorOS first seen, 2026-11-09); tapping opens that setting.
-            val notificationFix = alarmSetup.missing.firstOrNull { it == AlarmNeed.NOTIFICATIONS || it == AlarmNeed.POP_UP }
+            // A notification reminder needs only notifications; tapping opens that setting.
+            val notificationFix = alarmSetup.missing.firstOrNull { it == AlarmNeed.NOTIFICATIONS }
                 ?.takeIf { form.reminderOn && form.reminderType == ReminderType.NOTIFICATION }
             val reminderWarning = alarmWarning || notificationFix != null
             Section(stringResource(R.string.reminder)) {
@@ -360,7 +365,6 @@ private fun EditHabitContent(
                                         stringResource(
                                             when (if (alarmWarning) alarmSetup.missing.first() else notificationFix!!) {
                                                 AlarmNeed.NOTIFICATIONS -> R.string.reminder_fix_notifications
-                                                AlarmNeed.POP_UP -> R.string.reminder_fix_pop_up
                                                 AlarmNeed.EXACT_ALARMS -> R.string.reminder_fix_exact
                                                 AlarmNeed.FULL_SCREEN -> R.string.reminder_fix_full_screen
                                             },

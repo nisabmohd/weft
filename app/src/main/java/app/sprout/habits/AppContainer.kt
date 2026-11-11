@@ -21,7 +21,7 @@ class AppContainer(private val context: Context) {
     val repository by lazy { HabitRepository(database) { settings.hideSampleBanner() } }
     val settings by lazy { SettingsRepository(context) }
     val reminders by lazy { ReminderScheduler(context, repository) }
-    val reminderNotifier by lazy { ReminderNotifier(context, repository) }
+    val reminderNotifier by lazy { ReminderNotifier(context, repository) { alarmRinger.queue.value.isNotEmpty() } }
     val alarmRinger by lazy { app.sprout.habits.notify.AlarmRinger(context, repository, settings) }
     val notificationUndo by lazy { app.sprout.habits.notify.NotificationUndo(context) }
     val widgets by lazy { WidgetUpdater(context, repository, settings) }
@@ -33,4 +33,8 @@ class AppContainer(private val context: Context) {
 
     /** Lives as long as the process, for work that isn't tied to a screen. */
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /** The "… · Undo" message waiting for the next screen, and the changes that offer it. */
+    val pendingUndo by lazy { app.sprout.habits.ui.components.PendingUndo(appScope) }
+    val actions by lazy { app.sprout.habits.ui.UndoableActions(repository, settings, strings, pendingUndo, appScope) }
 }

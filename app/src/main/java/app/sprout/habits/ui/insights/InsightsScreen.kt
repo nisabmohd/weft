@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.insights
 
+import androidx.compose.material3.SnackbarHostState
+import app.sprout.habits.ui.today.UndoSnackbarHost
+import app.sprout.habits.ui.components.PendingUndoHost
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.ProgressRing
@@ -93,6 +96,10 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
     var pickingRange by remember { mutableStateOf(false) }
     var filtering by remember { mutableStateOf(false) }
     val res = LocalContext.current.resources
+    // A habit archived or deleted from its detail page shows its Undo here.
+    val snackbar = remember { SnackbarHostState() }
+    PendingUndoHost(snackbar)
+    Box(Modifier.fillMaxSize()) {
     // The header stays put while the list scrolls under it, so its buttons are always in reach.
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
@@ -134,6 +141,8 @@ fun InsightsScreen(viewModel: InsightsViewModel, weekStart: java.time.DayOfWeek,
             item(key = "bars") { WeeklyRhythm(ui) }
             if (ui.rates.isNotEmpty()) item(key = "rates") { HabitBreakdown(ui.rates, viewModel.breakdownByStreak, { viewModel.breakdownByStreak = it }, onOpenHabit) }
         }
+    }
+    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(horizontal = 8.dp))
     }
 
     if (pickingRange) {

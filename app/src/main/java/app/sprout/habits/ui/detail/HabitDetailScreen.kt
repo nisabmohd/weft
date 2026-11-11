@@ -1,5 +1,8 @@
 package app.sprout.habits.ui.detail
 
+import app.sprout.habits.ui.LocalUndoableActions
+import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.manage.ArchiveHabitSheet
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.key
 import app.sprout.habits.ui.components.groupedShape
@@ -85,8 +88,11 @@ fun HabitDetailScreen(
     val colors = MaterialTheme.colorScheme
     val hc = habitColors(ui.habit.colorHue.toFloat())
     var deleting by remember { mutableStateOf(false) }
+    var archiving by remember { mutableStateOf(false) }
+    val actions = LocalUndoableActions.current
     val snackbar = remember { SnackbarHostState() }
     DayLogHost(viewModel.logger, snackbar)
+    PendingUndoHost(snackbar, name = DETAIL)
 
     Box(Modifier.fillMaxSize().background(colors.background).statusBarsPadding()) {
         LazyColumn(
@@ -104,8 +110,8 @@ fun HabitDetailScreen(
                             if (ui.habit.archived) R.drawable.ic_unarchive else R.drawable.ic_archive,
                             stringResource(if (ui.habit.archived) R.string.restore else R.string.archive),
                         ) {
-                            viewModel.setArchived(!ui.habit.archived)
-                            if (!ui.habit.archived) onBack()
+                            // Archiving asks first and goes back; restoring just happens. Both offer Undo.
+                            if (ui.habit.archived) actions.setArchived(ui.habit, false) else archiving = true
                         }
                         HeaderIconButton(R.drawable.ic_delete, stringResource(R.string.action_delete), danger = true) { deleting = true }
                     }
@@ -179,7 +185,10 @@ fun HabitDetailScreen(
     }
 
     if (deleting) {
-        DeleteHabitSheet(ui.habit.name, onDelete = { deleting = false; viewModel.delete(onBack) }, onDismiss = { deleting = false })
+        DeleteHabitSheet(ui.habit.name, onDelete = { deleting = false; actions.deleteHabit(ui.habit, notOn = DETAIL); onBack() }, onDismiss = { deleting = false })
+    }
+    if (archiving) {
+        ArchiveHabitSheet(ui.habit.name, onArchive = { archiving = false; actions.setArchived(ui.habit, true, notOn = DETAIL); onBack() }, onDismiss = { archiving = false })
     }
 }
 
@@ -298,3 +307,6 @@ private fun CalendarDay(day: CalendarDayUi, hc: HabitColors, editable: Boolean, 
         Text("${day.day}", style = WeftType.label, color = fg)
     }
 }
+
+/** This screen's [PendingUndoHost] name: a change that closes it shows its Undo on the screen underneath. */
+private const val DETAIL = "detail"

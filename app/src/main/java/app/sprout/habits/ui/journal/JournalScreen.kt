@@ -1,5 +1,7 @@
 package app.sprout.habits.ui.journal
 
+import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.components.PromptSheet
 import app.sprout.habits.ui.components.GroupGap
 import app.sprout.habits.ui.components.SectionGapBelow
 import app.sprout.habits.ui.components.SectionGapAbove
@@ -90,7 +92,9 @@ fun JournalScreen(
     var choosing by remember { mutableStateOf(false) }
     var pickingRange by remember { mutableStateOf(false) }
     var actionsFor by remember { mutableStateOf<NoteCardUi?>(null) }
+    var deleting by remember { mutableStateOf<NoteCardUi?>(null) }
     val snackbar = remember { SnackbarHostState() }
+    PendingUndoHost(snackbar)
     val deletedText = stringResource(R.string.note_deleted)
     val undo = stringResource(R.string.action_undo)
     LaunchedEffect(viewModel) {
@@ -228,8 +232,18 @@ fun JournalScreen(
         NoteActionsSheet(
             note,
             onEdit = onOpenNote?.let { open -> { actionsFor = null; open(note.id) } },
-            onDelete = { actionsFor = null; viewModel.deleteNote(note.id) },
+            onDelete = { actionsFor = null; deleting = note },
             onDismiss = { actionsFor = null },
+        )
+    }
+    deleting?.let { note ->
+        // Asked first like Edit note's Delete; the snackbar then offers Undo.
+        PromptSheet(
+            title = stringResource(R.string.delete_note_title),
+            action = stringResource(R.string.action_delete),
+            onAction = { deleting = null; viewModel.deleteNote(note.id) },
+            onDismiss = { deleting = null },
+            actionRole = ButtonRole.Destructive,
         )
     }
     if (choosing && ui != null) {

@@ -665,21 +665,24 @@
     <!-- 1.6.2: Set up alarms, More → Alarms, alarm sound (features/FEATURE-ALARM-REMINDERS.md 7–10) -->
     <string name="action_done">Done</string>
     <string name="set_up_alarms">Set up alarms</string>
-    <string name="alarm_need_notifications">Show reminders</string>
-    <string name="alarm_need_pop_up">Banner notifications</string>
-    <string name="alarm_need_pop_up_progress">%1$d of %2$d on</string>
-    <string name="alarm_need_exact">Ring on the minute</string>
-    <string name="alarm_need_full_screen">Ring full screen when locked</string>
+    <string name="alarm_need_notifications">Send notifications</string>
+    <string name="alarm_need_notifications_desc">For reminders. Tap to choose banners, sound and lock screen.</string>
+    <string name="alarm_need_notifications_banners_off">Banners are off, so reminders won’t pop up. Tap to turn them on.</string>
+    <string name="alarm_need_exact">Ring alarms on time</string>
+    <string name="alarm_need_exact_desc">Without this, Android may ring them a few minutes late.</string>
+    <string name="alarm_need_full_screen">Show alarms full screen</string>
+    <string name="alarm_need_full_screen_desc">An alarm fills the screen, even when the phone is locked.</string>
     <string name="alarm_overlay">Show over other apps</string>
-    <string name="alarm_overlay_desc">Optional · helps the alarm open</string>
+    <string name="alarm_overlay_desc">Optional · lets an alarm open over other apps</string>
     <string name="alarm_lock_screen">Lock screen &amp; pop-ups</string>
-    <string name="alarm_lock_screen_desc">Turn both on</string>
+    <string name="alarm_lock_screen_desc">Turn both on in Weft’s app info</string>
     <string name="alarm_battery">Battery</string>
-    <string name="alarm_battery_desc">Set to “Don’t restrict”</string>
+    <string name="alarm_battery_desc">Set to “Don’t restrict” so alarms aren’t stopped</string>
     <string name="alarm_use_notification">Use a notification instead</string>
     <string name="alarms_sound_section">Sound</string>
     <string name="alarm_sound">Alarm sound</string>
     <string name="alarm_vibrate">Vibrate</string>
+    <string name="alarm_vibrate_desc">When an alarm rings</string>
     <string name="alarm_sound_weft">Weft</string>
     <string name="alarm_sound_weft_desc">Default</string>
     <string name="alarm_sound_weft_soft">Weft · Soft</string>
@@ -694,7 +697,6 @@
     <string name="reminder_fix_notifications">notifications are off</string>
     <string name="reminder_fix_exact">may ring late</string>
     <string name="reminder_fix_full_screen">can’t ring full screen</string>
-    <string name="reminder_fix_pop_up">banners are off</string>
     <!-- 1.6.2: More → Reminders & alarms (design 2026-11-09) -->
     <string name="reminders_alarms">Reminders &amp; alarms</string>
     <string name="reminders_section">Reminders</string>
@@ -703,9 +705,9 @@
     <string name="extra_phone_settings_desc">Only needed on some phones</string>
     <string name="extra_phone_settings_text">Some phones stop alarms on their own. Android can’t tell us if these are on, so check them once.</string>
     <string name="notification_sound">Notification sound</string>
+    <string name="notification_sound_desc">Change it in your phone’s settings</string>
     <string name="reminders_all_allowed">Notifications and alarms allowed</string>
     <string name="reminders_off_notifications">Notifications are off</string>
-    <string name="reminders_off_pop_up">Banner notifications are off</string>
     <string name="reminders_off_exact">Alarms may ring late</string>
     <string name="reminders_off_full_screen">Alarms can’t ring full screen</string>
     <!-- 1.6.2: habit-chip filter, Journal empty state (design 2026-11-09) -->
@@ -729,4 +731,19 @@
     <string name="icon_speak">Speak</string>
     <string name="icon_weekly_review">Weekly review</string>
     <string name="icon_scripture">Scripture</string>
+    <!-- Ask first, then Undo (2026-11-11) -->
+    <string name="action_clear">Clear</string>
+    <string name="action_remove">Remove</string>
+    <string name="archive_habit_title">Archive %1$s?</string>
+    <string name="archive_habit_text">It leaves Today, widgets and reminders. Its days and notes stay, and you can restore it from Manage habits.</string>
+    <string name="habit_archived">%1$s archived</string>
+    <string name="habit_restored">%1$s restored</string>
+    <string name="habit_deleted">%1$s deleted</string>
+    <string name="sample_remove_title">Remove sample data?</string>
+    <string name="sample_remove_text">The sample habits are deleted with their days and notes. Your own habits stay.</string>
+    <string name="sample_data_removed">Sample data removed</string>
+    <string name="clear_suggestions_title">Clear suggestion history?</string>
+    <string name="clear_suggestions_text">Writing suggestions stop learning from the notes you’ve written so far. Your notes stay.</string>
+    <string name="drive_disconnect_title">Disconnect Google Drive?</string>
+    <string name="drive_disconnect_text">Automatic backups stop. Your backups stay in Drive.</string>
 </resources>

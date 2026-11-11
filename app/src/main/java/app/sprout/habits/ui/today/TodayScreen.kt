@@ -1,5 +1,10 @@
 package app.sprout.habits.ui.today
 
+import app.sprout.habits.ui.components.PendingUndoHost
+import app.sprout.habits.ui.components.PromptSheet
+import app.sprout.habits.ui.components.ButtonRole
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import app.sprout.habits.ui.theme.WeftType
@@ -98,6 +103,18 @@ fun TodayScreen(
         )
     }
     DayLogHost(viewModel.logger, snackbar)
+    PendingUndoHost(snackbar)
+    var confirmRemoveSample by remember { mutableStateOf(false) }
+    if (confirmRemoveSample) {
+        PromptSheet(
+            title = stringResource(R.string.sample_remove_title),
+            text = stringResource(R.string.sample_remove_text),
+            action = stringResource(R.string.action_remove),
+            onAction = { confirmRemoveSample = false; onRemoveSampleData() },
+            onDismiss = { confirmRemoveSample = false },
+            actionRole = ButtonRole.Destructive,
+        )
+    }
     Box(Modifier.fillMaxSize()) {
         TodayContent(
             state,
@@ -110,7 +127,7 @@ fun TodayScreen(
             onLongPress = viewModel::openLogSheet,
             onOpen = onOpenHabit,
             sampleCard = if (hasSampleData) {
-                { SampleDataCard(onRemove = onRemoveSampleData) }
+                { SampleDataCard(onRemove = { confirmRemoveSample = true }) }
             } else {
                 null
             },

@@ -1,5 +1,10 @@
 package app.sprout.habits.ui.manage
 
+import app.sprout.habits.ui.LocalUndoableActions
+import app.sprout.habits.ui.components.PendingUndoHost
+import androidx.compose.material3.SnackbarHostState
+import app.sprout.habits.ui.today.UndoSnackbarHost
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import app.sprout.habits.ui.components.HabitTile
@@ -66,6 +71,10 @@ fun ManageHabitsScreen(
     val active by viewModel.active.collectAsStateWithLifecycle()
     val archived by viewModel.archived.collectAsStateWithLifecycle()
     var deleting by remember { mutableStateOf<Habit?>(null) }
+    var archiving by remember { mutableStateOf<Habit?>(null) }
+    val actions = LocalUndoableActions.current
+    val snackbar = remember { SnackbarHostState() }
+    PendingUndoHost(snackbar)
 
     // Local copy so a drag can reorder instantly; replaced whenever the database changes.
     val order = remember { mutableStateListOf<Habit>() }
@@ -88,6 +97,7 @@ fun ManageHabitsScreen(
     fun commit() = viewModel.reorder(order.map { it.id })
 
     val colors = MaterialTheme.colorScheme
+    Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding()) {
         Row(
             Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 16.dp, top = 8.dp),
@@ -162,7 +172,7 @@ fun ManageHabitsScreen(
                     },
                 ) {
                     TextButton(onClick = { onEdit(habit.id) }) { Text(stringResource(R.string.edit)) }
-                    TextButton(onClick = { viewModel.setArchived(habit, true) }) { Text(stringResource(R.string.archive)) }
+                    TextButton(onClick = { archiving = habit }) { Text(stringResource(R.string.archive)) }
                 }
             }
             if (archived.isNotEmpty()) {
@@ -172,16 +182,21 @@ fun ManageHabitsScreen(
                 }
                 items(archived, key = { "a${it.id}" }) { habit ->
                     HabitRow(habit, Modifier.animateItem(), elevated = false, handleModifier = null) {
-                        TextButton(onClick = { viewModel.setArchived(habit, false) }) { Text(stringResource(R.string.restore)) }
+                        TextButton(onClick = { actions.setArchived(habit, false) }) { Text(stringResource(R.string.restore)) }
                         TextButton(onClick = { deleting = habit }) { Text(stringResource(R.string.action_delete), color = colors.error) }
                     }
                 }
             }
         }
     }
+    UndoSnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = 8.dp))
+    }
 
     deleting?.let { habit ->
-        DeleteHabitSheet(habit.name, onDelete = { viewModel.delete(habit); deleting = null }, onDismiss = { deleting = null })
+        DeleteHabitSheet(habit.name, onDelete = { actions.deleteHabit(habit); deleting = null }, onDismiss = { deleting = null })
+    }
+    archiving?.let { habit ->
+        ArchiveHabitSheet(habit.name, onArchive = { actions.setArchived(habit, true); archiving = null }, onDismiss = { archiving = null })
     }
 }
 

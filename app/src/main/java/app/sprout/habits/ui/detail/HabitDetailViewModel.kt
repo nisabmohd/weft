@@ -99,17 +99,6 @@ class HabitDetailViewModel(
         if (month.value < YearMonth.now()) month.value = month.value.plusMonths(1)
     }
 
-    fun setArchived(archived: Boolean) {
-        viewModelScope.launch { repository.setArchived(habitId, archived) }
-    }
-
-    fun delete(onDone: () -> Unit) {
-        viewModelScope.launch {
-            repository.getHabit(habitId)?.let { repository.deleteHabit(it) }
-            onDone()
-        }
-    }
-
     private fun build(habit: Habit, entries: List<Entry>, notes: List<Note>, ym: YearMonth, weekStart: DayOfWeek): HabitDetailUi {
         val today = LocalDate.now()
         val todayDay = today.toEpochDay()

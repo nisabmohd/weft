@@ -165,6 +165,9 @@ class SettingsRepository(context: Context) {
     }
     suspend fun setWritingSuggestions(enabled: Boolean) = store.edit { it[WRITING_SUGGESTIONS] = enabled }
     suspend fun clearSuggestionHistory(now: Long = System.currentTimeMillis()) = store.edit { it[SUGGESTIONS_CLEARED_AT] = now }
+
+    /** Undo for [clearSuggestionHistory]: puts back the time it had before. */
+    suspend fun setSuggestionsClearedAt(at: Long) = store.edit { it[SUGGESTIONS_CLEARED_AT] = at }
     suspend fun setAlarmSound(sound: String) = store.edit { it[ALARM_SOUND] = sound }
     suspend fun setAlarmVibrate(on: Boolean) = store.edit { it[ALARM_VIBRATE] = on }
     suspend fun addCheckIn() = store.edit { it[CHECK_INS] = (it[CHECK_INS] ?: 0) + 1 }

@@ -4,10 +4,8 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import androidx.core.content.ContextCompat
 import app.sprout.habits.R
 
@@ -77,32 +75,14 @@ object Notifications {
 
     /**
      * True when Weft's notifications pop up on screen. Android only opens an alarm full screen
-     * from a channel that pops up; ColorOS sets every new channel below that (2026-11-09).
+     * from a channel that pops up; ColorOS sets every new channel below that (2026-11-09). Not a
+     * row of its own (user, 2026-11-11): the notifications row's line asks for banners while off.
      */
     fun canPopUp(context: Context): Boolean = quietChannels(context).isEmpty()
 
-    /** How many of the banner channels are on, of how many: the row's "1 of 2 on". */
-    fun popUpProgress(context: Context): Pair<Int, Int> = (POP_UP_CHANNELS.size - quietChannels(context).size) to POP_UP_CHANNELS.size
-
-    /** Opens the next channel that isn't a banner yet, straight on its own page. */
-    fun openPopUpSettings(context: Context) {
-        val next = quietChannels(context).firstOrNull() ?: return openSettings(context)
-        context.startActivity(
-            Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                .putExtra(Settings.EXTRA_CHANNEL_ID, next)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
-    }
-
     /** Opens "Alarms & reminders" for this app (Android 12+), where exact alarms are allowed. */
     fun openExactAlarmSettings(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            context.startActivity(
-                Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, android.net.Uri.parse("package:${context.packageName}"))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-            )
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) SystemPages.exactAlarms(context)
     }
 
     /** True when alarms may open full screen: always before Android 14, then only if allowed. */
@@ -111,20 +91,9 @@ object Notifications {
 
     /** Opens "Full screen notifications" for this app (Android 14+). */
     fun openFullScreenSettings(context: Context) {
-        if (Build.VERSION.SDK_INT >= 34) {
-            context.startActivity(
-                Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, android.net.Uri.parse("package:${context.packageName}"))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-            )
-        }
+        if (Build.VERSION.SDK_INT >= 34) SystemPages.fullScreen(context)
     }
 
     /** Opens the system screen for this app's notifications. */
-    fun openSettings(context: Context) {
-        context.startActivity(
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
-    }
+    fun openSettings(context: Context) = SystemPages.appNotifications(context)
 }

@@ -97,6 +97,7 @@ fun DriveBackupContent(
     var formatSheet by remember { mutableStateOf(false) }
     var restoreSheet by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    var confirmDisconnect by remember { mutableStateOf(false) }
     var backups by remember { mutableStateOf<List<DriveBackupInfo>?>(null) }
     var restoreToken by remember { mutableStateOf<String?>(null) }
 
@@ -284,15 +285,26 @@ fun DriveBackupContent(
                     accountSheet = false
                     start(DriveStep.CONNECT)
                 })
-                ActionRow(R.drawable.ic_link, stringResource(R.string.drive_disconnect), 1, 3, {
-                    accountSheet = false
-                    // Says so straight away; Google removes the access in the background.
-                    scope.launch { drive.disconnect() }
-                    onMessage(context.getString(R.string.drive_disconnected))
-                })
+                ActionRow(R.drawable.ic_link, stringResource(R.string.drive_disconnect), 1, 3, { accountSheet = false; confirmDisconnect = true })
                 ActionRow(R.drawable.ic_delete, stringResource(R.string.drive_delete_backups), 2, 3, { accountSheet = false; confirmDelete = true }, destructive = true)
             }
         }
+    }
+
+    if (confirmDisconnect) {
+        PromptSheet(
+            title = stringResource(R.string.drive_disconnect_title),
+            text = stringResource(R.string.drive_disconnect_text),
+            action = stringResource(R.string.drive_disconnect),
+            onAction = {
+                confirmDisconnect = false
+                // Says so straight away; Google removes the access in the background. No Undo:
+                // connecting again needs the Google sign-in.
+                scope.launch { drive.disconnect() }
+                onMessage(context.getString(R.string.drive_disconnected))
+            },
+            onDismiss = { confirmDisconnect = false },
+        )
     }
 
     if (confirmDelete) {

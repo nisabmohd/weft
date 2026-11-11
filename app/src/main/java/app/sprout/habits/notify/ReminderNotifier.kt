@@ -19,6 +19,8 @@ import app.sprout.habits.ui.today.TodayViewModel.Companion.formatNumber
 import app.sprout.habits.domain.isScheduled
 import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import app.sprout.habits.data.ReminderType
 import kotlinx.coroutines.launch
 
 /**
@@ -28,6 +30,8 @@ import kotlinx.coroutines.launch
 class ReminderNotifier(
     private val context: Context,
     private val repository: HabitRepository,
+    /** True while an alarm is ringing or waiting its turn (`AlarmRinger`'s queue). */
+    private val alarmRinging: () -> Boolean = { false },
 ) {
     /**
      * The habit's reminder, unless today is already done or skipped. [alert]: false when +step
@@ -39,7 +43,18 @@ class ReminderNotifier(
         val entry = repository.getEntry(habit.id, LocalDate.now().toEpochDay())
         if (entry?.status == EntryStatus.DONE || entry?.status == EntryStatus.SKIP) return
         val (title, text) = reminderText(habit, entry?.amount ?: 0.0, ResourceStrings(context))
-        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id), ReminderActions.forReminder(context, habit), alert)
+        // An alarm at the same time takes the screen and the sound; this one waits in the shade.
+        val quiet = alert && alarmTakesOver(habit)
+        post(habit.id, Notifications.CHANNEL_REMINDERS, title, text, reminderId(habit.id), ReminderActions.forReminder(context, habit), alert && !quiet, silent = quiet)
+    }
+
+    private suspend fun alarmTakesOver(habit: Habit): Boolean {
+        if (alarmRinging()) return true
+        val today = LocalDate.now()
+        val day = today.toEpochDay()
+        val settled = repository.observeEntries(day, day).first()
+            .filter { it.status == EntryStatus.DONE || it.status == EntryStatus.SKIP }.map { it.habitId }.toSet()
+        return alarmDueWith(habit, repository.observeHabits().first(), today, settled)
     }
 
     /**
@@ -90,6 +105,8 @@ class ReminderNotifier(
         id: Int,
         actions: List<NotificationCompat.Action> = emptyList(),
         alert: Boolean = false,
+        /** Into the shade without a banner or sound (an alarm is ringing). */
+        silent: Boolean = false,
     ) {
         if (!Notifications.canPost(context)) return
         val builder = NotificationCompat.Builder(context, channel)
@@ -100,6 +117,7 @@ class ReminderNotifier(
             .setAutoCancel(true)
             // +step updates the same notification: it shouldn't ring again.
             .setOnlyAlertOnce(true)
+            .setSilent(silent)
         actions.forEach(builder::addAction)
         val notification = builder.build()
         NotificationManagerCompat.from(context).notify(id, notification)
@@ -118,6 +136,19 @@ class ReminderNotifier(
     )
 
     companion object {
+        /**
+         * True when another habit's alarm rings at [habit]'s reminder time today (and isn't done or
+         * skipped, so it will ring): the two arrive within a second of each other, in either order,
+         * and the alarm should be the only thing that pops up and sounds (user, 2026-11-11).
+         */
+        fun alarmDueWith(habit: Habit, habits: List<Habit>, today: LocalDate, settled: Set<Long>): Boolean {
+            val minutes = habit.reminderMinutes ?: return false
+            return habits.any {
+                it.id != habit.id && !it.archived && it.reminderType == ReminderType.ALARM &&
+                    it.reminderMinutes == minutes && isScheduled(it.daysMask, today) && it.id !in settled
+            }
+        }
+
         fun reminderId(habitId: Long) = habitId.toInt() * 2
         fun noteReminderId(habitId: Long) = habitId.toInt() * 2 + 1
 

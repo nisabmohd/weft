@@ -22,11 +22,4 @@ class ManageHabitsViewModel(private val repository: HabitRepository) : ViewModel
         }
     }
 
-    fun setArchived(habit: Habit, archived: Boolean) {
-        viewModelScope.launch { repository.setArchived(habit.id, archived) }
-    }
-
-    fun delete(habit: Habit) {
-        viewModelScope.launch { repository.deleteHabit(habit) }
-    }
 }
